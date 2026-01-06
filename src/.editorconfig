@@ -1,0 +1,6 @@
+[*.cs]
+
+# TUnit0023: Member should be disposed within a clean up method
+dotnet_diagnostic.TUnit0023.severity = none
+# IDE0290: Use Primary Constructors
+dotnet_diagnostic.IDE0290.severity = none
