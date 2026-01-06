@@ -10,6 +10,7 @@ global using mark.davison.rome.api.models;
 global using mark.davison.rome.api.models.configuration.EntityConfiguration;
 global using mark.davison.rome.shared.constants;
 global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Diagnostics;
 global using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 global using Microsoft.Extensions.DependencyInjection;
 global using System.Diagnostics.CodeAnalysis;
