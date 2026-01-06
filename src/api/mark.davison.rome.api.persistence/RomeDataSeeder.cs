@@ -1,6 +1,6 @@
 ﻿namespace mark.davison.rome.api.persistence;
 
-public sealed class RomeDataSeeder : IDataSeeder
+internal sealed class RomeDataSeeder : IDataSeeder
 {
     private readonly IDateService _dateService;
     private readonly bool _isProductionMode;

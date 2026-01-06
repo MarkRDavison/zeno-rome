@@ -24,12 +24,10 @@ public class Startup(IConfiguration Configuration)
             .AddLogging()
             .AddAuthorization()
             .AddJwtAuthentication<RomeDbContext>(AppSettings.AUTHENTICATION)
-            .AddCoreDbContext<RomeDbContext>()
             .AddHealthCheckServices<ApplicationHealthStateHostedService>()
-            .AddDatabase<RomeDbContext>(AppSettings.PRODUCTION_MODE, AppSettings.DATABASE, typeof(PostgresContextFactory), typeof(SqliteContextFactory))
+            .AddPersistence(AppSettings.PRODUCTION_MODE, AppSettings.DATABASE, typeof(PostgresContextFactory), typeof(SqliteContextFactory))
             .AddServerCore()
-            .AddCQRSServer()
-            .AddTransient<IDataSeeder>(_ => new RomeDataSeeder(_.GetRequiredService<IDateService>(), AppSettings.PRODUCTION_MODE));
+            .AddCQRSServer();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
