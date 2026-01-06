@@ -11,6 +11,9 @@
     <Project Path="api/migrations/mark.davison.rome.api.migrations.postgres/mark.davison.rome.api.migrations.postgres.csproj" Id="0138ef8a-5ef2-4337-9358-11fea3f3eed7" />
     <Project Path="api/migrations/mark.davison.rome.api.migrations.sqlite/mark.davison.rome.api.migrations.sqlite.csproj" Id="bac47cdc-609c-49a8-a718-a28e21400ada" />
   </Folder>
+  <Folder Name="/api/tests/">
+    <Project Path="api/tests/mark.davison.rome.api.tests/mark.davison.rome.api.tests.csproj" Id="69d31b01-7a82-4f23-87a7-2ec6ceadb301" />
+  </Folder>
   <Folder Name="/aspire/">
     <Project Path="aspire/mark.davison.rome.aspire/mark.davison.rome.aspire.csproj" Id="db1eb033-591f-4239-bcaa-ef83e77a61b3" />
   </Folder>
