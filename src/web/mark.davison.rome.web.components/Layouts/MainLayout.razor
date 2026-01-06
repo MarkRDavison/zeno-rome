@@ -1,0 +1,123 @@
+﻿@inherits LayoutComponentBase
+
+@implements IDisposable
+
+@inject AuthenticationStateProvider _auth
+@inject IAuthenticationService _authenticationService
+
+<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudText Typo="Typo.h4" Class="app-title">Finance</MudText>
+        <AuthorizeView>
+            <Authorized>
+                @*TODO: Back button/home button if not in root?*@
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+                <MudSpacer />
+                @if (context.User.IsInRole("Admin"))
+                {
+                    <MudTooltip Text="Admin User">
+                        <MudIcon data-testid="@DataTestIds.AdminIcon" Class="mr-2" Icon="@Icons.Material.Filled.Shield" />
+                    </MudTooltip>
+                }
+                <span data-testid="@DataTestIds.Username">@context.User.Identity?.Name</span>
+                <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Size="Size.Large">
+                    <ActivatorContent>
+                        <MudIconButton data-testid="@DataTestIds.ManageIcon" Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" Edge="Edge.End" />
+                    </ActivatorContent>
+                    <ChildContent>
+                        <MudMenuItem Href="@Routes.UserSettings">Settings</MudMenuItem>
+                        @if (context.User.IsInRole("Admin"))
+                        {
+                            <MudDivider />
+                            <MudMenuItem Href="@Routes.AdminSettings">Admin Settings</MudMenuItem>
+                        }
+                        <MudDivider />
+                        <MudMenuItem Href="@($"{_authenticationService.BffRoot}/account/logout")">Logout</MudMenuItem>
+                    </ChildContent>
+                </MudMenu>
+            </Authorized>
+        </AuthorizeView>
+    </MudAppBar>
+    <AuthorizeView>
+        <Authorized>
+            <MudDrawer Elevation="2" @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always">
+                <NavMenu />
+            </MudDrawer>
+        </Authorized>
+    </AuthorizeView>
+    <MudMainContent>
+        <MudContainer Class="ma-4">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    bool _drawerOpen = true;
+    private bool _isDarkMode;
+    private MudThemeProvider? _mudThemeProvider;
+    private bool disposedValue;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    protected override void OnInitialized()
+    {
+        _auth.AuthenticationStateChanged += OnAuthStateChanged;
+
+        base.OnInitialized();
+    }
+
+    private void OnAuthStateChanged(Task<AuthenticationState> authState)
+    {
+        _ = HandleAuthStateChanged(authState);
+    }
+
+    private async Task HandleAuthStateChanged(Task<AuthenticationState> authState)
+    {
+        var newState = await authState;
+
+        if (newState.User.Identity?.IsAuthenticated ?? false)
+        {
+            Console.WriteLine("On Authenticated");
+        }
+        else
+        {
+            Console.WriteLine("On un-Authenticated");
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && _mudThemeProvider != null)
+        {
+            _isDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
+            await _mudThemeProvider.WatchSystemDarkModeAsync(OnSystemPreferenceChanged);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public void Dispose()
+    {
+        if (!disposedValue)
+        {
+            disposedValue = true;
+            _auth.AuthenticationStateChanged -= OnAuthStateChanged;
+        }
+    }
+
+    private async Task OnSystemPreferenceChanged(bool newValue)
+    {
+        _isDarkMode = newValue;
+        await InvokeAsync(StateHasChanged);
+    }
+}

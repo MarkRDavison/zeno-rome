@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="markdavison.common.client.abstractions" Version="10.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\shared\mark.davison.rome.shared.constants\mark.davison.rome.shared.constants.csproj" />
+    <ProjectReference Include="..\..\shared\mark.davison.rome.shared.models.dto\mark.davison.rome.shared.models.dto.csproj" />
+  </ItemGroup>
+
+</Project>

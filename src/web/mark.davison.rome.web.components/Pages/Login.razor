@@ -1,0 +1,39 @@
+﻿@attribute [Route(Routes.Login)]
+
+@inject IAuthenticationService _authenticationService
+
+<h1>Login</h1>
+
+@if (_loading)
+{
+	<MudProgressCircular Size="Size.Large" Class="ma-auto" Indeterminate />
+}
+else if (_loaded && _providers.Count > 0)
+{
+	<ul>
+		@foreach (var provider in _providers)
+		{
+			@*TODO: Icons/images etc*@
+			<li><a data-testid="@($"{DataTestIds.LoginWithProvider}{provider}")" href="@($"{_authenticationService.BffRoot}/account/login/{provider}")">Login with @provider</a></li>
+		}
+	</ul>
+}
+else
+{
+	@*NO AUTH PROVIDERS....*@
+}
+
+@code {
+	private bool _loading = true;
+	private bool _loaded = false;
+
+	private List<string> _providers = [];
+
+	protected override async Task OnInitializedAsync()
+	{
+		await Task.Delay(TimeSpan.FromMilliseconds(500));
+		_providers = [ "Keycloak" ];
+		_loaded = true;
+		_loading = false;
+	}
+}

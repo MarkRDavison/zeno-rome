@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\shared\mark.davison.rome.shared.constants\mark.davison.rome.shared.constants.csproj" />
+    <ProjectReference Include="..\mark.davison.rome.api.models.configuration\mark.davison.rome.api.models.configuration.csproj" />
+  </ItemGroup>
+
+</Project>

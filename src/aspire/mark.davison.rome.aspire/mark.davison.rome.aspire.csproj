@@ -1,0 +1,27 @@
+﻿<Project Sdk="Aspire.AppHost.Sdk/13.0.2">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>90c0070e-5733-4cde-8a3f-9a28d2b73790</UserSecretsId>
+  </PropertyGroup>
+	
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);ASPIRECERTIFICATES001</NoWarn>
+  </PropertyGroup>
+	
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.1.0" />
+    <PackageReference Include="Aspire.Hosting.Redis" Version="13.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\api\mark.davison.rome.api\mark.davison.rome.api.csproj" />
+    <ProjectReference Include="..\..\bff\mark.davison.rome.bff\mark.davison.rome.bff.csproj" />
+    <ProjectReference Include="..\..\shared\mark.davison.rome.shared.constants\mark.davison.rome.shared.constants.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\..\web\mark.davison.rome.web\mark.davison.rome.web.csproj" />
+  </ItemGroup>
+
+</Project>

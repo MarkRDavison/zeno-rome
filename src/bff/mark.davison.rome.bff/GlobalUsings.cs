@@ -1,0 +1,15 @@
+﻿global using mark.davison.common.abstractions.Services;
+global using mark.davison.common.authentication.server.Configuration;
+global using mark.davison.common.authentication.server.Ignition;
+global using mark.davison.common.authentication.server.Models;
+global using mark.davison.common.authentication.server.Services;
+global using mark.davison.common.server;
+global using mark.davison.common.server.abstractions.Configuration;
+global using mark.davison.common.server.abstractions.Health;
+global using mark.davison.common.server.Configuration;
+global using mark.davison.common.server.Ignition;
+global using mark.davison.common.server.Services;
+global using mark.davison.rome.bff.Configuration;
+global using mark.davison.rome.shared.constants;
+global using Microsoft.AspNetCore.HttpOverrides;
+global using Microsoft.Extensions.Options;

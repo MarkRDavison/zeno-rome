@@ -1,0 +1,13 @@
+﻿global using mark.davison.common.abstractions.Services;
+global using mark.davison.common.Constants;
+global using mark.davison.common.persistence;
+global using mark.davison.common.persistence.Helpers;
+global using mark.davison.common.server.Models;
+global using mark.davison.common.server.Models.EntityConfiguration;
+global using mark.davison.rome.api.models;
+global using mark.davison.rome.api.models.configuration.EntityConfiguration;
+global using mark.davison.rome.shared.constants;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+global using System.Diagnostics.CodeAnalysis;
+global using System.Linq.Expressions;

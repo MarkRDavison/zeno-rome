@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="markdavison.common.source.generators" Version="10.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\mark.davison.rome.api.commands\mark.davison.rome.api.commands.csproj" />
+    <ProjectReference Include="..\mark.davison.rome.api.queries\mark.davison.rome.api.queries.csproj" />
+    <ProjectReference Include="..\migrations\mark.davison.rome.api.migrations.postgres\mark.davison.rome.api.migrations.postgres.csproj" />
+    <ProjectReference Include="..\migrations\mark.davison.rome.api.migrations.sqlite\mark.davison.rome.api.migrations.sqlite.csproj" />
+  </ItemGroup>
+
+</Project>

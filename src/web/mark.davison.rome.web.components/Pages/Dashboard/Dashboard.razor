@@ -1,0 +1,11 @@
+﻿@attribute [Route(Routes.Dashboard)]
+
+<AuthorizeView>
+	<NotAuthorized>
+		@*TODO: Public landing page???*@
+		<Redirect Url="@Routes.Login" />
+	</NotAuthorized>
+	<Authorized>	
+
+	</Authorized>
+</AuthorizeView>
