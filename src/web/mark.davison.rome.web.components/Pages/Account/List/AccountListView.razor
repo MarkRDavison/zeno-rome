@@ -1,0 +1,29 @@
+﻿@attribute [Route(Routes.Accounts)]
+@attribute [Route(Routes.AccountsByType)]
+
+@implements IDisposable
+
+<MudStack Row="true" Class="pa-10">
+    <MudText Typo="Typo.h4">@ViewModel.Title</MudText>
+    <MudTooltip Text="Add">
+        <MudIconButton Icon="@Icons.Material.Filled.AddCircle" Variant="Variant.Filled" Color="Color.Primary" Style="min-width: 60px;" />
+    </MudTooltip>
+</MudStack>
+@* <MudDataGrid Items="@_items">
+    <Columns>
+        <TemplateColumn Title="Name">
+            <CellTemplate>
+                <MudLink Href="@context.Item.Name?.Href">@context.Item.Name?.Text</MudLink>
+            </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Title="Account type" Property="_ => _.AccountType" Hidden="@(Type != null)" />
+        <PropertyColumn Title="Account number" Property="_ => _.AccountNumber" />
+        <PropertyColumn Title="Current balance" Property="_ => _.CurrentBalance" CellStyleFunc="@AmountCellStyleFunc(_ => _.CurrentBalanceAmount)" />
+        <PropertyColumn Title="Balance difference" Property="_ => _.BalanceDifference" CellStyleFunc="@AmountCellStyleFunc(_ => _.BalanceDifferenceAmount)" />
+        <TemplateColumn Title="Last modified">
+            <CellTemplate>
+                <MudText>@context.Item.LastModified.ToShortDateString()</MudText>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+</MudDataGrid> *@

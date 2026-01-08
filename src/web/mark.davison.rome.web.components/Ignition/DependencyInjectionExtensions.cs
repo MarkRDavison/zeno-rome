@@ -9,6 +9,10 @@ public static class DependencyInjectionExtensions
             .UseAuthentication(WebConstants.ApiClientName, WebConstants.LocalBffRoot)
             .UseClientCQRS(typeof(Routes))
             .UseCommonClient(typeof(Routes));
+
+        services
+            .AddScoped<AccountListViewModel>();
+
         return services;
     }
 }

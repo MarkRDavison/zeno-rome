@@ -1,3 +1,21 @@
 ﻿<MudNavMenu>
     <MudNavLink Href="@Routes.Dashboard" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard" Class="pt-6">Dashboard </MudNavLink>
+    <MudNavGroup Title="ACCOUNTING" Expanded="true">
+        <MudNavGroup Title="Transactions" Expanded="true">
+            <MudNavLink Href="@RouteHelpers.Transactions(TransactionTypeConstants.Withdrawal)" Match="NavLinkMatch.Prefix">Expenses</MudNavLink>
+            <MudNavLink Href="@RouteHelpers.Transactions(TransactionTypeConstants.Deposit)" Match="NavLinkMatch.Prefix">Revenue / income</MudNavLink>
+            <MudNavLink Href="@RouteHelpers.Transactions(TransactionTypeConstants.Transfer)" Match="NavLinkMatch.Prefix">Transfers</MudNavLink>
+        </MudNavGroup>
+    </MudNavGroup>
+    <MudNavGroup Title="OTHERS" Expanded="true">
+        <MudNavGroup Title="Accounts" Expanded="true">
+            <MudNavLink Href="@RouteHelpers.Accounts(AccountTypeConstants.Asset)" Match="NavLinkMatch.Prefix">Asset accounts</MudNavLink>
+            <MudNavLink Href="@RouteHelpers.Accounts(AccountTypeConstants.Expense)" Match="NavLinkMatch.Prefix">Expense accounts</MudNavLink>
+            <MudNavLink Href="@RouteHelpers.Accounts(AccountTypeConstants.Revenue)" Match="NavLinkMatch.Prefix">Revenue accounts</MudNavLink>
+        </MudNavGroup>
+    </MudNavGroup>
+    <MudNavGroup Title="Classification" Expanded="true">
+        <MudNavLink Href="@Routes.Categories" Match="NavLinkMatch.Prefix">Categories</MudNavLink>
+        <MudNavLink Href="@Routes.Tags" Match="NavLinkMatch.Prefix">Tags</MudNavLink>
+    </MudNavGroup>
 </MudNavMenu>
