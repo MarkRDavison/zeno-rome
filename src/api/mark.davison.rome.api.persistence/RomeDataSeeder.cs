@@ -1,16 +1,15 @@
-﻿namespace mark.davison.rome.api.persistence;
+﻿using mark.davison.rome.shared.accounting.constants;
+
+namespace mark.davison.rome.api.persistence;
 
 internal sealed class RomeDataSeeder : IDataSeeder
 {
-    private readonly IDateService _dateService;
     private readonly bool _isProductionMode;
 
     public RomeDataSeeder(
-        IDateService dateService,
         bool isProductionMode
     )
     {
-        _dateService = dateService;
         _isProductionMode = isProductionMode;
     }
 
@@ -22,6 +21,17 @@ internal sealed class RomeDataSeeder : IDataSeeder
 
             await EnsureTenantSeeded(dbContext, token);
             await EnsureRolesSeeded(dbContext, token);
+            await EnsureAccountsSeeded(dbContext, token);
+            await EnsureAccountTypesSeeded(dbContext, token);
+            await EnsureCurrenciesSeeded(dbContext, token);
+            await EnsureTransactionTypesSeeded(dbContext, token);
+
+            await dbContext.SaveChangesAsync(token);
+
+            if (!_isProductionMode)
+            {
+                // Seed dev data
+            }
 
             await dbContext.SaveChangesAsync(token);
         }
@@ -33,7 +43,7 @@ internal sealed class RomeDataSeeder : IDataSeeder
         }
     }
 
-    internal async Task EnsureSeeded<T>(DbContext dbContext, List<T> entities, CancellationToken cancellationToken)
+    static internal async Task EnsureSeeded<T>(DbContext dbContext, List<T> entities, CancellationToken cancellationToken)
         where T : RomeEntity
     {
         var existingEntities = await dbContext.Set<T>().Where(_ => _.UserId == Guid.Empty).ToListAsync(cancellationToken);
@@ -43,6 +53,88 @@ internal sealed class RomeDataSeeder : IDataSeeder
         await dbContext.Set<T>().AddRangeAsync(newEntities, cancellationToken);
     }
 
+    private async Task EnsureTransactionTypesSeeded(DbContext dbContext, CancellationToken cancellationToken)
+    {
+        var transactionTypes = new List<TransactionType>
+        {
+            new TransactionType { Id = TransactionTypeConstants.Withdrawal, Type = "Withdrawal", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new TransactionType { Id = TransactionTypeConstants.Deposit, Type = "Deposit", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new TransactionType { Id = TransactionTypeConstants.Transfer, Type = "Transfer", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new TransactionType { Id = TransactionTypeConstants.OpeningBalance, Type = "Opening balance", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new TransactionType { Id = TransactionTypeConstants.Reconciliation, Type = "Reconciliation", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new TransactionType { Id = TransactionTypeConstants.Invalid, Type = "Invalid", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new TransactionType { Id = TransactionTypeConstants.LiabilityCredit, Type = "Liability credit", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue }
+        };
+
+        await EnsureSeeded(dbContext, transactionTypes, cancellationToken);
+    }
+    private async Task EnsureAccountTypesSeeded(DbContext dbContext, CancellationToken cancellationToken)
+    {
+        var accountTypes = new List<AccountType>
+        {
+            new AccountType { Id = AccountTypeConstants.Default, Type = "Default", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new AccountType { Id = AccountTypeConstants.Cash, Type = "Cash", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new AccountType { Id = AccountTypeConstants.Asset, Type = "Asset", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new AccountType { Id = AccountTypeConstants.Expense, Type = "Expense", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new AccountType { Id = AccountTypeConstants.Revenue, Type = "Revenue", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new AccountType { Id = AccountTypeConstants.InitialBalance, Type = "Initial balance", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new AccountType { Id = AccountTypeConstants.Beneficiary, Type = "Beneficiary", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new AccountType { Id = AccountTypeConstants.Import, Type = "Import", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new AccountType { Id = AccountTypeConstants.Loan, Type = "Loan", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new AccountType { Id = AccountTypeConstants.Reconciliation, Type = "Reconcilation", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new AccountType { Id = AccountTypeConstants.Debt, Type = "Debt", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new AccountType { Id = AccountTypeConstants.Mortgage, Type = "Mortgage", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new AccountType { Id = AccountTypeConstants.LiabilityCredit, Type = "Liability credit", UserId = Guid.Empty, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue }
+        };
+
+        await EnsureSeeded(dbContext, accountTypes, cancellationToken);
+    }
+
+    private async Task EnsureCurrenciesSeeded(DbContext dbContext, CancellationToken cancellationToken)
+    {
+        var currencies = new List<Currency>
+        {
+            new Currency { Id = CurrencyConstants.NZD, UserId = Guid.Empty, Code = "NZD", Name = "New Zealand Dollar", Symbol = "NZ$", DecimalPlaces = 2, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new Currency { Id = CurrencyConstants.AUD, UserId = Guid.Empty, Code = "AUD", Name = "Australian Dollar", Symbol = "A$", DecimalPlaces = 2, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new Currency { Id = CurrencyConstants.USD, UserId = Guid.Empty, Code = "USD", Name = "US  Dollar", Symbol = "US$", DecimalPlaces = 2, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new Currency { Id = CurrencyConstants.CAD, UserId = Guid.Empty, Code = "CAD", Name = "Canadian Dollar", Symbol = "C$", DecimalPlaces = 2, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new Currency { Id = CurrencyConstants.EUR, UserId = Guid.Empty, Code = "EUR", Name = "Euro", Symbol = "€", DecimalPlaces = 2, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new Currency { Id = CurrencyConstants.GBP, UserId = Guid.Empty, Code = "GBP", Name = "British Pound", Symbol = "£", DecimalPlaces = 2, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new Currency { Id = CurrencyConstants.JPY, UserId = Guid.Empty, Code = "JPY", Name = "Japanese Yen", Symbol = "¥", DecimalPlaces = 0, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new Currency { Id = CurrencyConstants.RMB, UserId = Guid.Empty, Code = "RMB", Name = "Chinese Yuan", Symbol = "¥", DecimalPlaces = 2, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue},
+            new Currency { Id = CurrencyConstants.INT, UserId = Guid.Empty, Code = "INT", Name = "Internal", Symbol = "$", DecimalPlaces = 2, Created = DateTimeOffset.MinValue, LastModified = DateTimeOffset.MinValue }
+        };
+
+        await EnsureSeeded(dbContext, currencies, cancellationToken);
+    }
+
+    private async Task EnsureAccountsSeeded(DbContext dbContext, CancellationToken cancellationToken)
+    {
+        var accounts = new List<Account> {
+            new Account
+            {
+                Id = AccountConstants.OpeningBalance,
+                UserId = Guid.Empty,
+                AccountTypeId = AccountTypeConstants.InitialBalance,
+                CurrencyId = CurrencyConstants.INT,
+                Name = "Opening balance",
+                Created = DateTimeOffset.MinValue,
+                LastModified = DateTimeOffset.MinValue
+            },
+            new Account
+            {
+                Id = AccountConstants.Reconciliation,
+                UserId = Guid.Empty,
+                AccountTypeId = AccountTypeConstants.Reconciliation,
+                CurrencyId = CurrencyConstants.INT,
+                Name = "Reconcilation",
+                Created = DateTimeOffset.MinValue,
+                LastModified = DateTimeOffset.MinValue
+            }
+        };
+
+        await EnsureSeeded(dbContext, accounts, cancellationToken);
+    }
     private async Task EnsureRolesSeeded(DbContext dbContext, CancellationToken cancellationToken)
     {
         if (!await ExistsAsync<Role>(dbContext, _ => _.Id == Guid.Parse("02a740de-569f-4477-b5e7-d8622228db17"), cancellationToken))
@@ -52,8 +144,8 @@ internal sealed class RomeDataSeeder : IDataSeeder
                 Id = Guid.Parse("02a740de-569f-4477-b5e7-d8622228db17"),
                 Name = RoleConstants.Admin,
                 Description = "Administrator with full access",
-                Created = DateTime.UtcNow,
-                LastModified = DateTime.UtcNow,
+                Created = DateTimeOffset.MinValue,
+                LastModified = DateTimeOffset.MinValue,
                 UserId = Guid.Empty
             }, cancellationToken);
         }
@@ -66,8 +158,8 @@ internal sealed class RomeDataSeeder : IDataSeeder
                 Id = Guid.Parse("207af3cb-4a21-4d85-a93d-e16a8690eff2"),
                 Name = RoleConstants.User,
                 Description = "Standard user with limited access",
-                Created = DateTime.UtcNow,
-                LastModified = DateTime.UtcNow,
+                Created = DateTimeOffset.MinValue,
+                LastModified = DateTimeOffset.MinValue,
                 UserId = Guid.Empty
             }, cancellationToken);
         }
@@ -81,8 +173,8 @@ internal sealed class RomeDataSeeder : IDataSeeder
             {
                 Id = TenantIds.SystemTenantId,
                 Name = "System",
-                CreatedAt = DateTime.UtcNow,
-                LastModified = DateTime.UtcNow
+                CreatedAt = DateTimeOffset.MinValue,
+                LastModified = DateTimeOffset.MinValue
             }, cancellationToken);
         }
     }
@@ -95,11 +187,13 @@ internal sealed class RomeDataSeeder : IDataSeeder
             TenantId = TenantIds.SystemTenantId,
             Email = "romesystem@markdavison.kiwi",
             DisplayName = "Rome System",
-            CreatedAt = _dateService.Now,
-            LastModified = _dateService.Now
+            CreatedAt = DateTimeOffset.MinValue,
+            LastModified = DateTimeOffset.MinValue
         };
 
-        var existingUser = await dbContext.Set<User>().FindAsync(Guid.Empty, cancellationToken);
+        var existingUser = await dbContext
+            .Set<User>()
+            .FindAsync(Guid.Empty, cancellationToken);
 
         if (existingUser == null)
         {

@@ -26,8 +26,10 @@ public class Startup(IConfiguration Configuration)
             .AddJwtAuthentication<RomeDbContext>(AppSettings.AUTHENTICATION)
             .AddHealthCheckServices<ApplicationHealthStateHostedService>()
             .AddPersistence(AppSettings.PRODUCTION_MODE, AppSettings.DATABASE, typeof(PostgresContextFactory), typeof(SqliteContextFactory))
+            .AddRedis(AppSettings.REDIS, AppSettings.PRODUCTION_MODE)
             .AddServerCore()
-            .AddCQRSServer();
+            .AddCQRSServer()
+            .AddSharedServices();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -39,6 +41,7 @@ public class Startup(IConfiguration Configuration)
             .UseMiddleware<RequestResponseLoggingMiddleware>()
             .UseAuthentication()
             .UseAuthorization()
+            .UseMiddleware<LoadFinanceUserContextMiddleware>()
             .UseEndpoints(endpoints =>
             {
                 endpoints

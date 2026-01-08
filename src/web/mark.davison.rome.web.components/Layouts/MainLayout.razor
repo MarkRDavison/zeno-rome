@@ -1,10 +1,14 @@
-﻿@inherits LayoutComponentBase
+﻿@using mark.davison.rome.web.components.Controls
+@inherits LayoutComponentBase
 
 @implements IDisposable
 
 @inject AuthenticationStateProvider _auth
 @inject NavigationManager _navigationManager
 @inject IAuthenticationService _authenticationService
+@inject IClientHttpRepository _clientRepository;
+@inject IStartupState _startupState
+@inject IAppContextService _appContext
 
 <MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
 <MudDialogProvider />
@@ -22,13 +26,7 @@
             <Authorized>
                 <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
                 <MudSpacer />
-                @if (context.User.IsInRole(RoleConstants.Admin))
-                {
-                    <MudTooltip Text="Admin User">
-                        <MudIcon data-testid="@DataTestIds.AdminIcon" Class="mr-2" Icon="@Icons.Material.Filled.Shield" />
-                    </MudTooltip>
-                }
-                <span data-testid="@DataTestIds.Username">@context.User.Identity?.Name</span>
+                <AppContext ClaimsPrincipal="@context.User" />
                 <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Size="Size.Large">
                     <ActivatorContent>
                         <MudIconButton data-testid="@DataTestIds.ManageIcon" Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" Edge="Edge.End" />
@@ -44,13 +42,17 @@
                         <MudMenuItem Href="@($"{_authenticationService.BffRoot}/account/logout")">Logout</MudMenuItem>
                     </ChildContent>
                 </MudMenu>
+                <MudIconButton data-testid="@DataTestIds.QuickCreate" Icon="@Icons.Material.Filled.Add" Color="Color.Inherit" Edge="Edge.End" OnClick="@((e) => QuickAddToggle())" />
             </Authorized>
         </AuthorizeView>
     </MudAppBar>
     <AuthorizeView>
         <Authorized>
-            <MudDrawer Elevation="2" @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always">
+            <MudDrawer Elevation="2" @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Variant="DrawerVariant.Persistent">
                 <NavMenu />
+            </MudDrawer>
+            <MudDrawer Class="mud-height-full" @bind-Open="@_quickAddOpen" Anchor="@Anchor.Right" Variant="DrawerVariant.Temporary" OverlayAutoClose>
+                <QuickAdd OnSelect="@(() => _quickAddOpen = false)" />
             </MudDrawer>
         </Authorized>
     </AuthorizeView>
@@ -63,6 +65,7 @@
 
 @code {
     bool _drawerOpen = true;
+    private bool _quickAddOpen = false;
     private bool _isDarkMode;
     private MudThemeProvider? _mudThemeProvider;
     private bool disposedValue;
@@ -71,12 +74,26 @@
     {
         _drawerOpen = !_drawerOpen;
     }
-
-    protected override void OnInitialized()
+    void QuickAddToggle()
     {
+        _quickAddOpen = !_quickAddOpen;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _appContext.RangeUpdated += async (o, e) =>
+        {
+            await InvokeAsync(StateHasChanged);
+        };
+
         _auth.AuthenticationStateChanged += OnAuthStateChanged;
 
-        base.OnInitialized();
+        var response = await _clientRepository.Get<BootstrapQueryRequest, BootstrapQueryResponse>(CancellationToken.None);
+
+        if (response.SuccessWithValue)
+        {
+            _startupState.NotifyStateChanged(response.Value.AuthProviders);
+        }
     }
 
     private void OnAuthStateChanged(Task<AuthenticationState> authState)
@@ -90,7 +107,12 @@
 
         if (newState.User.Identity?.IsAuthenticated ?? false)
         {
-            Console.WriteLine("On Authenticated");
+            var startupResponse = await _clientRepository.Get<StartupQueryRequest, StartupQueryResponse>(CancellationToken.None);
+
+            if (startupResponse.SuccessWithValue)
+            {
+                _startupState.NotifyStateChanged(startupResponse.Value);
+            }
         }
         else
         {

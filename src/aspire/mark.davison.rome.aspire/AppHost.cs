@@ -11,19 +11,16 @@ var config = new ConfigurationBuilder()
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+
+
 var dbUsername = builder.AddParameter("dbusername", "romedbuser", secret: false);
 var dbPassword = builder.AddParameter("dbpassword", "romedbpassword", secret: true);
+
 
 
 var redis = builder
     .AddRedis(AspireConstants.Redis, 6380)
     .WithoutHttpsCertificate();
-
-var db = builder
-    .AddPostgres(AspireConstants.Postgres, dbUsername, dbPassword, port: AspireConstants.PostgresPort)
-    .AddDatabase(AspireConstants.PostgresDatabase, AspireConstants.PostgresDatabase);
-
-//.AddDockerfile()
 
 var api = builder
     .AddProject<mark_davison_rome_api>(AspireConstants.Api)
@@ -31,10 +28,25 @@ var api = builder
     .WithNonProxiedHttpsEndpoint()
     .WithCommonHealthChecks()
     .WithExternalHttpEndpoints()
-    .WithPostgresDatabase(dbUsername, dbPassword)
-    .WithReference(db)
-    .WaitFor(db)
     .WaitFor(redis);
+
+var usePostgres = config["ROME:DATABASE:USE_POSTGRES"] == "true";
+
+if (usePostgres)
+{
+    var db = builder
+        .AddPostgres(AspireConstants.Postgres, dbUsername, dbPassword, port: AspireConstants.PostgresPort)
+        .AddDatabase(AspireConstants.PostgresDatabase, AspireConstants.PostgresDatabase);
+
+    api
+        .WithPostgresDatabase(dbUsername, dbPassword)
+        .WithReference(db)
+        .WaitFor(db);
+}
+else
+{
+    api.WithSqliteMemory();
+}
 
 var bff = builder
     .AddProject<mark_davison_rome_bff>(AspireConstants.Bff)
@@ -44,9 +56,7 @@ var bff = builder
     .WithExternalHttpEndpoints()
     .WithRedis(redis)
     .WithReference(api)
-    .WaitFor(redis)
-    .WaitFor(db)
-    .WaitFor(api);
+    .WaitFor(redis);
 
 builder
     .AddProject<mark_davison_rome_web>(AspireConstants.Web)

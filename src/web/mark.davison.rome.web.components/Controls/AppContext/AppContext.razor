@@ -1,0 +1,31 @@
+﻿@namespace mark.davison.rome.web.components.Controls
+
+@implements IDisposable
+
+<style>
+    .mud-picker.mud-picker-inline.mud-picker-input-button {
+        visibility: collapse !important;
+    }
+
+     .mud-range-input-separator {
+        visibility: collapse !important;
+    } 
+</style> 
+
+<MudStack Row AlignItems="AlignItems.Center">
+    <MudSpacer />
+    <MudButton OnClick="@OpenPicker">@FormattedRange</MudButton>
+    <MudDateRangePicker @ref="_picker" DateRange="@_range" DateRangeChanged="@DateRangeChanged" AutoClose="true">
+        <PickerActions>
+            <MudButton Class="mr-auto align-self-start" OnClick="@(async () => await _picker.CloseAsync(false))">Cancel</MudButton>
+            <MudButton OnClick="@Reset">Reset</MudButton>
+        </PickerActions>
+    </MudDateRangePicker>
+    @if (ClaimsPrincipal.IsInRole(RoleConstants.Admin))
+    {
+        <MudTooltip Text="Admin User">
+            <MudIcon data-testid="@DataTestIds.AdminIcon" Class="mr-2" Icon="@Icons.Material.Filled.Shield" />
+        </MudTooltip>
+    }
+    <span data-testid="@DataTestIds.Username">@Username</span>
+</MudStack>

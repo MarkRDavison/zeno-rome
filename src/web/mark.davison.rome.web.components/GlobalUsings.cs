@@ -1,3 +1,12 @@
-﻿global using mark.davison.common.client.web.Ignition;
+﻿global using mark.davison.common.client.abstractions.Repository;
+global using mark.davison.common.client.web.abstractions.Navigation;
+global using mark.davison.common.client.web.Ignition;
+global using mark.davison.rome.shared.accounting.constants;
+global using mark.davison.rome.shared.accounting.rules;
+global using mark.davison.rome.web.services.State;
+global using Microsoft.AspNetCore.Components;
 global using Microsoft.Extensions.DependencyInjection;
+global using MudBlazor;
+global using System.Diagnostics.CodeAnalysis;
 global using System.Runtime.CompilerServices;
+global using System.Security.Claims;

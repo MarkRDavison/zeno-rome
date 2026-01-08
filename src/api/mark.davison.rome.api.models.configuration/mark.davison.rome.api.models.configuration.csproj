@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\shared\mark.davison.rome.shared.accounting.constants\mark.davison.rome.shared.accounting.constants.csproj" />
     <ProjectReference Include="..\mark.davison.rome.api.models\mark.davison.rome.api.models.csproj" />
   </ItemGroup>
 

@@ -45,5 +45,13 @@ public sealed class RomeDbContext : DbContextBase<RomeDbContext>
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<Tenant> Tenants => Set<Tenant>();
+    public DbSet<Account> Accounts => Set<Account>();
+    public DbSet<AccountType> AccountTypes => Set<AccountType>();
+    public DbSet<Currency> Currencies => Set<Currency>();
+    public DbSet<CurrencyExchangeRate> CurrencyExchangeRates => Set<CurrencyExchangeRate>();
+    public DbSet<Transaction> Transactions => Set<Transaction>();
+    public DbSet<TransactionGroup> TransactionGroups => Set<TransactionGroup>();
+    public DbSet<TransactionJournal> TransactionJournals => Set<TransactionJournal>();
+    public DbSet<TransactionType> TransactionTypes => Set<TransactionType>();
 
 }

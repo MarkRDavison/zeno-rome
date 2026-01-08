@@ -29,6 +29,9 @@ public abstract class RomeEntityConfiguration<T> : IEntityTypeConfiguration<T>
         ConfigureEntity(builder);
     }
 
+    public const int NameMaxLength = 255;
+    public const int PeriodMaxLength = 63;
+
     protected virtual bool ConfigureNavigationManually => false;
 
     public abstract void ConfigureEntity(EntityTypeBuilder<T> builder);

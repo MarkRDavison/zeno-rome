@@ -22,6 +22,14 @@ public static class IResourceBuilderExtensions
         return builder.WithEndpoint(_httpsEndpointName, endpoint => endpoint.IsProxied = false);
     }
 
+    public static IResourceBuilder<TProject> WithSqliteMemory<TProject>(
+        this IResourceBuilder<TProject> builder)
+        where TProject : IResourceWithEnvironment
+    {
+        return builder
+            .WithEnvironment("ROME__DATABASE__DATABASE_TYPE", "Sqlite")
+            .WithEnvironment("ROME__DATABASE__CONNECTION_STRING", "MEMORY");
+    }
     public static IResourceBuilder<TProject> WithPostgresDatabase<TProject>(
         this IResourceBuilder<TProject> builder,
         IResourceBuilder<ParameterResource> username,

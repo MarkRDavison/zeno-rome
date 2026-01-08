@@ -5,6 +5,8 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection UseRomeServices(this IServiceCollection services)
     {
         return services
-            .AddSingleton<IDateService>(_ => new DateService(DateService.DateMode.Local));
+            .AddScoped<IStartupState, StartupState>()
+            .AddScoped<IAppContextService, AppContextService>()
+            .AddScoped<IDateService>(_ => new DateService(DateService.DateMode.Local));
     }
 }

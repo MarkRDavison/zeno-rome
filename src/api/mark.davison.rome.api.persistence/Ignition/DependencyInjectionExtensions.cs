@@ -28,6 +28,6 @@ public static class DependencyInjectionExtensions
 
         return services
             .AddCoreDbContext<RomeDbContext>()
-            .AddTransient<IDataSeeder>(_ => new RomeDataSeeder(_.GetRequiredService<IDateService>(), productionMode));
+            .AddTransient<IDataSeeder>(_ => new RomeDataSeeder(productionMode));
     }
 }

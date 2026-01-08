@@ -1,17 +1,21 @@
-﻿@attribute [Route(Routes.Login)]
+﻿@attribute [AllowAnonymous]
+@attribute [Route(Routes.Login)]
 
+@implements IDisposable
+
+@inject IStartupState _startupState
 @inject IAuthenticationService _authenticationService
 
-<h1>Login</h1>
+<MudText Typo="Typo.h2">Login</MudText>
 
-@if (_loading)
+@if (!_startupState.BootstrapComplete)
 {
 	<MudProgressCircular Size="Size.Large" Class="ma-auto" Indeterminate />
 }
-else if (_loaded && _providers.Count > 0)
+else if (_startupState.AuthProviders.Count > 0 && _startupState.BootstrapComplete)
 {
 	<ul>
-		@foreach (var provider in _providers)
+		@foreach (var provider in _startupState.AuthProviders)
 		{
 			@*TODO: Icons/images etc*@
 			<li><a data-testid="@($"{DataTestIds.LoginWithProvider}{provider}")" href="@($"{_authenticationService.BffRoot}/account/login/{provider}")">Login with @provider</a></li>
@@ -20,20 +24,24 @@ else if (_loaded && _providers.Count > 0)
 }
 else
 {
-	@*NO AUTH PROVIDERS....*@
+	<MudText Typo="Typo.body1">No auth providers configured</MudText>
 }
 
 @code {
-	private bool _loading = true;
-	private bool _loaded = false;
 
-	private List<string> _providers = [];
-
-	protected override async Task OnInitializedAsync()
+	private void OnStateChanged(object? sender, EventArgs args)
 	{
-		await Task.Delay(TimeSpan.FromMilliseconds(500));
-		_providers = [ "Keycloak" ];
-		_loaded = true;
-		_loading = false;
+		InvokeAsync(StateHasChanged);
 	}
+
+	protected override void OnInitialized()
+	{
+		_startupState.StateChanged += OnStateChanged;	
+	}
+
+	public void Dispose()
+	{
+		_startupState.StateChanged -= OnStateChanged;
+	}
+
 }

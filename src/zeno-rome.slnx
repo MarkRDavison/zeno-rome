@@ -21,8 +21,11 @@
     <Project Path="bff/mark.davison.rome.bff/mark.davison.rome.bff.csproj" />
   </Folder>
   <Folder Name="/shared/">
+    <Project Path="shared/mark.davison.rome.shared.accounting.rules/mark.davison.rome.shared.accounting.rules.csproj" Id="9979bec9-b762-42ef-91a0-16813734cdcb" />
     <Project Path="shared/mark.davison.rome.shared.constants/mark.davison.rome.shared.constants.csproj" Id="d2cddc8d-e2c1-4e65-aca9-2bf05057ab14" />
     <Project Path="shared/mark.davison.rome.shared.models.dto/mark.davison.rome.shared.models.dto.csproj" Id="bf969463-e040-470b-a3a0-2da52d362042" />
+    <Project Path="shared/mark.davison.rome.shared.accounting.constants/mark.davison.rome.shared.accounting.constants.csproj" Id="25bb6587-75e1-4da0-933f-6cb10609626e" />
+    <Project Path="shared/mark.davison.rome.shared.server/mark.davison.rome.shared.server.csproj" Id="519c8610-b4d6-4e54-83df-9af36ff0b8d2" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="../Docker/api.dockerfile" />

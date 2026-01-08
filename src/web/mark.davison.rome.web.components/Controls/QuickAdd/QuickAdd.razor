@@ -1,0 +1,11 @@
+﻿@namespace mark.davison.rome.web.components.Controls
+
+<MudNavMenu Class="pa-4">
+    <MudText Typo="Typo.h6">Create new stuff</MudText>
+
+    @foreach (var item in Items)
+    {
+        <MudNavLink OnClick="@(e => OnLinkClick(item.Href))" Icon="@item.Icon" Class="@(item.FlipX ? "flip-icon-x" : "")">@item.Text</MudNavLink>
+    }
+
+</MudNavMenu>

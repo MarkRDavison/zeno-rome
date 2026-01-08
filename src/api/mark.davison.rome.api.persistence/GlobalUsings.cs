@@ -8,6 +8,7 @@ global using mark.davison.common.server.Models;
 global using mark.davison.common.server.Models.EntityConfiguration;
 global using mark.davison.rome.api.models;
 global using mark.davison.rome.api.models.configuration.EntityConfiguration;
+global using mark.davison.rome.api.models.Entities;
 global using mark.davison.rome.shared.constants;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Diagnostics;
