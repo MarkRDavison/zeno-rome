@@ -1,6 +1,6 @@
 ﻿namespace mark.davison.rome.web.services.State;
 
-public interface IStartupState
+public interface IStartupState : IStateService
 {
 
     bool BootstrapComplete { get; }
@@ -8,8 +8,6 @@ public interface IStartupState
     List<AccountTypeDto> AccountTypes { get; }
     List<CurrencyDto> Currencies { get; }
     List<TransactionTypeDto> TransactionTypes { get; }
-
-    event EventHandler StateChanged;
     void NotifyStateChanged(IList<string> providers);
     void NotifyStateChanged(StartupDataDto startupData);
 }

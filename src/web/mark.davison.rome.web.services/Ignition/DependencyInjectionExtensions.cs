@@ -6,6 +6,7 @@ public static class DependencyInjectionExtensions
     {
         return services
             .AddScoped<IStartupState, StartupState>()
+            .AddScoped<IAccountState, AccountState>()
             .AddScoped<IAppContextService, AppContextService>()
             .AddScoped<IDateService>(_ => new DateService(DateService.DateMode.Local));
     }

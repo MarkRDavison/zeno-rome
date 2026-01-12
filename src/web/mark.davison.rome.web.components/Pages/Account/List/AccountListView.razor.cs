@@ -28,6 +28,11 @@ public partial class AccountListView
         await InvokeAsync(StateHasChanged);
     }
 
+    public async Task AddAccount()
+    {
+        await ViewModel.AddAccountAsync();
+    }
+
     public void Dispose()
     {
         ViewModel.PropertyChanged -= ViewModel_PropertyChanged;

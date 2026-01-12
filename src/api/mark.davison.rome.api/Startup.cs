@@ -29,7 +29,8 @@ public class Startup(IConfiguration Configuration)
             .AddRedis(AppSettings.REDIS, AppSettings.PRODUCTION_MODE)
             .AddServerCore()
             .AddCQRSServer()
-            .AddSharedServices();
+            .AddSharedServices()
+            .AddRomeCommands();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

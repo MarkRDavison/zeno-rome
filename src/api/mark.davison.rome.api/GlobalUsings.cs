@@ -9,6 +9,7 @@ global using mark.davison.common.server.Configuration;
 global using mark.davison.common.server.Ignition;
 global using mark.davison.common.server.Middleware;
 global using mark.davison.common.server.Services;
+global using mark.davison.rome.api.commands.Ignition;
 global using mark.davison.rome.api.Configuration;
 global using mark.davison.rome.api.Middleware;
 global using mark.davison.rome.api.migrations.postgres;

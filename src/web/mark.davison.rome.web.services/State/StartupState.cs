@@ -8,6 +8,8 @@ internal sealed class StartupState : IStartupState
     public List<AccountTypeDto> AccountTypes { get; private set; } = [];
     public List<CurrencyDto> Currencies { get; private set; } = [];
     public List<TransactionTypeDto> TransactionTypes { get; private set; } = [];
+    public bool Loading { get; }
+    public bool Loaded { get; }
 
     public event EventHandler StateChanged = default!;
     public void NotifyStateChanged(IList<string> providers)
@@ -15,7 +17,7 @@ internal sealed class StartupState : IStartupState
         AuthProviders = [.. providers];
         BootstrapComplete = true;
 
-        StateChanged?.Invoke(this, EventArgs.Empty);
+        NotifyStateChanged();
     }
 
     public void NotifyStateChanged(StartupDataDto startupData)
@@ -24,6 +26,11 @@ internal sealed class StartupState : IStartupState
         Currencies = [.. startupData.Currencies];
         TransactionTypes = [.. startupData.TransactionTypes];
 
+        NotifyStateChanged();
+    }
+
+    public void NotifyStateChanged()
+    {
         StateChanged?.Invoke(this, EventArgs.Empty);
     }
 }

@@ -11,7 +11,8 @@ public static class DependencyInjectionExtensions
             .UseCommonClient(typeof(Routes));
 
         services
-            .AddScoped<AccountListViewModel>();
+            .AddScoped<AccountListViewModel>()
+            .AddScoped<EditAccountViewModel>();
 
         return services;
     }

@@ -1,6 +1,4 @@
-﻿using mark.davison.rome.shared.accounting.constants;
-
-namespace mark.davison.rome.api.persistence;
+﻿namespace mark.davison.rome.api.persistence;
 
 internal sealed class RomeDataSeeder : IDataSeeder
 {
@@ -27,13 +25,6 @@ internal sealed class RomeDataSeeder : IDataSeeder
             await EnsureTransactionTypesSeeded(dbContext, token);
 
             await dbContext.SaveChangesAsync(token);
-
-            if (!_isProductionMode)
-            {
-                // Seed dev data
-            }
-
-            await dbContext.SaveChangesAsync(token);
         }
         catch (Exception ex)
         {
@@ -53,6 +44,63 @@ internal sealed class RomeDataSeeder : IDataSeeder
         await dbContext.Set<T>().AddRangeAsync(newEntities, cancellationToken);
     }
 
+    private async Task EnsureDevAccountsSeeded(Guid userId, DbContext dbContext, CancellationToken cancellationToken)
+    {
+        var accounts = new List<Account> {
+            new Account
+            {
+                Id = Guid.Parse("8E6DBBA7-CC8F-4D84-BAC6-FBD7889C8069"),
+                UserId = userId,
+                AccountTypeId = AccountTypeConstants.Asset,
+                CurrencyId = CurrencyConstants.NZD,
+                Name = "Everyday",
+                Created = DateTime.UtcNow,
+                LastModified = DateTime.UtcNow
+            },
+            new Account
+            {
+                Id = Guid.Parse("6339A56A-D1F2-4304-8CE9-024CF665BECC"),
+                UserId = userId,
+                AccountTypeId = AccountTypeConstants.Asset,
+                CurrencyId = CurrencyConstants.NZD,
+                Name = "Savings",
+                Created = DateTime.UtcNow,
+                LastModified = DateTime.UtcNow
+            },
+            new Account
+            {
+                Id = Guid.Parse("2C75EF75-AD77-4738-816E-B69C84F1BECF"),
+                UserId = userId,
+                AccountTypeId = AccountTypeConstants.Revenue,
+                CurrencyId = CurrencyConstants.NZD,
+                Name = "Work",
+                Created = DateTime.UtcNow,
+                LastModified = DateTime.UtcNow
+            },
+            new Account
+            {
+                Id = Guid.Parse("5F15867D-CBF9-4F09-B957-ED2EBFA0B89D"),
+                UserId = userId,
+                AccountTypeId = AccountTypeConstants.Expense,
+                CurrencyId = CurrencyConstants.NZD,
+                Name = "Supermarket",
+                Created = DateTime.UtcNow,
+                LastModified = DateTime.UtcNow
+            },
+            new Account
+            {
+                Id = Guid.Parse("62FC6CF0-E130-41C1-AE0C-3CF6DB2DA34D"),
+                UserId = userId,
+                AccountTypeId = AccountTypeConstants.Expense,
+                CurrencyId = CurrencyConstants.NZD,
+                Name = "Mechanic",
+                Created = DateTime.UtcNow,
+                LastModified = DateTime.UtcNow
+            }
+        };
+
+        await EnsureSeeded(dbContext, accounts, cancellationToken);
+    }
     private async Task EnsureTransactionTypesSeeded(DbContext dbContext, CancellationToken cancellationToken)
     {
         var transactionTypes = new List<TransactionType>
@@ -212,5 +260,15 @@ internal sealed class RomeDataSeeder : IDataSeeder
         where TEntity : class
     {
         return await dbContext.Set<TEntity>().Where(predicate).AnyAsync(token);
+    }
+
+    public async Task SeedUserDataAsync(Guid userId, DbContext dbContext, CancellationToken token)
+    {
+        if (!_isProductionMode)
+        {
+            await EnsureDevAccountsSeeded(userId, dbContext, token);
+
+            await dbContext.SaveChangesAsync(token);
+        }
     }
 }
