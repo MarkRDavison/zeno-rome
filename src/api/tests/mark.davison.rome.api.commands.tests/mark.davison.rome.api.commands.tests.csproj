@@ -11,4 +11,8 @@
     <PackageReference Include="TUnit" Version="1.9.55" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\mark.davison.rome.api.commands\mark.davison.rome.api.commands.csproj" />
+  </ItemGroup>
+
 </Project>
