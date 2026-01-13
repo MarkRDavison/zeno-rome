@@ -42,4 +42,9 @@
     <Project Path="web/mark.davison.rome.web.services/mark.davison.rome.web.services.csproj" Id="e508a17e-8547-4cd8-a345-f583b80cb214" />
     <Project Path="web/mark.davison.rome.web/mark.davison.rome.web.csproj" Id="c31839f5-b6c3-4789-ba6a-983afb92fb4d" />
   </Folder>
+  <Folder Name="/web/test/">
+    <Project Path="web/tests/mark.davison.common.web.playwright.test/mark.davison.common.web.playwright.test.csproj" />
+    <Project Path="web/tests/mark.davison.rome.web.playwright.app/mark.davison.rome.web.playwright.app.csproj" />
+    <Project Path="web/tests/mark.davison.rome.web.playwright.tests/mark.davison.rome.web.playwright.tests.csproj" Id="b5cb32db-14da-4e08-9afa-87cc72d6b141" />
+  </Folder>
 </Solution>
