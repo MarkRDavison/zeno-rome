@@ -13,3 +13,6 @@ global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertAccoun
 global using mark.davison.rome.shared.models.dto.Shared;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.DependencyInjection;
+global using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("mark.davison.rome.api.commands.tests")]
