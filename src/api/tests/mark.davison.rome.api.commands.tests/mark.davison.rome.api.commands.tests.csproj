@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="markdavison.common.server.test" Version="10.3.0" />
-    <PackageReference Include="TUnit" Version="1.9.55" />
+    <PackageReference Include="TUnit" Version="1.10.0" />
   </ItemGroup>
 
   <ItemGroup>

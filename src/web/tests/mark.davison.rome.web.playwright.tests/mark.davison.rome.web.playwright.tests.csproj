@@ -5,6 +5,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <PropertyGroup>
+    <!-- Only define SKIP_TUNIT_TESTS when building the main solution -->
+    <DefineConstants Condition="'$(SolutionName)' == 'zeno-rome'">$(DefineConstants);SKIP_TUNIT_TESTS</DefineConstants>
+  </PropertyGroup>
+	
+  <ItemGroup>
+    <None Remove="appsettings.Development.json" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <Content Include="appsettings.Development.json" Condition="Exists('appsettings.Development.json')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\mark.davison.rome.web.playwright.app\mark.davison.rome.web.playwright.app.csproj" />

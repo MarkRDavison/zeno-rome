@@ -15,7 +15,7 @@
   <ItemGroup>
     <PackageReference Include="markdavison.common.server.test" Version="10.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.1" />
-    <PackageReference Include="TUnit" Version="1.9.26" />
+    <PackageReference Include="TUnit" Version="1.10.0" />
   </ItemGroup>
 
   <ItemGroup>

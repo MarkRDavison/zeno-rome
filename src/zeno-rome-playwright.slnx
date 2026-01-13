@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="shared/mark.davison.rome.shared.constants/mark.davison.rome.shared.constants.csproj" />
+  <Project Path="web/tests/mark.davison.common.web.playwright.test/mark.davison.common.web.playwright.test.csproj" />
+  <Project Path="web/tests/mark.davison.rome.web.playwright.app/mark.davison.rome.web.playwright.app.csproj" />
+  <Project Path="web/tests/mark.davison.rome.web.playwright.tests/mark.davison.rome.web.playwright.tests.csproj" />
+</Solution>
