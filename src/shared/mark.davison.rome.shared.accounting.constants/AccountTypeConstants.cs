@@ -16,11 +16,7 @@ public static class AccountTypeConstants
     public static Guid Mortgage = new Guid("4DB9B14B-447A-4BB5-870E-C0A5EEC2CA63");
     public static Guid LiabilityCredit = new Guid("EB98F6A3-EE9E-4EFD-AA09-8D20E96FEE80");
 
-    // TODO: Create better typed versions/move these to a test helper class,
-    // asset and non asset
-    // liability and non liability etc
-    // Compare to the dictionary/account vs transaction map thing
-    public static IEnumerable<Guid> All => new[] {
+    public static IEnumerable<Guid> All => [
         Default ,
         Cash,
         Asset,
@@ -34,109 +30,28 @@ public static class AccountTypeConstants
         Debt,
         Mortgage,
         LiabilityCredit
-    };
+    ];
 
 
-    public static IEnumerable<Guid> Assets => new[] {
+    public static IEnumerable<Guid> Assets => [
         Asset
-    };
+    ];
 
-    public static IEnumerable<Guid> Expenses => new[] {
+    public static IEnumerable<Guid> Expenses => [
         Expense
-    };
+    ];
 
-    public static IEnumerable<Guid> Revenues => new[] {
+    public static IEnumerable<Guid> Revenues => [
         Revenue
-    };
+    ];
 
-    public static IEnumerable<Guid> Liabilities => new[] {
+    public static IEnumerable<Guid> Liabilities => [
         Loan,
         Debt,
         Mortgage
-    };
+    ];
 
-    public static IEnumerable<object[]> Assets_DynamicData
-    {
-        get
-        {
-            foreach (var id in Assets)
-            {
-                yield return new object[] { id };
-            }
-        }
-    }
 
-    public static IEnumerable<object[]> Expenses_DynamicData
-    {
-        get
-        {
-            foreach (var id in Expenses)
-            {
-                yield return new object[] { id };
-            }
-        }
-    }
-
-    public static IEnumerable<object[]> NonAssets_DynamicData
-    {
-        get
-        {
-            foreach (var id in All.Except(Assets))
-            {
-                yield return new object[] { id };
-            }
-        }
-    }
-
-    public static IEnumerable<object[]> Revenues_DynamicData
-    {
-        get
-        {
-            foreach (var id in Revenues)
-            {
-                yield return new object[] { id };
-            }
-        }
-    }
-    public static IEnumerable<object[]> NonRevenues_DynamicData
-    {
-        get
-        {
-            foreach (var id in All.Except(Revenues))
-            {
-                yield return new object[] { id };
-            }
-        }
-    }
-
-    public static IEnumerable<object[]> Liabilities_DynamicData
-    {
-        get
-        {
-            foreach (var id in Liabilities)
-            {
-                yield return new object[] { id };
-            }
-        }
-    }
-    public static IEnumerable<object[]> NonLiabilities_DynamicData
-    {
-        get
-        {
-            foreach (var id in All.Except(Liabilities))
-            {
-                yield return new object[] { id };
-            }
-        }
-    }
-    public static IEnumerable<object[]> NonAssetsOrLiabilities_DynamicData
-    {
-        get
-        {
-            foreach (var id in All.Except(Liabilities.Concat(Assets)))
-            {
-                yield return new object[] { id };
-            }
-        }
-    }
+    public static IEnumerable<Guid> NonAssetsOrLiabilities => All.Except(Assets.Union(Liabilities));
+    public static IEnumerable<Guid> NonRevenues => All.Except(Revenues);
 }
