@@ -132,8 +132,8 @@ public abstract class BaseTest : PageTest, IAsyncDisposable
         GC.SuppressFinalize(this);
     }
 
-    protected PlaywrightAppSettings AppSettings { get; }
-    protected AuthenticationHelper AuthenticationHelper { get; }
+    protected PlaywrightAppSettings AppSettings { get; } = default!;
+    protected AuthenticationHelper AuthenticationHelper { get; } = default!;
     protected IPage CurrentPage { get; set; } = default!;
 
     protected virtual bool Debug => Debugger.IsAttached;

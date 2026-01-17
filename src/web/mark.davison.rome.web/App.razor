@@ -2,23 +2,23 @@
         AdditionalAssemblies="new[]{ typeof(Routes).Assembly }" 
         NotFoundPage="typeof(NotFound)">
     <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
-                <NotAuthorized>
-                    @if (!context.User.Identity?.IsAuthenticated ?? true)
-                    {
-                        @*TODO: Add redirect_url*@
-                       <Redirect Url="@Routes.Login" />
-                    }
-                    else
-                    {
-                        <p>You do not have permission to view this page.</p>
-                        <a href="@Routes.Dashboard">Return to home</a>
-                    }
-                </NotAuthorized>
-                <Authorizing>
-                    <div class="p-4">Checking authorization...</div>
-                </Authorizing>
-            </AuthorizeRouteView>
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <NotAuthorized>
+                @if (!context.User.Identity?.IsAuthenticated ?? true)
+                {
+                    @*TODO: Add redirect_url*@
+                    <Redirect Url="@Routes.Login" />
+                }
+                else
+                {
+                    <p>You do not have permission to view this page.</p>
+                    <a href="@Routes.Dashboard">Return to home</a>
+                }
+            </NotAuthorized>
+            <Authorizing>
+                <div class="p-4">Checking authorization...</div>
+            </Authorizing>
+        </AuthorizeRouteView>
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
 </Router>
