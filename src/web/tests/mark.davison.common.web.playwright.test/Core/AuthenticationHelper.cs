@@ -64,20 +64,30 @@ public partial class AuthenticationHelper
 
             await loginWithProviderLink.ClickAsync();
 
-            await Assertions.Expect(page).ToHaveTitleAsync(ExpectedTitleRegex(), new PageAssertionsToHaveTitleOptions
+            try
             {
-                Timeout = 10_000.0f // TODO: Config
-            });
+                await Assertions.Expect(page).ToHaveTitleAsync(ExpectedTitleRegex(), new PageAssertionsToHaveTitleOptions
+                {
+                    Timeout = 10_000.0f // TODO: Config
+                });
 
-            await page.GetByLabel(UsernameLabel).FillAsync(_appSettings.AUTH_USERNAME);
-            await page.Locator("#password").FillAsync(_appSettings.AUTH_PASSWORD);
+                await page.GetByLabel(UsernameLabel).FillAsync(_appSettings.AUTH_USERNAME);
+                await page.Locator("#password").FillAsync(_appSettings.AUTH_PASSWORD);
 
-            var button = page.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+                var button = page.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+                {
+                    NameString = "Sign In"
+                });
+
+                await button.ClickAsync();
+            }
+            catch (Exception)
             {
-                NameString = "Sign In"
-            });
-
-            await button.ClickAsync();
+                if (!page.Url.Contains(_appSettings.WEB_ORIGIN))
+                {
+                    throw;
+                }
+            }
         }
 
         await Assertions.Expect(page)
@@ -87,6 +97,7 @@ public partial class AuthenticationHelper
                 {
                     Timeout = 10_000.0f// TODO: Config
                 });
+
         await Assertions.Expect(page).ToHaveTitleAsync(_appSettings.APP_TITLE);
     }
 

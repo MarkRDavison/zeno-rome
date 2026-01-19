@@ -104,13 +104,11 @@ public class AccountListViewModel : INotifyPropertyChanged, IDisposable
         return style;
     };
 
-    public Task AddAccountAsync()
+    public void AddAccount()
     {
         if (_accountTypeId is not null)
         {
             _clientNavigationManager.NavigateTo(RouteHelpers.AccountNew(_accountTypeId.Value));
         }
-
-        return Task.CompletedTask;
     }
 }

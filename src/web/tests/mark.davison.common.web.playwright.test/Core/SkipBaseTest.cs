@@ -2,6 +2,8 @@
 
 public class SkipBaseTest : IAsyncDisposable
 {
+    protected readonly Faker _faker = new Faker();
+
     protected SkipBaseTest(IDataNames _)
     {
 
@@ -11,4 +13,5 @@ public class SkipBaseTest : IAsyncDisposable
     {
         return ValueTask.CompletedTask;
     }
+
 }

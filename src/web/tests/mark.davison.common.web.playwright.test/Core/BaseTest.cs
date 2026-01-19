@@ -4,7 +4,7 @@ public abstract class BaseTest : PageTest, IAsyncDisposable
 {
     private static IBrowser? _browser;
     private static IBrowserContext? _context;
-    private readonly Faker _faker = new Faker();
+    protected readonly Faker _faker = new Faker();
     protected readonly HttpClient _client;
     private const string _authStateFilename = ".auth.json";
 

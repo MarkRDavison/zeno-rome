@@ -28,9 +28,9 @@ public partial class AccountListView
         await InvokeAsync(StateHasChanged);
     }
 
-    public async Task AddAccount()
+    public void AddAccount()
     {
-        await ViewModel.AddAccountAsync();
+        ViewModel.AddAccount();
     }
 
     public void Dispose()

@@ -1,4 +1,4 @@
-﻿namespace mark.davison.rome.web.playwright.tests;
+﻿namespace mark.davison.rome.web.playwright.app;
 
 public sealed class DataNames : IDataNames
 {

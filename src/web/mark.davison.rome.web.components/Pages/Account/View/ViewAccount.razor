@@ -1,0 +1,17 @@
+﻿@attribute [Route(Routes.Account)]
+
+<MudPaper Class="ma-10">
+    <MudStack Row="true">
+        <MudText data-testid="@DataTestIds.ViewAccountTitle" Typo="Typo.h4">unknown account</MudText>
+        <MudTooltip Text="Add">@*What? Transaction where this defaults to source/dest????*@
+            <MudIconButton Disabled Icon="@Icons.Material.Filled.AddCircle" Variant="Variant.Filled" Color="Color.Primary" Style="min-width: 60px;" />
+        </MudTooltip>
+    </MudStack>
+</MudPaper>
+
+@code {
+
+    [Parameter]
+    public required Guid Id { get; set; }
+
+}

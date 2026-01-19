@@ -20,7 +20,7 @@ public abstract class BaseViewModel<TPayload> : INotifyPropertyChanged, IDisposa
         return Task.FromResult(true);
     }
 
-    private void State_StateChanged(object? sender, EventArgs e)
+    protected void State_StateChanged(object? sender, EventArgs e)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
     }
