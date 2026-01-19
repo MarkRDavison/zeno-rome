@@ -5,6 +5,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <PropertyGroup>
+    <!-- Only define SKIP_TUNIT_TESTS when building the main solution -->
+    <DefineConstants Condition="'$(SolutionName)' == 'zeno-rome'">$(DefineConstants);SKIP_TUNIT_TESTS</DefineConstants>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\shared\mark.davison.rome.shared.constants\mark.davison.rome.shared.constants.csproj" />
