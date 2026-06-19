@@ -36,3 +36,13 @@ h1:focus {
     margin-left: 1rem !important;
     margin-right: 3rem !important;
 }
+
+.app-context {
+    .mud-picker.mud-picker-inline.mud-picker-input-button {
+        display: none !important;
+    }
+
+    .mud-range-input-separator {
+        display: none !important;
+    }
+}

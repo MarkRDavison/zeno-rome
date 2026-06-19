@@ -56,3 +56,4 @@ nunit-*.xml
 *.user
 appsettings.Development.json
 *.idea
+*.css

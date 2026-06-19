@@ -1,0 +1,33 @@
+﻿<div class="ma-auto" data-loading="@Loading">
+    @if (Loading)
+    {
+        @if (LoadingContent == null)
+        {
+            <MudProgressCircular Indeterminate Size="@Size" />
+        }
+        else
+        {
+            @LoadingContent
+        }
+    }
+    else
+    {
+        @ChildContent
+    }
+</div>
+
+@code {
+
+    [Parameter]
+    public bool Loading { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? LoadingContent { get; set; }
+
+    [Parameter]
+    public MudBlazor.Size Size { get; set; } = MudBlazor.Size.Large;
+
+}

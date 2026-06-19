@@ -2,17 +2,7 @@
 
 @implements IDisposable
 
-<style>
-    .mud-picker.mud-picker-inline.mud-picker-input-button {
-        visibility: collapse !important;
-    }
-
-     .mud-range-input-separator {
-        visibility: collapse !important;
-    } 
-</style> 
-
-<MudStack Row AlignItems="AlignItems.Center">
+<MudStack Class="app-context" Row AlignItems="AlignItems.Center">
     <MudSpacer />
     <MudButton OnClick="@OpenPicker">@FormattedRange</MudButton>
     <MudDateRangePicker @ref="_picker" DateRange="@_range" DateRangeChanged="@DateRangeChanged" AutoClose="true">

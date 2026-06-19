@@ -113,10 +113,6 @@
                 _startupState.NotifyStateChanged(startupResponse.Value);
             }
         }
-        else
-        {
-            Console.WriteLine("On un-Authenticated");
-        }
 
         await InvokeAsync(StateHasChanged);
     }

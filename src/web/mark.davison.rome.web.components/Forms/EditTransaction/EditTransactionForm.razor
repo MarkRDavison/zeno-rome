@@ -1,0 +1,54 @@
+﻿@inherits Form<EditTransactionFormViewModel>
+
+<ActivityMonitor Loading="@Processing">
+    <ChildContent>
+        <MudForm>
+            @for (var index = 0; index < FormViewModel.Items.Count; ++index)
+            {
+                int indexActual = index;
+                <MudPaper Class="mb-4 pa-6" id="@Id("edit-transaction-form", indexActual)">
+                    <div class="d-flex justify-space-between align-center">
+                        <MudText Typo="Typo.body2">@FormViewModel.GetSplitTitle(indexActual)</MudText>
+                        @if (FormViewModel.Items.Count > 1)
+                        {
+                            <MudIconButton data-testid="@DataTestIds.EditTransactionDeleteSplit" Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Error" OnClick="@(() => FormViewModel.RemoveSplit(FormViewModel.Items[indexActual].Id))" />
+                        }
+                    </div>
+
+                    <MudTextField id="@Id("edit-transaction-form-description", indexActual)" T="string" Label="Name" Required="true" @bind-Text="FormViewModel.Items[indexActual].Description" For="@(() => FormViewModel.Items[indexActual].Description)" />
+                    <Dropdown Id="@Id("edit-transaction-form-source", indexActual)" Label="Source account" Items="@FormViewModel.SourceAccountItems" Required="true" @bind-Value="FormViewModel.Items[indexActual].SourceAccountId" For="@(() => FormViewModel.Items[indexActual].SourceAccountId)" />
+                    <Dropdown Id="@Id("edit-transaction-form-destination", indexActual)" Label="Destination account" Items="@FormViewModel.DestinationAccountItems" Required="true" @bind-Value="FormViewModel.Items[indexActual].DestinationAccountId" For="@(() => FormViewModel.Items[indexActual].DestinationAccountId)" />
+
+                    @if (indexActual == 0)
+                    {
+                        <MudDatePicker id="@Id("edit-transaction-form-date", indexActual)" ImmediateText Label="Date" @bind-Date="FormViewModel.Date" For="@(() => FormViewModel.Date)" />
+                    }
+
+                    <NumericField id="@Id("edit-transaction-form-amount", indexActual)" HideSpinButtons Label="Amount" @bind-Value="FormViewModel.Items[indexActual].Amount" AllowNegative="false" DecimalPlaces="@FormViewModel.GetDecimalPlacesForCurrencyId(FormViewModel.Items[indexActual].SourceAccountId)" For="@(() => FormViewModel.Items[indexActual].Amount)" />
+
+                    <Dropdown Id="@Id("edit-transaction-form-category", indexActual)" Label="Category" Items="@FormViewModel.CategoryItems" @bind-Value="FormViewModel.Items[indexActual].CategoryId" For="@(() => FormViewModel.Items[indexActual].CategoryId)" />
+                </MudPaper>
+            }
+
+            @if (FormViewModel.Items.Count > 1)
+            {
+                <MudDivider DividerType="DividerType.FullWidth" Class="my-6" />
+
+                <MudPaper Class="mb-4 pa-6">
+                    <MudTextField data-testid="@DataTestIds.EditTransactionSplitDescription"
+                                  id="edit-transaction-form-split-description"
+                                  T="string"
+                                  Immediate
+                                  Label="Split transaction description"
+                                  Required="true" @bind-Text="FormViewModel.SplitDescription"
+                                  For="@(() => FormViewModel.SplitDescription)" />
+                </MudPaper>
+            }
+
+            <MudDivider DividerType="DividerType.FullWidth" Class="my-6" />
+
+            <MudButton Disabled="@Processing" Variant="Variant.Filled" Color="Color.Success" OnClick="@FormViewModel.AddSplit">Add another split</MudButton>
+
+        </MudForm>
+    </ChildContent>
+</ActivityMonitor>

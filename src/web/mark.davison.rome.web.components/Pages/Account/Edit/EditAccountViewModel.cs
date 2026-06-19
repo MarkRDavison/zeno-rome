@@ -55,14 +55,10 @@ public class EditAccountViewModel : BaseViewModel<(Guid, EditAccountFormViewMode
     {
         InProgress = true;
 
-        Console.WriteLine("EditAccountViewModel.OnCreate");
         if (FormViewModel.Valid)
         {
-            Console.WriteLine("EditAccountViewModel.OnCreate.FormViewModel.Valid == true");
-            var response = await _formSubmission.Primary(FormViewModel);
-            if (response.Success)
+            if (await _formSubmission.Primary(FormViewModel) is { Success: true })
             {
-                Console.WriteLine("EditAccountViewModel.OnCreate.FormViewModel.Submit.Response is success"); ;
                 _clientNavigationManager.NavigateTo(RouteHelpers.Account(FormViewModel.Id));
             }
         }
@@ -74,11 +70,9 @@ public class EditAccountViewModel : BaseViewModel<(Guid, EditAccountFormViewMode
     {
         if (disposing)
         {
-            if (EditContext is not null)
-            {
-                EditContext.OnFieldChanged -= FieldChanged;
-            }
+            EditContext?.OnFieldChanged -= FieldChanged;
         }
+
         base.Dispose(disposing);
     }
 

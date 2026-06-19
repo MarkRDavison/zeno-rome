@@ -1,7 +1,4 @@
-﻿using mark.davison.common.client.abstractions.Repository;
-using mark.davison.rome.shared.models.dto.Scenarios.Queries.AccountList;
-
-namespace mark.davison.rome.web.services.State;
+﻿namespace mark.davison.rome.web.services.State;
 
 internal sealed class AccountState : IAccountState
 {
