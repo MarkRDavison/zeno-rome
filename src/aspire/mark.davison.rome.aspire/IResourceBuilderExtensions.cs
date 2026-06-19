@@ -47,13 +47,14 @@ public static class IResourceBuilderExtensions
 
     public static IResourceBuilder<TProject> WithRedis<TProject>(
         this IResourceBuilder<TProject> builder,
-        IResourceBuilder<RedisResource> redis)
+        IResourceBuilder<RedisResource> redis,
+        int redisPort)
         where TProject : IResourceWithEnvironment
     {
         return builder
             .WithEnvironment("ROME__REDIS__INSTANCE_NAME", "rome-redis")
             .WithEnvironment("ROME__REDIS__HOST", "localhost")
-            .WithEnvironment("ROME__REDIS__PORT", redis.Resource.Host.Endpoint.TargetPort.ToString())
+            .WithEnvironment("ROME__REDIS__PORT", redisPort.ToString())
             .WithEnvironment("ROME__REDIS__PASSWORD", redis.Resource.PasswordParameter!)
             .WithReference(redis);
     }

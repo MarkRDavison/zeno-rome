@@ -27,7 +27,7 @@
                 <MudSpacer />
                 <AppContext ClaimsPrincipal="@context.User" />
                 <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Size="Size.Large">
-                    <ActivatorContent>
+                    <ActivatorContent Context="activatorContext">
                         <MudIconButton data-testid="@DataTestIds.ManageIcon" Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" Edge="Edge.End" />
                     </ActivatorContent>
                     <ChildContent>

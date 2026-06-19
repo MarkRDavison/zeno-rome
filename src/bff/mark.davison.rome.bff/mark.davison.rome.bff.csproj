@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="markdavison.common.authentication.server" Version="10.3.0" />
-    <PackageReference Include="markdavison.common.source.generators" Version="10.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
+    <PackageReference Include="markdavison.common.authentication.server" Version="10.4.0" />
+    <PackageReference Include="markdavison.common.source.generators" Version="10.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
   </ItemGroup>
 
   <ItemGroup>

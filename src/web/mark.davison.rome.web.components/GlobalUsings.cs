@@ -10,9 +10,9 @@ global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertAccoun
 global using mark.davison.rome.shared.models.dto.Shared;
 global using mark.davison.rome.web.components.CommonCandidates;
 global using mark.davison.rome.web.components.Forms.EditAccount;
-global using mark.davison.rome.web.components.Pages.Account.Create;
 global using mark.davison.rome.web.components.Pages.Account.Edit;
 global using mark.davison.rome.web.components.Pages.Account.List;
+global using mark.davison.rome.web.components.Pages.Account.View;
 global using mark.davison.rome.web.services.Models;
 global using mark.davison.rome.web.services.State;
 global using Microsoft.AspNetCore.Components;

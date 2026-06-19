@@ -7,4 +7,6 @@ public interface IAccountState : IStateService
     Task FetchState(Guid? accountTypeId);
 
     IList<AccountDto> Accounts { get; }
+
+    Task FetchAccount(Guid accountId);
 }

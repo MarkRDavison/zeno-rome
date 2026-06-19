@@ -19,7 +19,7 @@ public partial class AppContext
     [AllowNull]
     private MudDateRangePicker _picker;
 
-    private readonly DateRange _range = new();
+    private DateRange _range = new();
     private bool _changeInProgress;
 
     protected override void OnInitialized()
@@ -45,8 +45,10 @@ public partial class AppContext
 
     private void UpdateRangeFromAppContextService()
     {
-        _range.Start = AppContextService.State.RangeStart.ToDateTime(TimeOnly.MinValue);
-        _range.End = AppContextService.State.RangeEnd.ToDateTime(TimeOnly.MinValue);
+        var start = AppContextService.State.RangeStart.ToDateTime(TimeOnly.MinValue);
+        var end = AppContextService.State.RangeEnd.ToDateTime(TimeOnly.MinValue);
+
+        _range = new(start, end);
     }
 
     public void Dispose()

@@ -11,16 +11,17 @@ var config = new ConfigurationBuilder()
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-
-
 var dbUsername = builder.AddParameter("dbusername", "romedbuser", secret: false);
 var dbPassword = builder.AddParameter("dbpassword", "romedbpassword", secret: true);
 
-
-
 var redis = builder
-    .AddRedis(AspireConstants.Redis, 6380)
-    .WithoutHttpsCertificate();
+    .AddRedis(AspireConstants.Redis)
+    .WithoutHttpsCertificate()
+    .WithEndpoint("tcp", ep =>
+    {
+        ep.Port = AspireConstants.RedisPort;
+        ep.TargetPort = 6379;
+    });
 
 var api = builder
     .AddProject<mark_davison_rome_api>(AspireConstants.Api)
@@ -54,7 +55,7 @@ var bff = builder
     .WithNonProxiedHttpsEndpoint()
     .WithCommonHealthChecks()
     .WithExternalHttpEndpoints()
-    .WithRedis(redis)
+    .WithRedis(redis, AspireConstants.RedisPort)
     .WithReference(api)
     .WaitFor(redis);
 

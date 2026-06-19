@@ -12,7 +12,8 @@ public static class DependencyInjectionExtensions
 
         services
             .AddScoped<AccountListViewModel>()
-            .AddScoped<EditAccountViewModel>();
+            .AddScoped<EditAccountViewModel>()
+            .AddScoped<ViewAccountViewModel>();
 
         return services;
     }

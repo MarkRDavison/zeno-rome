@@ -11,6 +11,7 @@
         public const string Api = nameof(Api);
         public const string Bff = nameof(Bff);
         public const string Web = nameof(Web);
+        public const int RedisPort = 6380;
     }
 
 }

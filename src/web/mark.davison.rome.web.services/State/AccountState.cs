@@ -51,4 +51,25 @@ internal sealed class AccountState : IAccountState
             SetState([]);
         }
     }
+
+    public async Task FetchAccount(Guid accountId)
+    {
+        Accounts = [];
+        Loading = true;
+        Loaded = false;
+
+        NotifyStateChanged();
+
+        var request = new AccountListQueryRequest { AccountType = null }; // TODO: Replace this with a FetchTransactionsByAccount/account info query
+        var response = await _clientRepository.Get<AccountListQueryRequest, AccountListQueryResponse>(request, CancellationToken.None);
+
+        if (response.SuccessWithValue)
+        {
+            SetState([.. response.Value]);
+        }
+        else
+        {
+            SetState([]);
+        }
+    }
 }
