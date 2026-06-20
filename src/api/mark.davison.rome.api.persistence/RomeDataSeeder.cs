@@ -3,12 +3,20 @@
 internal sealed class RomeDataSeeder : IDataSeeder
 {
     private readonly bool _isProductionMode;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
+
+    private static Guid EveryDayAccountId = Guid.Parse("8E6DBBA7-CC8F-4D84-BAC6-FBD7889C8069");
+    private static Guid WorkAccountId = Guid.Parse("2C75EF75-AD77-4738-816E-B69C84F1BECF");
+    private static Guid SavingsAccountId = Guid.Parse("6339A56A-D1F2-4304-8CE9-024CF665BECC");
+    private static Guid SupermarketAccountId = Guid.Parse("5F15867D-CBF9-4F09-B957-ED2EBFA0B89D");
+    private static Guid MechanicAccountId = Guid.Parse("62FC6CF0-E130-41C1-AE0C-3CF6DB2DA34D");
 
     public RomeDataSeeder(
-        bool isProductionMode
-    )
+        bool isProductionMode,
+        IServiceScopeFactory serviceScopeFactory)
     {
         _isProductionMode = isProductionMode;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task SeedDataAsync(DbContext dbContext, CancellationToken token)
@@ -46,10 +54,11 @@ internal sealed class RomeDataSeeder : IDataSeeder
 
     private async Task EnsureDevAccountsSeeded(Guid userId, DbContext dbContext, CancellationToken cancellationToken)
     {
+        // TODO: Replace with create/edit account command
         var accounts = new List<Account> {
             new Account
             {
-                Id = Guid.Parse("8E6DBBA7-CC8F-4D84-BAC6-FBD7889C8069"),
+                Id = EveryDayAccountId,
                 UserId = userId,
                 AccountTypeId = AccountTypeConstants.Asset,
                 CurrencyId = CurrencyConstants.NZD,
@@ -59,7 +68,7 @@ internal sealed class RomeDataSeeder : IDataSeeder
             },
             new Account
             {
-                Id = Guid.Parse("6339A56A-D1F2-4304-8CE9-024CF665BECC"),
+                Id = SavingsAccountId,
                 UserId = userId,
                 AccountTypeId = AccountTypeConstants.Asset,
                 CurrencyId = CurrencyConstants.NZD,
@@ -69,7 +78,7 @@ internal sealed class RomeDataSeeder : IDataSeeder
             },
             new Account
             {
-                Id = Guid.Parse("2C75EF75-AD77-4738-816E-B69C84F1BECF"),
+                Id = WorkAccountId,
                 UserId = userId,
                 AccountTypeId = AccountTypeConstants.Revenue,
                 CurrencyId = CurrencyConstants.NZD,
@@ -79,7 +88,7 @@ internal sealed class RomeDataSeeder : IDataSeeder
             },
             new Account
             {
-                Id = Guid.Parse("5F15867D-CBF9-4F09-B957-ED2EBFA0B89D"),
+                Id = SupermarketAccountId,
                 UserId = userId,
                 AccountTypeId = AccountTypeConstants.Expense,
                 CurrencyId = CurrencyConstants.NZD,
@@ -89,7 +98,7 @@ internal sealed class RomeDataSeeder : IDataSeeder
             },
             new Account
             {
-                Id = Guid.Parse("62FC6CF0-E130-41C1-AE0C-3CF6DB2DA34D"),
+                Id = MechanicAccountId,
                 UserId = userId,
                 AccountTypeId = AccountTypeConstants.Expense,
                 CurrencyId = CurrencyConstants.NZD,
@@ -101,6 +110,96 @@ internal sealed class RomeDataSeeder : IDataSeeder
 
         await EnsureSeeded(dbContext, accounts, cancellationToken);
     }
+
+    // TODO: Dev data should be elsewhere...
+    private async Task EnsureDevExampleTransactionsAreSeeded(Guid userId, DbContext dbContext, CancellationToken cancellationToken)
+    {
+        using var scope = _serviceScopeFactory.CreateScope();
+
+        var userContext = scope.ServiceProvider.GetRequiredService<ICurrentUserContext>();
+
+        var user = await scope.ServiceProvider
+            .GetRequiredService<IDbContext<RomeDbContext>>()
+            .Set<User>()
+            .AsNoTracking()
+            .Include(_ => _.UserRoles)
+            .ThenInclude(_ => _.Role)
+            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+
+        if (user is null)
+        {
+            return;
+        }
+
+        var roleNames = user.UserRoles.Select(ur => ur.Role?.Name).OfType<string>();
+
+        userContext.PopulateFromIds(user.Id, user.TenantId, roleNames, true);
+
+        var dispatcher = scope.ServiceProvider.GetRequiredService<ICommandDispatcher>();
+        {
+            var salaryDates = new List<DateOnly>
+            {
+                DateOnly.FromDateTime(DateTime.Today).AddDays(-6 * 14),
+                DateOnly.FromDateTime(DateTime.Today).AddDays(-5 * 14),
+                DateOnly.FromDateTime(DateTime.Today).AddDays(-4 * 14),
+                DateOnly.FromDateTime(DateTime.Today).AddDays(-3 * 14),
+                DateOnly.FromDateTime(DateTime.Today).AddDays(-2 * 14),
+                DateOnly.FromDateTime(DateTime.Today).AddDays(-1 * 14)
+            };
+
+            foreach (var d in salaryDates)
+            {
+                await dispatcher.Dispatch<CreateTransactionCommandRequest, CreateTransactionCommandResponse>(new CreateTransactionCommandRequest
+                {
+                    Description = string.Empty,
+                    TransactionTypeId = TransactionTypeConstants.Deposit,
+                    Transactions = [new(
+                    Guid.NewGuid(),
+                    "A simple salary deposit",
+                    WorkAccountId,
+                    EveryDayAccountId,
+                    d,
+                    100 * 10000,
+                    null,
+                    CurrencyConstants.NZD,
+                    null)]
+                }, cancellationToken);
+            }
+
+            await dispatcher.Dispatch<CreateTransactionCommandRequest, CreateTransactionCommandResponse>(new CreateTransactionCommandRequest
+            {
+                Description = string.Empty,
+                TransactionTypeId = TransactionTypeConstants.Withdrawal,
+                Transactions = [new(
+                    Guid.NewGuid(),
+                    "Food",
+                    EveryDayAccountId,
+                    SupermarketAccountId,
+                    DateOnly.FromDateTime(DateTime.Today).AddDays(-3),
+                    20 * 10000,
+                    null,
+                    CurrencyConstants.NZD,
+                    null)]
+            }, cancellationToken);
+
+            await dispatcher.Dispatch<CreateTransactionCommandRequest, CreateTransactionCommandResponse>(new CreateTransactionCommandRequest
+            {
+                Description = string.Empty,
+                TransactionTypeId = TransactionTypeConstants.Transfer,
+                Transactions = [new(
+                    Guid.NewGuid(),
+                    "Savings",
+                    EveryDayAccountId,
+                    SavingsAccountId,
+                    DateOnly.FromDateTime(DateTime.Today).AddDays(-7),
+                    200 * 10000,
+                    null,
+                    CurrencyConstants.NZD,
+                    null)]
+            }, cancellationToken);
+        }
+    }
+
     private async Task EnsureTransactionTypesSeeded(DbContext dbContext, CancellationToken cancellationToken)
     {
         var transactionTypes = new List<TransactionType>
@@ -183,6 +282,7 @@ internal sealed class RomeDataSeeder : IDataSeeder
 
         await EnsureSeeded(dbContext, accounts, cancellationToken);
     }
+
     private async Task EnsureRolesSeeded(DbContext dbContext, CancellationToken cancellationToken)
     {
         if (!await ExistsAsync<Role>(dbContext, _ => _.Id == Guid.Parse("02a740de-569f-4477-b5e7-d8622228db17"), cancellationToken))
@@ -267,6 +367,10 @@ internal sealed class RomeDataSeeder : IDataSeeder
         if (!_isProductionMode)
         {
             await EnsureDevAccountsSeeded(userId, dbContext, token);
+
+            await dbContext.SaveChangesAsync(token);
+
+            await EnsureDevExampleTransactionsAreSeeded(userId, dbContext, token);
 
             await dbContext.SaveChangesAsync(token);
         }

@@ -16,11 +16,12 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
     {
         _accountState = accountState;
         _startupState = startupState;
+        _transactionState = transactionState;
+        _appContextService = appContextService;
 
         RegisterState(_accountState);
         RegisterState(_startupState);
-        _transactionState = transactionState;
-        _appContextService = appContextService;
+        RegisterState(_transactionState);
     }
 
     public override async Task<bool> Initialize(Guid payload)

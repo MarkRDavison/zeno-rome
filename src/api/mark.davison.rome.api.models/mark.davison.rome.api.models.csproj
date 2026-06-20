@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="markdavison.common.persistence" Version="10.4.0" />
-    <PackageReference Include="markdavison.common.server" Version="10.4.0" />
+    <PackageReference Include="markdavison.common.persistence" Version="10.4.1" />
+    <PackageReference Include="markdavison.common.server" Version="10.4.1" />
   </ItemGroup>
 
 </Project>
