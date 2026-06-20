@@ -2,18 +2,99 @@
 
 @inherits BaseView<ViewAccountViewModel, Guid>
 
-<MudPaper Class="ma-10">
-    @if (ViewModel.Loading)
-    {
-        <MudProgressCircular Size="Size.Large" Class="ma-auto" Indeterminate />
-    }
-    else
-    {
-        <MudStack Row="true">
-            <MudText data-testid="@DataTestIds.ViewAccountTitle" Typo="Typo.h4">@ViewModel.Title</MudText>
-            <MudTooltip Text="Add">@*What? Transaction where this defaults to source/dest????*@
-                <MudIconButton Disabled Icon="@Icons.Material.Filled.AddCircle" Variant="Variant.Filled" Color="Color.Primary" Style="min-width: 60px;" />
-            </MudTooltip>
-        </MudStack>
-    }
-    </MudPaper>
+<MudPaper Class="ma-10 pa-10">
+    <ActivityMonitor Loading="@ViewModel.Loading">
+        <ChildContent>
+            <MudStack>
+                <MudStack Row="true">
+                    <MudText data-testid="@DataTestIds.ViewAccountTitle" Typo="Typo.h4">@ViewModel.Title</MudText>
+                    <MudTooltip Text="Add">
+                        @*What? Transaction where this defaults to source/dest????*@
+                        <MudIconButton Disabled Icon="@Icons.Material.Filled.AddCircle" Variant="Variant.Filled" Color="Color.Primary" Style="min-width: 60px;" />
+                    </MudTooltip>
+                </MudStack>
+                <MudDataGrid SortMode="SortMode.None" Items="@ViewModel.GenerateRows()" RowClassFunc=@ViewModel.RowClassFunc>
+                    <Columns>
+                        <TemplateColumn SortBy="_ => _.TransactionType" Title="">
+                            <CellTemplate>
+                                @{
+                                    // TODO: Constant names, or helper for transaction type -> icon
+                                    if (context.Item.TransactionType == "Deposit")
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Filled.ArrowRightAlt" Title="Deposit" />
+                                    }
+                                    else if (context.Item.TransactionType == "Withdrawal")
+                                    {
+                                        <MudIcon Style="transform: scaleX(-1);" Icon="@Icons.Material.Filled.ArrowRightAlt" Title="Withdrawal" />
+                                    }
+                                    else if (context.Item.TransactionType == "Transfer")
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Filled.SyncAlt" Title="Transfer" />
+                                    }
+                                }
+                            </CellTemplate>
+                        </TemplateColumn>
+                        <TemplateColumn Title="Description" SortBy="_ => _.Description.Text">
+                            <CellTemplate>
+                                @if (string.IsNullOrEmpty(context.Item.Description.Href) || context.Item.IsSubTransaction)
+                                {
+                                    @context.Item.Description.Text
+                                }
+                                else
+                                {
+                                    <MudLink Href="@context.Item.Description.Href">@context.Item.Description.Text</MudLink>
+                                }
+                            </CellTemplate>
+                        </TemplateColumn>
+                        <PropertyColumn Property="_ => _.Amount" Format="N2" CellStyleFunc="@ViewModel.AmountCellStyle" />
+                        <PropertyColumn Property="_ => _.Date" Format="MMMM d, yyyy" />
+                        <TemplateColumn Title="Source account" SortBy="_ => _.SourceAccount.Text">
+                            <CellTemplate>
+                                @if (string.IsNullOrEmpty(context.Item.SourceAccount.Href))
+                                {
+                                    @context.Item.SourceAccount.Text
+                                }
+                                else
+                                {
+                                    <MudLink Href="@context.Item.SourceAccount.Href">@context.Item.SourceAccount.Text</MudLink>
+                                }
+                            </CellTemplate>
+                        </TemplateColumn>
+                        <TemplateColumn Title="Destination account" SortBy="@(_ => _.DestinationAccount.Text)">
+                            <CellTemplate>
+                                @if (string.IsNullOrEmpty(context.Item.DestinationAccount.Href))
+                                {
+                                    @context.Item.DestinationAccount.Text
+                                }
+                                else
+                                {
+                                    <MudLink Href="@context.Item.DestinationAccount.Href">@context.Item.DestinationAccount.Text</MudLink>
+                                }
+                            </CellTemplate>
+                        </TemplateColumn>
+                        <TemplateColumn Title="Category" SortBy="@(_ => _.Category.Text)">
+                            <CellTemplate>
+                                @if (string.IsNullOrEmpty(context.Item.Category.Href))
+                                {
+                                    @context.Item.Category.Text
+                                }
+                                else
+                                {
+                                    <MudLink Href="@context.Item.Category.Href">@context.Item.Category.Text</MudLink>
+                                }
+                            </CellTemplate>
+                        </TemplateColumn>
+                        <TemplateColumn Sortable="false">
+                            <CellTemplate>
+                                @if (!context.Item.IsSubTransaction)
+                                {
+                                    <CommandMenu Items="@ViewModel.CommandMenuItems" />
+                                }
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                </MudDataGrid>
+            </MudStack>
+        </ChildContent>
+    </ActivityMonitor>
+</MudPaper>

@@ -1,4 +1,4 @@
-﻿using mark.davison.rome.shared.models.dto.Scenarios.Queries.FetchTransaction;
+﻿using mark.davison.rome.shared.models.dto.Scenarios.Queries.TransactionByAccount;
 
 namespace mark.davison.rome.web.services.State.Transaction;
 
@@ -39,6 +39,26 @@ internal sealed class TransactionState : ITransactionState
 
         var request = new FetchTransactionQueryRequest { TransactionGroupId = transactionGroupId };
         var response = await _clientRepository.Get<FetchTransactionQueryRequest, FetchTransactionQueryResponse>(request, CancellationToken.None);
+
+        if (response.SuccessWithValue)
+        {
+            SetState([.. response.Value]); // TODO: Dont just replace...
+        }
+        else
+        {
+            SetState([]);
+        }
+    }
+
+    public async Task FetchTransactionsForAccount(Guid accountId)
+    {
+        Transactions = [];
+        Loading = true;
+        Loaded = false;
+
+        NotifyStateChanged();
+        var request = new TransactionByAccountQueryRequest { AccountId = accountId };
+        var response = await _clientRepository.Get<TransactionByAccountQueryRequest, TransactionByAccountQueryResponse>(request, CancellationToken.None);
 
         if (response.SuccessWithValue)
         {

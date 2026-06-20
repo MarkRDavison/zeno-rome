@@ -1,5 +1,6 @@
 ﻿namespace mark.davison.rome.web.components.Pages.Account.List;
 
+// TODO: Use base class
 public class AccountListViewModel : INotifyPropertyChanged, IDisposable
 {
     private bool _isLoading = true;
