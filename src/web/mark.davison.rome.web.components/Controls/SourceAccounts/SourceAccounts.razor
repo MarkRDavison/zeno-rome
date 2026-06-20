@@ -1,0 +1,19 @@
+﻿@namespace mark.davison.rome.web.components.Controls
+
+<div data-testid="@DataTestIds.SourceAccounts">
+    @foreach (var (a, i) in Accounts.Zip(Enumerable.Range(0, Accounts.Count)))
+    {
+        if (i != 0)
+        {
+            <span>,</span>
+        }
+        <span><MudLink Href="@a.Href">@a.Text</MudLink></span>
+    }
+</div>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public required List<LinkDefinition> Accounts { get; set; }
+
+}

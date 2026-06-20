@@ -70,7 +70,11 @@ public sealed class NewTransactionPage : RomeBasePage
         await FillField(this, splitLocator, SplitFieldNameLabel, splitInfo.Name);
         await SelectField(this, splitLocator, SplitFieldSourceAccountLabel, splitInfo.SourceAccountName);
         await SelectField(this, splitLocator, SplitFieldDestinationAccountLabel, splitInfo.DestinationAccountName);
-        await FillField(this, splitLocator, SplitFieldDateLabel, splitInfo.Date);
+        if (index is 0)
+        {
+            // Date is only on the first split.
+            await FillField(this, splitLocator, SplitFieldDateLabel, splitInfo.Date);
+        }
         await FillField(this, splitLocator, SplitFieldAmountLabel, splitInfo.Amount);
         // TODO: CATEGORY
     }

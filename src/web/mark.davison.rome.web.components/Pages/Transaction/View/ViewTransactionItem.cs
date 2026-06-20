@@ -1,6 +1,6 @@
 ﻿namespace mark.davison.rome.web.components.Pages.Transaction.View;
 
-internal class ViewTransactionItem
+public sealed class ViewTransactionItem
 {
     public required string Description { get; init; }
     public required LinkDefinition SourceAccount { get; init; }

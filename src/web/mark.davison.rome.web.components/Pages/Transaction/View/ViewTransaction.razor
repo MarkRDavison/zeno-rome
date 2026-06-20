@@ -2,18 +2,132 @@
 
 @inherits BaseView<ViewTransactionViewModel, Guid>
 
-<MudPaper Class="ma-10">
+<MudPaper Class="ma-10 pa-10">
     @if (ViewModel.Loading)
     {
         <MudProgressCircular Size="Size.Large" Class="ma-auto" Indeterminate />
     }
     else
     {
-        <MudStack Row="true" Class="pa-4">
+        <MudStack Row="true">
             <MudText data-testid="@DataTestIds.ViewTransactionTitle" Typo="Typo.h4">View Transaction</MudText>
             <MudTooltip Text="Edit">
                 <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Primary" Style="min-width: 60px;" />
             </MudTooltip>
         </MudStack>
+
+        <MudGrid>
+        <MudItem sm="12" md="6">
+            <MudCard Outlined="true">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Class="pb-4">Transaction information</MudText>
+                        <MudDivider Class="pb-4" />
+                        <MudGrid>
+                            <MudItem xs="6">
+                                Type
+                            </MudItem>
+                            <MudItem xs="6">
+                                <p data-testid="@DataTestIds.ViewTransactionType">
+                                    @ViewModel.TransactionType
+                                </p>
+                            </MudItem>
+                            @if (!string.IsNullOrEmpty(ViewModel.TransactionDescription))
+                            {
+                                <MudItem xs="6">
+                                    Description
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <p data-testid="@DataTestIds.ViewTransactionDescription">
+                                        @ViewModel.TransactionDescription
+                                    </p>
+                                </MudItem>
+                            }
+                            @if (ViewModel.TransactionDate != null)
+                            {
+                                <MudItem xs="6">
+                                    Date
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <p data-testid="@DataTestIds.ViewTransactionDate">
+                                        @ViewModel.TransactionDate.Value.ToString("MMMM d, yyyy")
+                                    </p>
+                                </MudItem>
+                            }
+                        </MudGrid>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+            </MudCard>
+        </MudItem>
+        <MudItem sm="12" md="6">
+            <MudCard Outlined="true">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Class="pb-4">Meta information</MudText>
+                        <MudDivider Class="pb-4" />
+                        <MudGrid>
+                            <MudItem xs="6">
+                                Source accounts
+                            </MudItem>
+                            <MudItem xs="6">
+                                <SourceAccounts Accounts="@ViewModel.SourceAccounts" />
+                            </MudItem>
+                            <MudItem xs="6">
+                                Total amount
+                            </MudItem>
+                            <MudItem xs="6">
+                                <span style="@ViewModel.TotalAmountStyle">@ViewModel.TotalAmount</span>
+                            </MudItem>
+                        </MudGrid>
+                    </CardHeaderContent>
+                </MudCardHeader>
+            </MudCard>
+        </MudItem>
+        @if (ViewModel.Items.Count() > 1)
+        {
+            <MudItem sm="12" Class="pa-6">
+                <MudText Typo="Typo.h5">Splits</MudText>
+            </MudItem>
+        }
+            @foreach (var item in ViewModel.Items)
+        {
+            <MudItem sm="12" md="6" lg="4" Class="transaction-card">
+                <MudCard Outlined="true">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Class="pb-4">@item.Description</MudText>
+                            <MudDivider />
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" />
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudLink Href="@item.SourceAccount.Href">@item.SourceAccount.Text</MudLink>
+                                →
+                                <span style="@item.AmountStyle">@item.Amount</span>
+                                →
+                                <MudLink Href="@item.DestinationAccount.Href">@item.DestinationAccount.Text</MudLink>
+                            </MudItem>
+                            @if (item.Category != null)
+                            {
+                                <MudItem xs="6">
+                                    Category
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudLink Href="@item.Category.Href">@item.Category.Text</MudLink>
+                                </MudItem>
+                            }
+                        </MudGrid>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
     }
 </MudPaper>
