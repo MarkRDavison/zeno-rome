@@ -9,10 +9,11 @@ global using mark.davison.rome.api.persistence;
 global using mark.davison.rome.shared.accounting.constants;
 global using mark.davison.rome.shared.accounting.rules;
 global using mark.davison.rome.shared.models.dto.Scenarios.Commands.CreateTransaction;
+global using mark.davison.rome.shared.models.dto.Scenarios.Commands.SetUserContext;
 global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertAccount;
 global using mark.davison.rome.shared.models.dto.Shared;
+global using mark.davison.rome.shared.server.Services;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.DependencyInjection;
 global using System.Runtime.CompilerServices;
-
 [assembly: InternalsVisibleTo("mark.davison.rome.api.commands.tests")]

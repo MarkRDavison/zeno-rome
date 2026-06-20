@@ -16,6 +16,7 @@
     <ProjectReference Include="..\..\shared\mark.davison.rome.shared.accounting.rules\mark.davison.rome.shared.accounting.rules.csproj" />
     <ProjectReference Include="..\..\shared\mark.davison.rome.shared.constants\mark.davison.rome.shared.constants.csproj" />
     <ProjectReference Include="..\..\shared\mark.davison.rome.shared.models.dto\mark.davison.rome.shared.models.dto.csproj" />
+    <ProjectReference Include="..\..\shared\mark.davison.rome.shared.server\mark.davison.rome.shared.server.csproj" />
     <ProjectReference Include="..\mark.davison.rome.api.persistence\mark.davison.rome.api.persistence.csproj" />
   </ItemGroup>
 

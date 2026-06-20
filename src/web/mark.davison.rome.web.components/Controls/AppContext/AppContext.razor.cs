@@ -1,4 +1,5 @@
 ﻿using mark.davison.common.client.web.abstractions.Authentication;
+using mark.davison.rome.shared.models.dto.Scenarios.Commands.SetUserContext;
 
 namespace mark.davison.rome.web.components.Controls;
 
@@ -76,30 +77,24 @@ public partial class AppContext
 
             try
             {
-                //var request = new SetUserContextCommandRequest
-                //{
-                //    UserContext = new UserContextDto
-                //    {
-                //        StartRange = DateOnly.FromDateTime(range.Start!.Value),
-                //        EndRange = DateOnly.FromDateTime(range.End!.Value)
-                //    }
-                //};
+                var request = new SetUserContextCommandRequest
+                {
+                    StartRange = DateOnly.FromDateTime(range.Start!.Value),
+                    EndRange = DateOnly.FromDateTime(range.End!.Value)
+                };
 
-                //var response = await ClientHttpRepository.Post<SetUserContextCommandResponse, SetUserContextCommandRequest>(request, CancellationToken.None);
+                var response = await ClientHttpRepository.Post<SetUserContextCommandRequest, SetUserContextCommandResponse>(request, CancellationToken.None);
 
-                //if (response.SuccessWithValue)
-                //{
-                //    _range.Start = response.Value.StartRange.ToDateTime(TimeOnly.MinValue);
-                //    _range.End = response.Value.EndRange.ToDateTime(TimeOnly.MinValue);
+                if (response.SuccessWithValue)
+                {
+                    _range = new(
+                        response.Value.StartRange.ToDateTime(TimeOnly.MinValue),
+                        response.Value.EndRange.ToDateTime(TimeOnly.MinValue));
 
-                //    AppContextService.UpdateRange(
-                //        DateOnly.FromDateTime(range.Start!.Value),
-                //        DateOnly.FromDateTime(range.End!.Value));
-                //}
-
-                AppContextService.UpdateRange(
-                    DateOnly.FromDateTime(range.Start!.Value),
-                    DateOnly.FromDateTime(range.End!.Value));
+                    AppContextService.UpdateRange(
+                        DateOnly.FromDateTime(range.Start!.Value),
+                        DateOnly.FromDateTime(range.End!.Value));
+                }
             }
             finally
             {

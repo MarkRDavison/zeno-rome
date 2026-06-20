@@ -134,7 +134,7 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
             }
         }
 
-        return items;
+        return items.OrderByDescending(_ => _.Date);
     }
 
     public Func<ViewAccountGridRow, string> AmountCellStyle => _ =>

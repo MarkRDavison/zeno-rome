@@ -13,7 +13,7 @@
                         <MudIconButton Disabled Icon="@Icons.Material.Filled.AddCircle" Variant="Variant.Filled" Color="Color.Primary" Style="min-width: 60px;" />
                     </MudTooltip>
                 </MudStack>
-                <MudDataGrid SortMode="SortMode.None" Items="@ViewModel.GenerateRows()" RowClassFunc=@ViewModel.RowClassFunc>
+                <MudDataGrid Items="@ViewModel.GenerateRows()" RowClassFunc=@ViewModel.RowClassFunc>
                     <Columns>
                         <TemplateColumn SortBy="_ => _.TransactionType" Title="">
                             <CellTemplate>
