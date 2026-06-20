@@ -3,10 +3,10 @@
 
 public sealed class AddAccountTests : RomeBaseTest
 {
+    [Test]
     [Arguments(AccountType.Asset)]
     [Arguments(AccountType.Expense)]
     [Arguments(AccountType.Revenue)]
-    [Test]
     public async Task AddAccountWorks(AccountType accountType)
     {
         var accountName = MakeAccountName();

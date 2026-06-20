@@ -1,0 +1,19 @@
+﻿@attribute [Route(Routes.Transaction)]
+
+@inherits BaseView<ViewTransactionViewModel, Guid>
+
+<MudPaper Class="ma-10">
+    @if (ViewModel.Loading)
+    {
+        <MudProgressCircular Size="Size.Large" Class="ma-auto" Indeterminate />
+    }
+    else
+    {
+        <MudStack Row="true" Class="pa-4">
+            <MudText data-testid="@DataTestIds.ViewTransactionTitle" Typo="Typo.h4">View Transaction</MudText>
+            <MudTooltip Text="Edit">
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Primary" Style="min-width: 60px;" />
+            </MudTooltip>
+        </MudStack>
+    }
+</MudPaper>

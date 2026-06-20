@@ -86,7 +86,7 @@ public abstract class BaseTest : PageTest, IAsyncDisposable
 
             _context ??= await _browser.NewContextAsync(new()
             {
-
+                Locale = "en-NZ",
                 StorageStatePath = File.Exists(AuthStateFullPath(AppSettings.TEMP_DIR))
                     ? AuthStateFullPath(AppSettings.TEMP_DIR)
                     : null

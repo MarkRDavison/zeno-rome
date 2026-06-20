@@ -18,11 +18,11 @@ public partial class EditTransactionViewModel : BaseViewModel<(Guid, EditTransac
     {
         _startupState = startupState;
         _accountState = accountState;
+        _formSubmission = formSubmission;
+        _clientNavigationManager = clientNavigationManager;
 
         RegisterState(_startupState);
         RegisterState(_accountState);
-        _formSubmission = formSubmission;
-        _clientNavigationManager = clientNavigationManager;
     }
 
     public override async Task<bool> Initialize((Guid, EditTransactionFormViewModel?) payload)
@@ -64,17 +64,15 @@ public partial class EditTransactionViewModel : BaseViewModel<(Guid, EditTransac
         }
         base.Dispose(disposing);
     }
+
     public async Task OnCreate()
     {
         InProgress = true;
 
-        Console.WriteLine("EditTransactionViewModel.OnCreate");
         if (FormViewModel.Valid)
         {
-            Console.WriteLine("EditTransactionViewModel.OnCreate.FormViewModel.Valid == true");
             if (await _formSubmission.Primary(FormViewModel) is { Success: true })
             {
-                Console.WriteLine("EditTransactionViewModel.OnCreate.FormViewModel.Submit.Response is success"); ;
                 _clientNavigationManager.NavigateTo(RouteHelpers.Transaction(FormViewModel.Id));
             }
         }
@@ -82,10 +80,11 @@ public partial class EditTransactionViewModel : BaseViewModel<(Guid, EditTransac
         InProgress = false;
     }
 
-    public string Title => _isCreateNew ? "Create transaction" : "Edit transaction";
+    public string Title => _isCreateNew ? $"Create {(TransactionType?.Type ?? "transaction")}" : $"Edit {(TransactionType?.Type ?? "transaction")}";
     public bool Loading => FormViewModel is null;
     public bool InProgress { get; private set; }
     public bool PrimaryDisabled => InProgress;
+    public TransactionTypeDto? TransactionType => _startupState.TransactionTypes.Single(tt => tt.Id == FormViewModel.TransactionTypeId); // TODO: Make nullable?
 
     public EditContext? EditContext { get; private set; }
     public required EditTransactionFormViewModel FormViewModel { get; set; }

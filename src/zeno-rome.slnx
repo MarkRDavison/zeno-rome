@@ -13,6 +13,7 @@
   </Folder>
   <Folder Name="/api/tests/">
     <Project Path="api/tests/mark.davison.rome.api.commands.tests/mark.davison.rome.api.commands.tests.csproj" Id="5e84f888-90a7-44c4-8d79-50ce2f06a292" />
+    <Project Path="api/tests/mark.davison.rome.api.queries.tests/mark.davison.rome.api.queries.tests.csproj" Id="3e982371-d063-4eba-bf9e-4bb36692ff8a" />
     <Project Path="api/tests/mark.davison.rome.api.tests/mark.davison.rome.api.tests.csproj" Id="69d31b01-7a82-4f23-87a7-2ec6ceadb301" />
   </Folder>
   <Folder Name="/aspire/">

@@ -11,7 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\api\mark.davison.rome.api.models\mark.davison.rome.api.models.csproj" />
     <ProjectReference Include="..\mark.davison.rome.shared.accounting.rules\mark.davison.rome.shared.accounting.rules.csproj" />
+    <ProjectReference Include="..\mark.davison.rome.shared.models.dto\mark.davison.rome.shared.models.dto.csproj" />
   </ItemGroup>
 
 </Project>

@@ -28,4 +28,13 @@ public sealed class QuickCreateOverlay
 
         return new NewAccountPage(_page, _appSettings, accountType);
     }
+
+    public async Task<NewTransactionPage> CreateTransaction(TransactionType transactionType)
+    {
+        var heading = $"New {transactionType.ToString().ToLower()}";
+
+        await _page.GetByText(heading).ClickAsync();
+
+        return new NewTransactionPage(_page, _appSettings, transactionType);
+    }
 }

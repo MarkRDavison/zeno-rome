@@ -1,6 +1,6 @@
 ﻿@inherits Form<EditTransactionFormViewModel>
 
-<ActivityMonitor Loading="@Processing">
+<ActivityMonitor Loading="@Loading">
     <ChildContent>
         <MudForm>
             @for (var index = 0; index < FormViewModel.Items.Count; ++index)

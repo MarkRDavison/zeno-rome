@@ -6,4 +6,5 @@ global using mark.davison.rome.shared.models.dto.Scenarios.Queries.AccountList;
 global using mark.davison.rome.shared.models.dto.Shared;
 global using mark.davison.rome.web.services.Models;
 global using mark.davison.rome.web.services.State;
+global using mark.davison.rome.web.services.State.Transaction;
 global using Microsoft.Extensions.DependencyInjection;

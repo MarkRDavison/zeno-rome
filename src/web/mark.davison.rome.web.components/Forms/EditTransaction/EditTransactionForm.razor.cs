@@ -5,5 +5,8 @@ public partial class EditTransactionForm
     [Parameter, EditorRequired]
     public required bool Processing { get; set; }
 
+    [Parameter, EditorRequired]
+    public required bool Loading { get; set; }
+
     private static string Id(string id, int index) => $"{id}-{index}";
 }

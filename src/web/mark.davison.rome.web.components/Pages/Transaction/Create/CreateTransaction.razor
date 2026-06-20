@@ -16,7 +16,10 @@
 
              <MudItem Class="d-flex align-center justify-left mud-width-full py-8">
                 <EditForm EditContext="@ViewModel.EditContext" OnSubmit="@ViewModel.OnCreate">
-                    <EditTransactionForm Processing="@ViewModel.InProgress" FormViewModel="@ViewModel.FormViewModel" />
+                    <EditTransactionForm 
+                        Processing="@ViewModel.InProgress" 
+                        Loading="@ViewModel.Loading"
+                        FormViewModel="@ViewModel.FormViewModel" />
                 </EditForm>
             </MudItem>
 

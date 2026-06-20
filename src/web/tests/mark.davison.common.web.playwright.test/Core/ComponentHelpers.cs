@@ -1,6 +1,4 @@
-﻿using Microsoft.Playwright;
-
-namespace mark.davison.common.web.playwright.test.Core;
+﻿namespace mark.davison.common.web.playwright.test.Core;
 
 public static class ComponentHelpers
 {
@@ -144,7 +142,7 @@ public static class ComponentHelpers
 
         await locator.GetByRole(AriaRole.Button, new()
         {
-            Name = label
+
         }).ClickAsync();
 
         var popup = page.Locator($".mud-popover-provider #{id}");
@@ -166,9 +164,9 @@ public static class ComponentHelpers
 
         await popup.Locator($"div[id=\"{expectedId}\"]").ClickAsync();
 
-        var month = value.ToString("MMMM");
+        var months = popup.Locator(".mud-picker-month-container button");
 
-        await popup.GetByLabel(month[..3]).ClickAsync();
+        await months.Nth(value.Month - 1).ClickAsync();
 
         var day = value.Day.ToString();
 
