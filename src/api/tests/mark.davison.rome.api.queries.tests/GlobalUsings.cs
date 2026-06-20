@@ -1,7 +1,10 @@
 ﻿global using mark.davison.common.authentication.server.abstractions.Services;
 global using mark.davison.common.persistence;
 global using mark.davison.common.server.test.Persistence;
+global using mark.davison.rome.api.models.Entities;
 global using mark.davison.rome.api.persistence;
 global using mark.davison.rome.api.queries.Scenarios.FetchTransaction;
+global using mark.davison.rome.api.queries.Scenarios.TransactionByAccount;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.FetchTransaction;
+global using mark.davison.rome.shared.models.dto.Scenarios.Queries.TransactionByAccount;
 global using Moq;

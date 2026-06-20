@@ -1,22 +1,25 @@
-﻿namespace mark.davison.rome.api.queries.tests.Scenarios.FetchTransaction;
+﻿namespace mark.davison.rome.api.queries.tests.Scenarios.TransactionByAccount;
 
-public class FetchTransactionQueryProcessorTests
+public sealed class TransactionByAccountQueryProcessorTests
 {
     private readonly IDbContext<RomeDbContext> _dbContext;
     private readonly Mock<ICurrentUserContext> _currentUserContextMock;
-    private readonly FetchTransactionQueryProcessor _fetchTransactionQueryProcessor;
+    private readonly TransactionByAccountQueryProcessor _transactionByAccountQueryProcessor;
 
-    public FetchTransactionQueryProcessorTests()
+    public TransactionByAccountQueryProcessorTests()
     {
         _dbContext = DbContextHelpers.CreateInMemory(_ => new RomeDbContext(_));
         _currentUserContextMock = new(MockBehavior.Strict);
 
-        _fetchTransactionQueryProcessor = new(_dbContext);
+        _transactionByAccountQueryProcessor = new(_dbContext);
     }
 
     [Test]
-    public async Task ProcessAsync_WhereTransactionExists_ReturnsTransaction()
+    public async Task ProcessAsync_ReturnsTransactionsForAccount()
     {
+        var sourceAccountId = Guid.NewGuid();
+        var destinationAccountId = Guid.NewGuid();
+
         var transactionGroup = new TransactionGroup
         {
             Id = Guid.NewGuid(),
@@ -41,7 +44,8 @@ public class FetchTransactionQueryProcessorTests
                 Created = DateTime.Now,
                 LastModified = DateTime.Now,
                 UserId = Guid.Empty,
-                IsSource = true
+                IsSource = true,
+                AccountId = sourceAccountId
             },
             new Transaction
             {
@@ -50,7 +54,8 @@ public class FetchTransactionQueryProcessorTests
                 Created = DateTime.Now,
                 LastModified = DateTime.Now,
                 UserId = Guid.Empty,
-                IsSource = false
+                IsSource = false,
+                AccountId = destinationAccountId
             }
         };
 
@@ -66,24 +71,12 @@ public class FetchTransactionQueryProcessorTests
             await _dbContext.SaveChangesAsync(true, CancellationToken.None);
         }
 
-        var request = new FetchTransactionQueryRequest { TransactionGroupId = transactionGroup.Id };
+        var request = new TransactionByAccountQueryRequest { AccountId = sourceAccountId };
 
-        var response = await _fetchTransactionQueryProcessor.ProcessAsync(request, _currentUserContextMock.Object, CancellationToken.None);
+        var response = await _transactionByAccountQueryProcessor.ProcessAsync(request, _currentUserContextMock.Object, CancellationToken.None);
 
         await Assert.That(response.Success).IsTrue();
         await Assert.That(response.SuccessWithValue).IsTrue();
         await Assert.That(response.Value).Count().IsEqualTo(2);
-    }
-
-    [Test]
-    public async Task ProcessAsync_WhereTransactionDoesNotExist_ReturnsEmpty()
-    {
-        var request = new FetchTransactionQueryRequest { TransactionGroupId = Guid.NewGuid() };
-
-        var response = await _fetchTransactionQueryProcessor.ProcessAsync(request, _currentUserContextMock.Object, CancellationToken.None);
-
-        await Assert.That(response.Success).IsTrue();
-        await Assert.That(response.SuccessWithValue).IsTrue();
-        await Assert.That(response.Value).Count().IsEqualTo(0);
     }
 }

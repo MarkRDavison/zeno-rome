@@ -244,11 +244,8 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
                     AmountStyle = GetAmountColour(transactionTypeId, source.Amount)
                 };
             })
-            .Where(_ => _ != null)
-            .Cast<ViewTransactionItem>()
+            .OfType<ViewTransactionItem>()
             .ToList();
-
-        Console.WriteLine("Card item count: {0}", items.Count);
 
         var totalAmount = items.Sum(_ => _.AmountValue);
         TotalAmount = GetAmountText(transactionTypeId, totalAmount, currency);
