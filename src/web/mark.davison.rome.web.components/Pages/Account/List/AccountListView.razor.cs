@@ -1,40 +1,12 @@
 ﻿namespace mark.davison.rome.web.components.Pages.Account.List;
 
-public partial class AccountListView
+public partial class AccountListView : BaseView<AccountListViewModel, Guid?>
 {
-    [Inject]
-    public required AccountListViewModel ViewModel { get; set; }
-
     [Parameter]
     public Guid? Type { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task<bool> InitializeViewModel()
     {
-        ViewModel.PropertyChanged += ViewModel_PropertyChanged;
-    }
-
-    public override async Task SetParametersAsync(ParameterView parameters)
-    {
-        await base.SetParametersAsync(parameters);
-
-        if (await ViewModel.Initialize(Type))
-        {
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
-    private async void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        await InvokeAsync(StateHasChanged);
-    }
-
-    public void AddAccount()
-    {
-        ViewModel.AddAccount();
-    }
-
-    public void Dispose()
-    {
-        ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
+        return await ViewModel.Initialize(Type);
     }
 }

@@ -2,10 +2,26 @@
 
 public abstract class BaseViewModel<TPayload> : INotifyPropertyChanged, IDisposable
 {
-    private readonly IList<Action> _stateUnsubscribers = [];
     private bool disposedValue;
+    private readonly IList<Action> _stateUnsubscribers = [];
+    private readonly IList<Func<bool>> _stateLoadingFuncs = [];
+    private readonly IAppContextService _appContextService;
 
     public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected BaseViewModel(IAppContextService appContextService)
+    {
+        _appContextService = appContextService;
+
+        _appContextService.RangeUpdated += OnContextRangeUpdated;
+    }
+
+    private void OnContextRangeUpdated(object? sender, EventArgs e)
+    {
+        _ = OnAppContextUpdated(_appContextService.State);
+    }
+
+    protected virtual Task OnAppContextUpdated(AppContextState state) => Task.CompletedTask;
 
     protected void RegisterState<TStateService>(TStateService state)
         where TStateService : IStateService
@@ -13,7 +29,10 @@ public abstract class BaseViewModel<TPayload> : INotifyPropertyChanged, IDisposa
         state.StateChanged += State_StateChanged;
 
         _stateUnsubscribers.Add(() => state.StateChanged -= State_StateChanged);
+        _stateLoadingFuncs.Add(() => state.Loading);
     }
+
+    protected bool IsStateLoading => _stateLoadingFuncs.All(f => f.Invoke());
 
     public virtual Task<bool> Initialize(TPayload payload)
     {
@@ -37,6 +56,8 @@ public abstract class BaseViewModel<TPayload> : INotifyPropertyChanged, IDisposa
                 }
 
                 _stateUnsubscribers.Clear();
+                _stateLoadingFuncs.Clear();
+                _appContextService.RangeUpdated -= OnContextRangeUpdated;
             }
 
             disposedValue = true;

@@ -111,6 +111,7 @@
             if (startupResponse.SuccessWithValue)
             {
                 _startupState.NotifyStateChanged(startupResponse.Value);
+                _appContext.UpdateRange(startupResponse.Value.UserContext.StartRange, startupResponse.Value.UserContext.EndRange);
             }
         }
 

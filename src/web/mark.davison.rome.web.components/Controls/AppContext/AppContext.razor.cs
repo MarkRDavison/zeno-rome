@@ -30,12 +30,12 @@ public partial class AppContext
 
     private void AuthenticationService_UserChanged(object? sender, ClaimsPrincipal e)
     {
-        Console.WriteLine("AppContext.razor.cs: AuthenticationService_UserChanged");
         _ = HandleAuthStateChanged(e);
     }
 
     private async Task HandleAuthStateChanged(ClaimsPrincipal authState)
     {
+        UpdateRangeFromAppContextService();
         await InvokeAsync(StateHasChanged);
     }
 

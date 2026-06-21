@@ -14,7 +14,10 @@ public partial class EditTransactionViewModel : BaseViewModel<(Guid, EditTransac
         IStartupState startupState,
         IAccountState accountState,
         IFormSubmission<EditTransactionFormViewModel> formSubmission,
-        IClientNavigationManager clientNavigationManager)
+        IClientNavigationManager clientNavigationManager,
+        IAppContextService appContextService
+    ) : base(
+        appContextService)
     {
         _startupState = startupState;
         _accountState = accountState;

@@ -10,7 +10,10 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
     public ViewTransactionViewModel(
         IAccountState accountState,
         IStartupState startupState,
-        ITransactionState transactionState)
+        ITransactionState transactionState,
+        IAppContextService appContextService
+    ) : base(
+        appContextService)
     {
         _accountState = accountState;
         _startupState = startupState;
@@ -37,12 +40,9 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
     public string? TransactionType { get; private set; }
     public string? TotalAmount { get; private set; }
     public string? TotalAmountStyle { get; private set; }
-    public List<LinkDefinition> SourceAccounts { get; private set; } = new();
+    public List<LinkDefinition> SourceAccounts { get; private set; } = [];
 
-    public bool Loading =>
-        _transactionState.Loading ||
-        _accountState.Loading ||
-        _transactionGroupId == Guid.Empty;
+    public bool Loading => IsStateLoading || _transactionGroupId == Guid.Empty;
 
     // TODO: To helper
     private TransactionDto GetSourceTransaction(Guid transactionTypeId, List<TransactionDto> transactions)

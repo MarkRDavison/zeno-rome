@@ -11,7 +11,10 @@ public class EditAccountViewModel : BaseViewModel<(Guid, EditAccountFormViewMode
     public EditAccountViewModel(
         IStartupState startupState,
         IFormSubmission<EditAccountFormViewModel> formSubmission,
-        IClientNavigationManager clientNavigationManager)
+        IClientNavigationManager clientNavigationManager,
+        IAppContextService appContextService
+    ) : base(
+        appContextService)
     {
         _startupState = startupState;
         _formSubmission = formSubmission;

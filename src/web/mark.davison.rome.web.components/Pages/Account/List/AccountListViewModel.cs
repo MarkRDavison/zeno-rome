@@ -1,7 +1,6 @@
 ﻿namespace mark.davison.rome.web.components.Pages.Account.List;
 
-// TODO: Use base class
-public class AccountListViewModel : INotifyPropertyChanged, IDisposable
+public class AccountListViewModel : BaseViewModel<Guid?>
 {
     private bool _isLoading = true;
     private Guid? _accountTypeId = Guid.Empty;
@@ -12,51 +11,41 @@ public class AccountListViewModel : INotifyPropertyChanged, IDisposable
     public AccountListViewModel(
         IStartupState startupState,
         IAccountState accountState,
-        IClientNavigationManager clientNavigationManager)
+        IClientNavigationManager clientNavigationManager,
+        IAppContextService appContextService
+    ) : base(
+        appContextService)
     {
         _startupState = startupState;
         _accountState = accountState;
         _clientNavigationManager = clientNavigationManager;
 
-        _startupState.StateChanged += StateChanged;
-        _accountState.StateChanged += StateChanged;
+        RegisterState(_startupState);
+        RegisterState(_accountState);
     }
 
-    private void StateChanged(object? sender, EventArgs e)
+    public override async Task<bool> Initialize(Guid? payload)
     {
-        PropertyChanged?.Invoke(sender, new PropertyChangedEventArgs(null));
-    }
-
-    public async Task<bool> Initialize(Guid? accountTypeId)
-    {
-        if (_accountTypeId == accountTypeId)
+        if (_accountTypeId == payload)
         {
             return false;
         }
 
-        _accountTypeId = accountTypeId;
+        _accountTypeId = payload;
 
-        await _accountState.FetchState(accountTypeId);
+        await _accountState.FetchState(payload);
 
         _isLoading = false;
 
         return true;
     }
 
-    public void Dispose()
-    {
-        _startupState.StateChanged -= StateChanged;
-        _accountState.StateChanged -= StateChanged;
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
     public bool Loading =>
         _isLoading ||
         !_startupState.BootstrapComplete ||
         _startupState.AccountTypes.Count is 0;
 
-    public bool AccountsLoading => Loading || _accountState.Loading;
+    public bool AccountsLoading => Loading || IsStateLoading;
 
     public string Title => Loading || _accountTypeId is null
         ? "Accounts"
@@ -71,7 +60,19 @@ public class AccountListViewModel : INotifyPropertyChanged, IDisposable
 
     private AccountListItemViewModel CreateListItemViewModel(AccountDto account)
     {
-        var currency = _startupState.Currencies.First(_ => _.Id == account.CurrencyId);
+        var currency = _startupState.Currencies.FirstOrDefault(_ => _.Id == account.CurrencyId);
+
+        if (currency is null)
+        {
+            Console.WriteLine("Trying to find {0}", account.CurrencyId);
+
+            foreach (var c in _startupState.Currencies)
+            {
+                Console.WriteLine(" - {0} ({1})", c.Name, c.Id);
+            }
+
+            throw new InvalidOperationException($"Could not find currency: {account.CurrencyId}");
+        }
 
         return new AccountListItemViewModel
         {

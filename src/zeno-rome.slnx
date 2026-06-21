@@ -37,6 +37,7 @@
     <File Path="../Docker/bff-web.dockerfile" />
     <File Path="../Docker/web.dockerfile" />
     <File Path="../scripts/CreateMigrations.ps1" />
+    <File Path="../Todo.md" />
   </Folder>
   <Folder Name="/web/">
     <Project Path="web/mark.davison.rome.web.components/mark.davison.rome.web.components.csproj" />

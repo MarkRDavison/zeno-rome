@@ -12,7 +12,9 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
         IAccountState accountState,
         IStartupState startupState,
         ITransactionState transactionState,
-        IAppContextService appContextService)
+        IAppContextService appContextService
+    ) : base(
+        appContextService)
     {
         _accountState = accountState;
         _startupState = startupState;
@@ -28,10 +30,20 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
     {
         _accountId = payload;
 
-        await _accountState.FetchAccount(payload);
-        await _transactionState.FetchTransactionsForAccount(payload);
+        await LoadAccountState();
 
         return true;
+    }
+
+    protected override async Task OnAppContextUpdated(AppContextState state)
+    {
+        await LoadAccountState();
+    }
+
+    protected async Task LoadAccountState()
+    {
+        await _accountState.FetchAccount(_accountId);
+        await _transactionState.FetchTransactionsForAccount(_accountId);
     }
 
     public IEnumerable<ViewAccountGridRow> GenerateRows()
@@ -48,7 +60,7 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
             var transactionsByJournal = tGroup.GroupBy(_ => _.TransactionJournalId);
 
             // TODO: Helper method on transaction state to get data in useful format by account/category/tag etc etc
-            if (!transactionsByJournal.Any(_ => _.Any(__ => __.AccountId == _accountId)))
+            if (!transactionsByJournal.Any(g => g.Any(t => t.AccountId == _accountId)))
             {
                 continue;
             }
@@ -169,7 +181,7 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
     }
 
     public AccountDto? Account => _accountState.Accounts.FirstOrDefault(_ => _.Id == _accountId);
-    public bool Loading => _accountId != Guid.Empty && Account is null || _accountState.Loading || _transactionState.Loading;
+    public bool Loading => _accountId != Guid.Empty && Account is null || IsStateLoading;
     public string Title => Account?.Name ?? string.Empty;
     public List<CommandMenuItem> CommandMenuItems { get; set; } =
     [
