@@ -15,6 +15,7 @@
         public const string ViewTransactionType = "view-transaction-type";
         public const string ViewTransactionDescription = "view-transaction-description";
         public const string ViewTransactionDate = "view-transaction-date";
+        public const string ViewTransactionTotalAmount = "view-transaction-total";
         public const string EditTransactionSplitDescription = "edit-transaction-split-description";
         public const string EditTransactionDeleteSplit = "edit-transaction-delete-split";
         public const string SourceAccounts = "source-accounts";

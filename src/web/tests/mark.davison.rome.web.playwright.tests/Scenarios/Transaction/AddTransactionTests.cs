@@ -1,4 +1,6 @@
-﻿namespace mark.davison.rome.web.playwright.tests.Scenarios.Transaction;
+﻿using static mark.davison.rome.web.playwright.app.Pages.ViewTransactionPage;
+
+namespace mark.davison.rome.web.playwright.tests.Scenarios.Transaction;
 
 public sealed class AddTransactionTests : RomeBaseTest
 {
@@ -22,7 +24,13 @@ public sealed class AddTransactionTests : RomeBaseTest
                             100.0M)
                     ]));
 
-        await newTransaction.ExpectTitle("View Transaction");
+        await newTransaction
+            .ExpectTitle("View Transaction")
+            .ThenAsync(_ => _.ExpectTransactionInfo(TransactionType.Deposit, null, DateOnly.FromDateTime(DateTime.Today)))
+            .ThenAsync(_ => _.ExpectMetaInfo([AccountConstants.ExistingWorkAccountName], 100.0M))
+            .ThenAsync(_ => _.ExpectSplitInfo([
+                new SplitInfo("split #1", AccountConstants.ExistingWorkAccountName, AccountConstants.ExistingEverydayAccountName, 100.0M)
+            ]));
     }
 
     [Test]
@@ -51,6 +59,13 @@ public sealed class AddTransactionTests : RomeBaseTest
                             80.0M)
                     ]));
 
-        await newTransaction.ExpectTitle("View Transaction");
+        await newTransaction
+            .ExpectTitle("View Transaction")
+            .ThenAsync(_ => _.ExpectTransactionInfo(TransactionType.Deposit, "Split transaction", DateOnly.FromDateTime(DateTime.Today)))
+            .ThenAsync(_ => _.ExpectMetaInfo([AccountConstants.ExistingWorkAccountName], 180.0M))
+            .ThenAsync(_ => _.ExpectSplitInfo([
+                new SplitInfo("split #1", AccountConstants.ExistingWorkAccountName, AccountConstants.ExistingEverydayAccountName, 100.0M),
+                new SplitInfo("split #2", AccountConstants.ExistingWorkAccountName, AccountConstants.ExistingSavingsAccountName, 80.0M),
+            ]));
     }
 }

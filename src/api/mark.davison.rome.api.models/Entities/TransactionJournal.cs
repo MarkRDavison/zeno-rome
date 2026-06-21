@@ -6,6 +6,7 @@ public class TransactionJournal : RomeEntity
     public Guid TransactionGroupId { get; set; }
     public Guid CurrencyId { get; set; }
     public Guid? ForeignCurrencyId { get; set; }
+    public Guid? CategoryId { get; set; }
     public string Description { get; set; } = string.Empty;
     public DateOnly Date { get; set; }
     public int Order { get; set; }
@@ -16,4 +17,5 @@ public class TransactionJournal : RomeEntity
     public virtual List<Transaction> Transactions { get; set; } = [];
     public virtual Currency? Currency { get; set; }
     public virtual Currency? ForeignCurrency { get; set; }
+    public virtual Category? Category { get; set; }
 }

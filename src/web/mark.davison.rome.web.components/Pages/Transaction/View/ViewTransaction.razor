@@ -17,7 +17,7 @@
         </MudStack>
 
         <MudGrid>
-        <MudItem sm="12" md="6">
+            <MudItem sm="12" md="6" Class="transaction-information-card">
             <MudCard Outlined="true">
                 <MudCardHeader>
                     <CardHeaderContent>
@@ -62,8 +62,8 @@
                 </MudCardHeader>
             </MudCard>
         </MudItem>
-        <MudItem sm="12" md="6">
-            <MudCard Outlined="true">
+            <MudItem sm="12" md="6" Class="meta-information-card">
+                <MudCard Outlined="true">
                 <MudCardHeader>
                     <CardHeaderContent>
                         <MudText Class="pb-4">Meta information</MudText>
@@ -78,7 +78,7 @@
                             <MudItem xs="6">
                                 Total amount
                             </MudItem>
-                            <MudItem xs="6">
+                            <MudItem xs="6" data-testid="@DataTestIds.ViewTransactionTotalAmount">
                                 <span style="@ViewModel.TotalAmountStyle">@ViewModel.TotalAmount</span>
                             </MudItem>
                         </MudGrid>
@@ -92,7 +92,7 @@
                 <MudText Typo="Typo.h5">Splits</MudText>
             </MudItem>
         }
-            @foreach (var item in ViewModel.Items)
+        @foreach (var item in ViewModel.Items)
         {
             <MudItem sm="12" md="6" lg="4" Class="transaction-card">
                 <MudCard Outlined="true">

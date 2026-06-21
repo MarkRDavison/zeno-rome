@@ -53,5 +53,6 @@ public sealed class RomeDbContext : DbContextBase<RomeDbContext>
     public DbSet<TransactionGroup> TransactionGroups => Set<TransactionGroup>();
     public DbSet<TransactionJournal> TransactionJournals => Set<TransactionJournal>();
     public DbSet<TransactionType> TransactionTypes => Set<TransactionType>();
+    public DbSet<Category> Categories => Set<Category>();
 
 }

@@ -5,12 +5,6 @@ internal sealed class RomeDataSeeder : IDataSeeder
     private readonly bool _isProductionMode;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    private static Guid EveryDayAccountId = Guid.Parse("8E6DBBA7-CC8F-4D84-BAC6-FBD7889C8069");
-    private static Guid WorkAccountId = Guid.Parse("2C75EF75-AD77-4738-816E-B69C84F1BECF");
-    private static Guid SavingsAccountId = Guid.Parse("6339A56A-D1F2-4304-8CE9-024CF665BECC");
-    private static Guid SupermarketAccountId = Guid.Parse("5F15867D-CBF9-4F09-B957-ED2EBFA0B89D");
-    private static Guid MechanicAccountId = Guid.Parse("62FC6CF0-E130-41C1-AE0C-3CF6DB2DA34D");
-
     public RomeDataSeeder(
         bool isProductionMode,
         IServiceScopeFactory serviceScopeFactory)
@@ -52,13 +46,20 @@ internal sealed class RomeDataSeeder : IDataSeeder
         await dbContext.Set<T>().AddRangeAsync(newEntities, cancellationToken);
     }
 
-    private async Task EnsureDevAccountsSeeded(Guid userId, DbContext dbContext, CancellationToken cancellationToken)
+    private sealed record AccountIds(
+        Guid EveryDayAccountId,
+        Guid SavingsAccountId,
+        Guid WorkAccountId,
+        Guid SupermarketAccountId,
+        Guid MechanicAccountId);
+
+    private async Task EnsureDevAccountsSeeded(Guid userId, AccountIds accountIds, DbContext dbContext, CancellationToken cancellationToken)
     {
         // TODO: Replace with create/edit account command
         var accounts = new List<Account> {
             new Account
             {
-                Id = EveryDayAccountId,
+                Id = accountIds.EveryDayAccountId,
                 UserId = userId,
                 AccountTypeId = AccountTypeConstants.Asset,
                 CurrencyId = CurrencyConstants.NZD,
@@ -68,7 +69,7 @@ internal sealed class RomeDataSeeder : IDataSeeder
             },
             new Account
             {
-                Id = SavingsAccountId,
+                Id = accountIds.SavingsAccountId,
                 UserId = userId,
                 AccountTypeId = AccountTypeConstants.Asset,
                 CurrencyId = CurrencyConstants.NZD,
@@ -78,7 +79,7 @@ internal sealed class RomeDataSeeder : IDataSeeder
             },
             new Account
             {
-                Id = WorkAccountId,
+                Id = accountIds.WorkAccountId,
                 UserId = userId,
                 AccountTypeId = AccountTypeConstants.Revenue,
                 CurrencyId = CurrencyConstants.NZD,
@@ -88,7 +89,7 @@ internal sealed class RomeDataSeeder : IDataSeeder
             },
             new Account
             {
-                Id = SupermarketAccountId,
+                Id = accountIds.SupermarketAccountId,
                 UserId = userId,
                 AccountTypeId = AccountTypeConstants.Expense,
                 CurrencyId = CurrencyConstants.NZD,
@@ -98,7 +99,7 @@ internal sealed class RomeDataSeeder : IDataSeeder
             },
             new Account
             {
-                Id = MechanicAccountId,
+                Id = accountIds.MechanicAccountId,
                 UserId = userId,
                 AccountTypeId = AccountTypeConstants.Expense,
                 CurrencyId = CurrencyConstants.NZD,
@@ -112,7 +113,7 @@ internal sealed class RomeDataSeeder : IDataSeeder
     }
 
     // TODO: Dev data should be elsewhere...
-    private async Task EnsureDevExampleTransactionsAreSeeded(Guid userId, DbContext dbContext, CancellationToken cancellationToken)
+    private async Task EnsureDevExampleTransactionsAreSeeded(Guid userId, AccountIds accountIds, DbContext dbContext, CancellationToken cancellationToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
 
@@ -156,8 +157,8 @@ internal sealed class RomeDataSeeder : IDataSeeder
                     Transactions = [new(
                     Guid.NewGuid(),
                     "A simple salary deposit",
-                    WorkAccountId,
-                    EveryDayAccountId,
+                    accountIds.WorkAccountId,
+                    accountIds.EveryDayAccountId,
                     d,
                     100 * 10000,
                     null,
@@ -173,8 +174,8 @@ internal sealed class RomeDataSeeder : IDataSeeder
                 Transactions = [new(
                     Guid.NewGuid(),
                     "Food",
-                    EveryDayAccountId,
-                    SupermarketAccountId,
+                    accountIds.EveryDayAccountId,
+                    accountIds.SupermarketAccountId,
                     DateOnly.FromDateTime(DateTime.Today).AddDays(-3),
                     20 * 10000,
                     null,
@@ -189,8 +190,8 @@ internal sealed class RomeDataSeeder : IDataSeeder
                 Transactions = [new(
                     Guid.NewGuid(),
                     "Savings",
-                    EveryDayAccountId,
-                    SavingsAccountId,
+                    accountIds.EveryDayAccountId,
+                    accountIds.SavingsAccountId,
                     DateOnly.FromDateTime(DateTime.Today).AddDays(-7),
                     200 * 10000,
                     null,
@@ -366,11 +367,18 @@ internal sealed class RomeDataSeeder : IDataSeeder
     {
         if (!_isProductionMode)
         {
-            await EnsureDevAccountsSeeded(userId, dbContext, token);
+            var accountIds = new AccountIds(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                Guid.NewGuid());
+
+            await EnsureDevAccountsSeeded(userId, accountIds, dbContext, token);
 
             await dbContext.SaveChangesAsync(token);
 
-            await EnsureDevExampleTransactionsAreSeeded(userId, dbContext, token);
+            await EnsureDevExampleTransactionsAreSeeded(userId, accountIds, dbContext, token);
 
             await dbContext.SaveChangesAsync(token);
         }

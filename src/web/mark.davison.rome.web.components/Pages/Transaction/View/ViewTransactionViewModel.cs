@@ -2,6 +2,7 @@
 
 public class ViewTransactionViewModel : BaseViewModel<Guid>
 {
+    private bool _initialized;
     private Guid _transactionGroupId;
     private readonly IAccountState _accountState;
     private readonly IStartupState _startupState;
@@ -26,11 +27,13 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
 
     public override async Task<bool> Initialize(Guid payload)
     {
+        _initialized = false;
         _transactionGroupId = payload;
 
         await _transactionState.FetchTransactions(_transactionGroupId);
         await _accountState.FetchState(null);
 
+        _initialized = true;
         return true;
     }
 
@@ -42,7 +45,7 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
     public string? TotalAmountStyle { get; private set; }
     public List<LinkDefinition> SourceAccounts { get; private set; } = [];
 
-    public bool Loading => IsStateLoading || _transactionGroupId == Guid.Empty;
+    public bool Loading => !_initialized || IsStateLoading || _transactionGroupId == Guid.Empty;
 
     // TODO: To helper
     private TransactionDto GetSourceTransaction(Guid transactionTypeId, List<TransactionDto> transactions)
