@@ -75,6 +75,8 @@ public partial class AppContext
         {
             _changeInProgress = true;
 
+            _range = range;
+
             try
             {
                 var request = new SetUserContextCommandRequest
@@ -92,18 +94,14 @@ public partial class AppContext
                         response.Value.EndRange.ToDateTime(TimeOnly.MinValue));
 
                     AppContextService.UpdateRange(
-                        DateOnly.FromDateTime(range.Start!.Value),
-                        DateOnly.FromDateTime(range.End!.Value));
+                        DateOnly.FromDateTime(_range.Start!.Value),
+                        DateOnly.FromDateTime(_range.End!.Value));
                 }
             }
             finally
             {
                 _changeInProgress = false;
             }
-
-            UpdateRangeFromAppContextService();
-
-            await InvokeAsync(StateHasChanged);
         }
     }
 
