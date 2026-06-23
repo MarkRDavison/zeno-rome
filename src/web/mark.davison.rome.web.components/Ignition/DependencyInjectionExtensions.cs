@@ -20,7 +20,8 @@ public static class DependencyInjectionExtensions
             .AddScoped<EditTransactionViewModel>();
 
         services
-            .AddScoped<CategoryListViewModel>();
+            .AddScoped<CategoryListViewModel>()
+            .AddScoped<EditCategoryViewModel>();
 
         return services;
     }

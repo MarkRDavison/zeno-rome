@@ -5,14 +5,17 @@ public sealed class CategoryListViewModel : BaseViewModel<object?>
 {
     private bool _isLoading = true;
     private readonly ICategoryState _categoryState;
+    private readonly IClientNavigationManager _clientNavigationManager;
 
     public CategoryListViewModel(
         IAppContextService appContextService,
-        ICategoryState categoryState
+        ICategoryState categoryState,
+        IClientNavigationManager clientNavigationManager
     ) : base(
         appContextService)
     {
         _categoryState = categoryState;
+        _clientNavigationManager = clientNavigationManager;
 
         RegisterState(_categoryState);
     }
@@ -53,6 +56,6 @@ public sealed class CategoryListViewModel : BaseViewModel<object?>
 
     public void AddCategory()
     {
-        throw new NotImplementedException();
+        _clientNavigationManager.NavigateTo(Routes.CategoryNew);
     }
 }

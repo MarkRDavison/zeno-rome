@@ -5,11 +5,14 @@ public class CategoryListQueryProcessorTests
     private readonly IDbContext<RomeDbContext> _dbContext;
     private readonly Mock<ICurrentUserContext> _currentUserContextMock;
     private readonly CategoryListQueryProcessor _categoryListQueryProcessor;
+    private readonly Guid _userId;
 
     public CategoryListQueryProcessorTests()
     {
         _dbContext = DbContextHelpers.CreateInMemory(_ => new RomeDbContext(_));
         _currentUserContextMock = new(MockBehavior.Strict);
+        _userId = Guid.NewGuid();
+        _currentUserContextMock.Setup(_ => _.UserId).Returns(_userId);
 
         _categoryListQueryProcessor = new(_dbContext);
     }
@@ -22,7 +25,7 @@ public class CategoryListQueryProcessorTests
             Id = Guid.NewGuid(),
             Created = DateTime.Now,
             LastModified = DateTime.Now,
-            UserId = Guid.Empty,
+            UserId = _userId,
             Name = Guid.NewGuid().ToString()
         };
 
@@ -31,15 +34,12 @@ public class CategoryListQueryProcessorTests
             Id = Guid.NewGuid(),
             Created = DateTime.Now,
             LastModified = DateTime.Now,
-            UserId = Guid.Empty,
+            UserId = _userId,
             Name = Guid.NewGuid().ToString()
         };
 
-        {
-            await _dbContext.AddAsync(category1, CancellationToken.None);
-            await _dbContext.AddAsync(category2, CancellationToken.None);
-            await _dbContext.SaveChangesAsync(true, CancellationToken.None);
-        }
+        await _dbContext.UpsertEntitiesAsync([category1, category2], CancellationToken.None);
+        await _dbContext.SaveChangesAsync(true, CancellationToken.None);
 
         var request = new CategoryListQueryRequest();
         var response = await _categoryListQueryProcessor.ProcessAsync(request, _currentUserContextMock.Object, CancellationToken.None);

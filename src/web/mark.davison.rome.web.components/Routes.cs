@@ -12,6 +12,7 @@ public sealed class Routes
 
     public const string Categories = "/classification/categories";
     public const string Category = "/classification/categories/{id:guid}";
+    public const string CategoryNew = "/classification/categories/new";
 
     public const string Tags = "/classification/tags";
     public const string Tag = "/classification/tag/{id:guid}";

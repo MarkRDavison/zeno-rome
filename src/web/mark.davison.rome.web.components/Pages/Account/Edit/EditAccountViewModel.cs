@@ -43,13 +43,9 @@ public class EditAccountViewModel : BaseViewModel<(Guid, EditAccountFormViewMode
             HideAccountType = true
         };
 
-        if (EditContext is not null)
-        {
-            EditContext.OnFieldChanged -= FieldChanged;
-        }
-
+        EditContext?.OnFieldChanged -= FieldChanged;
         EditContext = new EditContext(FormViewModel);
-        EditContext.OnFieldChanged -= FieldChanged;
+        EditContext.OnFieldChanged += FieldChanged;
 
         return true;
     }
@@ -85,5 +81,6 @@ public class EditAccountViewModel : BaseViewModel<(Guid, EditAccountFormViewMode
     public bool PrimaryDisabled => InProgress;
     public EditContext? EditContext { get; private set; }
     public required EditAccountFormViewModel FormViewModel { get; set; }
+    // TODO: BASE CLASS??
     private void FieldChanged(object? sender, FieldChangedEventArgs args) => this.State_StateChanged(this, EventArgs.Empty);
 }

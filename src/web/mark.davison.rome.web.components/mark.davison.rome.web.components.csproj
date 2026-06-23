@@ -17,8 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\Category\Edit\" />
-    <Folder Include="Pages\Category\Create\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

@@ -1,0 +1,10 @@
+﻿@inherits Form<EditCategoryFormViewModel>
+
+<MudForm>
+    <MudTextField T="string" 
+                  id="edit-category-form-name" 
+                  Label="Name" 
+                  Required="true" 
+                  @bind-Text="FormViewModel.Name" 
+                  For="@(() => FormViewModel.Name)" />
+</MudForm>
