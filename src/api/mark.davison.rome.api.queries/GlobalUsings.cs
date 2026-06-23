@@ -6,6 +6,7 @@ global using mark.davison.rome.api.models.Entities;
 global using mark.davison.rome.api.persistence;
 global using mark.davison.rome.shared.accounting.constants;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.AccountList;
+global using mark.davison.rome.shared.models.dto.Scenarios.Queries.CategoryList;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.FetchTransaction;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.Startup;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.TransactionByAccount;

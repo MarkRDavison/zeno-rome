@@ -62,6 +62,11 @@ public partial class AppContext
         await _picker.OpenAsync();
     }
 
+    private async Task Close()
+    {
+        await _picker.CloseAsync();
+    }
+
     private async Task Reset()
     {
         await _picker.CloseAsync();

@@ -19,6 +19,9 @@ public static class DependencyInjectionExtensions
             .AddScoped<ViewTransactionViewModel>()
             .AddScoped<EditTransactionViewModel>();
 
+        services
+            .AddScoped<CategoryListViewModel>();
+
         return services;
     }
 }

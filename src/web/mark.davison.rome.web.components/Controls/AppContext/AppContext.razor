@@ -2,12 +2,14 @@
 
 @implements IDisposable
 
+@* TODO: Premade ranges with custom as the current? *@
+
 <MudStack Class="app-context" Row AlignItems="AlignItems.Center">
     <MudSpacer />
     <MudButton OnClick="@OpenPicker">@FormattedRange</MudButton>
     <MudDateRangePicker @ref="_picker" DateRange="@_range" DateRangeChanged="@DateRangeChanged" AutoClose="true">
         <PickerActions>
-            <MudButton Class="mr-auto align-self-start" OnClick="@(async () => await _picker.CloseAsync(false))">Cancel</MudButton>
+            <MudButton Class="mr-auto align-self-start" OnClick="@Close">Cancel</MudButton>
             <MudButton OnClick="@Reset">Reset</MudButton>
         </PickerActions>
     </MudDateRangePicker>

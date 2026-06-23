@@ -46,6 +46,18 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
         await _transactionState.FetchTransactionsForAccount(_accountId);
     }
 
+    public string GetFormattedAmount(Guid? currencyId, long? amount)
+    {
+        if (currencyId is null || amount is null)
+        {
+            return string.Empty;
+        }
+
+        var currency = _startupState.Currencies.First(_ => _.Id == currencyId);
+
+        return CurrencyRules.FromPersistedToFormatted(amount.Value, currency.Symbol, currency.DecimalPlaces);
+    }
+
     public IEnumerable<ViewAccountGridRow> GenerateRows()
     {
         List<ViewAccountGridRow> items = [];

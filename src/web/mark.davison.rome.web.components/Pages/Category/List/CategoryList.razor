@@ -1,0 +1,33 @@
+﻿@attribute [Route(Routes.Categories)]
+
+@inherits BaseView<CategoryListViewModel, object?>
+
+<MudPaper Class="pa-10">
+    @if (ViewModel.Loading)
+    {
+        <MudProgressCircular Size="Size.Large" Class="ma-auto" Indeterminate />
+    }
+    else
+    {
+        <MudStack Row="true" Class="pa-10">
+            <MudText Typo="Typo.h4" data-testid="@DataTestIds.CategoryListTitle">Categories</MudText>
+            <MudTooltip Text="Add">
+                <MudIconButton Icon="@Icons.Material.Filled.AddCircle" Variant="Variant.Filled" Color="Color.Primary" Style="min-width: 60px;" OnClick="@ViewModel.AddCategory" />
+            </MudTooltip>
+        </MudStack>
+        <MudDataGrid Items="@ViewModel.Items">
+            <Columns>
+                <TemplateColumn Title="Name">
+                    <CellTemplate>
+                        <MudLink Href="@context.Item.Name?.Href">@context.Item.Name?.Text</MudLink>
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn Sortable="false">
+                    <CellTemplate>
+                        <CommandMenu Items="@ViewModel.CommandMenuItems" />
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+        </MudDataGrid>
+    }
+</MudPaper>

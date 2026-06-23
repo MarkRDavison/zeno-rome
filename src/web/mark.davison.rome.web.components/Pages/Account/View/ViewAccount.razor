@@ -7,11 +7,11 @@
         <ChildContent>
             <MudStack>
                 <MudStack Row="true">
-                    <MudText data-testid="@DataTestIds.ViewAccountTitle" Typo="Typo.h4">@ViewModel.Title</MudText>
-                    <MudTooltip Text="Add">
-                        @*What? Transaction where this defaults to source/dest????*@
-                        <MudIconButton Disabled Icon="@Icons.Material.Filled.AddCircle" Variant="Variant.Filled" Color="Color.Primary" Style="min-width: 60px;" />
-                    </MudTooltip>
+                    <MudText data-testid="@DataTestIds.ViewAccountTitle" 
+                             Typo="Typo.h4">@ViewModel.Title</MudText>
+                    <MudText data-testid="@DataTestIds.ViewAccountCurrentBalance" 
+                                Class="@GetAccountCurrentBalanceCssClasses()"
+                                Typo="Typo.h5">@ViewModel.GetFormattedAmount(ViewModel.Account?.CurrencyId, ViewModel.Account?.CurrentBalance)</MudText>
                 </MudStack>
                 <MudDataGrid Items="@ViewModel.GenerateRows()" RowClassFunc=@ViewModel.RowClassFunc>
                     <Columns>
@@ -25,7 +25,7 @@
                                     }
                                     else if (context.Item.TransactionType == "Withdrawal")
                                     {
-                                        <MudIcon Style="transform: scaleX(-1);" Icon="@Icons.Material.Filled.ArrowRightAlt" Title="Withdrawal" />
+                                        <MudIcon Class="flipX" Icon="@Icons.Material.Filled.ArrowRightAlt" Title="Withdrawal" />
                                     }
                                     else if (context.Item.TransactionType == "Transfer")
                                     {

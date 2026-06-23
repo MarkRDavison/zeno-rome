@@ -23,10 +23,7 @@
                         <MudLink Href="@context.Item.Name?.Href">@context.Item.Name?.Text</MudLink>
                     </CellTemplate>
                 </TemplateColumn>
-                @if (Type is null)
-                {
-                    <PropertyColumn Title="Account type" Property="_ => _.AccountType" />
-                }
+                <PropertyColumn Title="Account type" Property="_ => _.AccountType" Hidden="@(Type is null)" />
                 <PropertyColumn Title="Account number" Property="_ => _.AccountNumber" />
                 <PropertyColumn Title="Current balance" Property="_ => _.CurrentBalance" CellStyleFunc="@ViewModel.AmountCellStyleFunc(_ => _.CurrentBalanceAmount)" />
                 <PropertyColumn Title="Balance difference" Property="_ => _.BalanceDifference" CellStyleFunc="@ViewModel.AmountCellStyleFunc(_ => _.BalanceDifferenceAmount)" />

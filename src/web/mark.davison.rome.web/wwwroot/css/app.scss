@@ -45,3 +45,26 @@ h1:focus {
         display: none !important;
     }
 }
+
+/* General */
+.green-numeric-amount {
+    color: #00AD5D;
+}
+
+.red-numeric-amount {
+    color: #E47365;
+}
+
+.blue-numeric-amount {
+    color: #47B2F5;
+}
+
+.flipX {
+    transform: scaleX(-1);
+}
+
+/* ViewAccount.razor */
+.account-current-balance {
+    align-self: center;
+}
+
