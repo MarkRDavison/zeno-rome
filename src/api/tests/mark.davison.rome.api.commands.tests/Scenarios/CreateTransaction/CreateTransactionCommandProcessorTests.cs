@@ -26,8 +26,8 @@ public class CreateTransactionCommandProcessorTests
             Description = "Split description",
             Transactions =
             {
-                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null),
-                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null)
+                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null),
+                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null)
             }
         };
 
@@ -51,7 +51,7 @@ public class CreateTransactionCommandProcessorTests
             Description = "Split description",
             Transactions =
             {
-                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null)
+                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null)
             }
         };
 
@@ -71,7 +71,7 @@ public class CreateTransactionCommandProcessorTests
     [Test]
     public async Task Process_CreatesTransactionJournals_WithExpectedValues()
     {
-        var createTransactionDto = new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null)
+        var createTransactionDto = new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null)
         {
             Description = "Some transaction description",
             CurrencyId = Guid.NewGuid(),
@@ -116,7 +116,7 @@ public class CreateTransactionCommandProcessorTests
     [Test]
     public async Task Process_CreatesTransactions_AsExpected()
     {
-        var transaction = new CreateTransactionDto(Guid.NewGuid(), "transaction description", Guid.NewGuid(), Guid.NewGuid(), DateOnly.MinValue, 100, 125, Guid.NewGuid(), Guid.NewGuid());
+        var transaction = new CreateTransactionDto(Guid.NewGuid(), "transaction description", Guid.NewGuid(), Guid.NewGuid(), DateOnly.MinValue, 100, 125, Guid.NewGuid(), Guid.NewGuid(), null);
         var request = new CreateTransactionCommandRequest
         {
             Transactions =

@@ -1,6 +1,4 @@
-﻿using mark.davison.rome.shared.models.dto.Scenarios.Queries.CategoryList;
-
-namespace mark.davison.rome.web.services.State.Category;
+﻿namespace mark.davison.rome.web.services.State.Category;
 
 internal sealed class CategoryState : ICategoryState
 {

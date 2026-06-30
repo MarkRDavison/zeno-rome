@@ -3,6 +3,7 @@ global using mark.davison.common.client.abstractions.Repository;
 global using mark.davison.common.Services;
 global using mark.davison.rome.shared.accounting.rules;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.AccountList;
+global using mark.davison.rome.shared.models.dto.Scenarios.Queries.CategoryList;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.FetchTransaction;
 global using mark.davison.rome.shared.models.dto.Shared;
 global using mark.davison.rome.web.services.Models;

@@ -29,7 +29,7 @@ public class CreateTransactionCommandValidatorTests
     [Test]
     public async Task Validate_ReturnsMessageWhenDateIsInvalid()
     {
-        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null);
+        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null);
         var request = new CreateTransactionCommandRequest
         {
             Transactions = new()
@@ -51,8 +51,8 @@ public class CreateTransactionCommandValidatorTests
         {
             Transactions =
             [
-                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null),
-                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null)
+                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null),
+                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null)
             ]
         };
 
@@ -66,7 +66,7 @@ public class CreateTransactionCommandValidatorTests
     [Test]
     public async Task Validate_ReturnsMessageWhenSourceAndDestinationAccountAreSame()
     {
-        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null);
+        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null);
         var request = new CreateTransactionCommandRequest
         {
             Transactions =
@@ -88,7 +88,7 @@ public class CreateTransactionCommandValidatorTests
         {
             Transactions =
             [
-                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null)
+                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null)
             ]
         };
 
@@ -101,7 +101,7 @@ public class CreateTransactionCommandValidatorTests
     [Test]
     public async Task Validate_ReturnsMessageWhenCurrencyIdIsInvalid()
     {
-        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null);
+        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null);
         var request = new CreateTransactionCommandRequest
         {
             Transactions =
@@ -119,7 +119,7 @@ public class CreateTransactionCommandValidatorTests
     [Test]
     public async Task Validate_ReturnsMessageWhenForeginCurrencyIdIsInvalid()
     {
-        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, Guid.Empty);
+        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, Guid.Empty, null);
         var request = new CreateTransactionCommandRequest
         {
             Transactions =
@@ -137,7 +137,7 @@ public class CreateTransactionCommandValidatorTests
     [Test]
     public async Task Validate_ReturnsMessageWhenCurrencyIdsAreSame()
     {
-        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, CurrencyConstants.NZD, CurrencyConstants.NZD);
+        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, CurrencyConstants.NZD, CurrencyConstants.NZD, null);
         var request = new CreateTransactionCommandRequest
         {
             Transactions =
@@ -150,6 +150,28 @@ public class CreateTransactionCommandValidatorTests
 
         await Assert.That(response.Success).IsFalse();
         await Assert.That(response.Errors).Contains(string.Format(CreateTransactionCommandValidator.VALIDATION_DUPLICATE_CURRENCY, transaction.Id));
+    }
+
+    [Test]
+    public async Task Validate_ReturnsMessageWhenCategoryIdIsInvalid()
+    {
+        _createTransctionValidationContext
+            .Setup(c => c.GetCategoryById(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Category?)null);
+
+        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, Guid.Empty, Guid.Empty);
+        var request = new CreateTransactionCommandRequest
+        {
+            Transactions =
+            [
+                transaction
+            ]
+        };
+
+        var response = await _validator.ValidateAsync(request, _currentUserContext.Object, CancellationToken.None);
+
+        await Assert.That(response.Success).IsFalse();
+        await Assert.That(response.Errors).Contains(string.Format(CreateTransactionCommandValidator.VALIDATION_CATEGORY_ID, transaction.Id));
     }
 
     [Test]
@@ -175,7 +197,7 @@ public class CreateTransactionCommandValidatorTests
         {
             Transactions =
             [
-                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null)
+                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null)
             ]
         };
 

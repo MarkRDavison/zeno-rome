@@ -63,6 +63,11 @@ h1:focus {
     transform: scaleX(-1);
 }
 
+.column-auto {
+    width: 1%;
+    white-space: nowrap;
+}
+
 /* ViewAccount.razor */
 .account-current-balance {
     align-self: center;

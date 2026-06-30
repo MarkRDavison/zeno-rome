@@ -1,7 +1,4 @@
-﻿using mark.davison.rome.api.models.Entities;
-using mark.davison.rome.shared.models.dto.Shared;
-
-namespace mark.davison.rome.shared.server.Utilities;
+﻿namespace mark.davison.rome.shared.server.Utilities;
 
 public static class TransactionExtensions
 {
@@ -14,7 +11,7 @@ public static class TransactionExtensions
             AccountId = transaction.AccountId,
             Amount = transaction.Amount,
             Date = transactionJournal.Date,
-            CategoryId = null,//transactionJournal.CategoryId,
+            CategoryId = transactionJournal.CategoryId,
             CurrencyId = transaction.CurrencyId,
             Description = transaction.Description,
             ForeignAmount = transaction.ForeignAmount,

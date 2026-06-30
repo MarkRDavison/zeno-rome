@@ -46,6 +46,37 @@ internal sealed class RomeDataSeeder : IDataSeeder
         await dbContext.Set<T>().AddRangeAsync(newEntities, cancellationToken);
     }
 
+    private sealed record CategoryIds(
+        Guid PetsCategoryId,
+        Guid CarCategoryId,
+        Guid FoodCategoryId
+    );
+
+    private async Task EnsureDevCategoriesSeeded(IServiceProvider services, ICurrentUserContext currentUserContext, CategoryIds categoryIds, DbContext dbContext, CancellationToken cancellationToken)
+    {
+        var categories = new List<(Guid Id, string Name)>
+        {
+            (categoryIds.PetsCategoryId, "Pets"),
+            (categoryIds.CarCategoryId, "Car"),
+            (categoryIds.FoodCategoryId, "Food")
+        };
+
+
+        var handler = services.GetRequiredService<ICommandHandler<UpsertCategoryCommandRequest, UpsertCategoryCommandResponse>>();
+
+        foreach (var c in categories)
+        {
+            await handler.Handle(
+                new UpsertCategoryCommandRequest
+                {
+                    Id = c.Id,
+                    Name = c.Name
+                },
+                currentUserContext,
+                cancellationToken);
+        }
+    }
+
     private sealed record AccountIds(
         Guid EveryDayAccountId,
         Guid SavingsAccountId,
@@ -113,30 +144,9 @@ internal sealed class RomeDataSeeder : IDataSeeder
     }
 
     // TODO: Dev data should be elsewhere...
-    private async Task EnsureDevExampleTransactionsAreSeeded(Guid userId, AccountIds accountIds, DbContext dbContext, CancellationToken cancellationToken)
+    private async Task EnsureDevExampleTransactionsAreSeeded(IServiceProvider services, ICurrentUserContext currentUserContext, AccountIds accountIds, CategoryIds categoryIds, DbContext dbContext, CancellationToken cancellationToken)
     {
-        using var scope = _serviceScopeFactory.CreateScope();
-
-        var userContext = scope.ServiceProvider.GetRequiredService<ICurrentUserContext>();
-
-        var user = await scope.ServiceProvider
-            .GetRequiredService<IDbContext<RomeDbContext>>()
-            .Set<User>()
-            .AsNoTracking()
-            .Include(_ => _.UserRoles)
-            .ThenInclude(_ => _.Role)
-            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
-
-        if (user is null)
-        {
-            return;
-        }
-
-        var roleNames = user.UserRoles.Select(ur => ur.Role?.Name).OfType<string>();
-
-        userContext.PopulateFromIds(user.Id, user.TenantId, roleNames, true);
-
-        var dispatcher = scope.ServiceProvider.GetRequiredService<ICommandDispatcher>();
+        var handler = services.GetRequiredService<ICommandHandler<CreateTransactionCommandRequest, CreateTransactionCommandResponse>>();
         {
             var salaryDates = new List<DateOnly>
             {
@@ -150,7 +160,7 @@ internal sealed class RomeDataSeeder : IDataSeeder
 
             foreach (var d in salaryDates)
             {
-                await dispatcher.Dispatch<CreateTransactionCommandRequest, CreateTransactionCommandResponse>(new CreateTransactionCommandRequest
+                await handler.Handle(new CreateTransactionCommandRequest
                 {
                     Description = string.Empty,
                     TransactionTypeId = TransactionTypeConstants.Deposit,
@@ -163,11 +173,12 @@ internal sealed class RomeDataSeeder : IDataSeeder
                     100 * 10000,
                     null,
                     CurrencyConstants.NZD,
+                    null,
                     null)]
-                }, cancellationToken);
+                }, currentUserContext, cancellationToken);
             }
 
-            await dispatcher.Dispatch<CreateTransactionCommandRequest, CreateTransactionCommandResponse>(new CreateTransactionCommandRequest
+            await handler.Handle(new CreateTransactionCommandRequest
             {
                 Description = string.Empty,
                 TransactionTypeId = TransactionTypeConstants.Withdrawal,
@@ -180,10 +191,11 @@ internal sealed class RomeDataSeeder : IDataSeeder
                     20 * 10000,
                     null,
                     CurrencyConstants.NZD,
-                    null)]
-            }, cancellationToken);
+                    null,
+                    categoryIds.FoodCategoryId)]
+            }, currentUserContext, cancellationToken);
 
-            await dispatcher.Dispatch<CreateTransactionCommandRequest, CreateTransactionCommandResponse>(new CreateTransactionCommandRequest
+            await handler.Handle(new CreateTransactionCommandRequest
             {
                 Description = string.Empty,
                 TransactionTypeId = TransactionTypeConstants.Transfer,
@@ -196,8 +208,9 @@ internal sealed class RomeDataSeeder : IDataSeeder
                     200 * 10000,
                     null,
                     CurrencyConstants.NZD,
+                    null,
                     null)]
-            }, cancellationToken);
+            }, currentUserContext, cancellationToken);
         }
     }
 
@@ -374,11 +387,41 @@ internal sealed class RomeDataSeeder : IDataSeeder
                 Guid.NewGuid(),
                 Guid.NewGuid());
 
+            var categoryIds = new CategoryIds(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                Guid.NewGuid());
+
+            using var scope = _serviceScopeFactory.CreateScope();
+
+            var userContext = scope.ServiceProvider.GetRequiredService<ICurrentUserContext>();
+
+            var user = await scope.ServiceProvider
+                .GetRequiredService<IDbContext<RomeDbContext>>()
+                .Set<User>()
+                .AsNoTracking()
+                .Include(_ => _.UserRoles)
+                .ThenInclude(_ => _.Role)
+                .FirstOrDefaultAsync(u => u.Id == userId, token);
+
+            if (user is null)
+            {
+                return;
+            }
+
+            var roleNames = user.UserRoles.Select(ur => ur.Role?.Name).OfType<string>();
+
+            userContext.PopulateFromIds(user.Id, user.TenantId, roleNames, true);
+
+            await EnsureDevCategoriesSeeded(scope.ServiceProvider, userContext, categoryIds, dbContext, token);
+
+            await dbContext.SaveChangesAsync(token);
+
             await EnsureDevAccountsSeeded(userId, accountIds, dbContext, token);
 
             await dbContext.SaveChangesAsync(token);
 
-            await EnsureDevExampleTransactionsAreSeeded(userId, accountIds, dbContext, token);
+            await EnsureDevExampleTransactionsAreSeeded(scope.ServiceProvider, userContext, accountIds, categoryIds, dbContext, token);
 
             await dbContext.SaveChangesAsync(token);
         }

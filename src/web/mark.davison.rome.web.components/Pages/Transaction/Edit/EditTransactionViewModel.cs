@@ -7,12 +7,14 @@ public partial class EditTransactionViewModel : BaseViewModel<(Guid, EditTransac
 
     private readonly IStartupState _startupState;
     private readonly IAccountState _accountState;
+    private readonly ICategoryState _categoryState;
     private readonly IFormSubmission<EditTransactionFormViewModel> _formSubmission;
     private readonly IClientNavigationManager _clientNavigationManager;
 
     public EditTransactionViewModel(
         IStartupState startupState,
         IAccountState accountState,
+        ICategoryState categoryState,
         IFormSubmission<EditTransactionFormViewModel> formSubmission,
         IClientNavigationManager clientNavigationManager,
         IAppContextService appContextService
@@ -21,11 +23,14 @@ public partial class EditTransactionViewModel : BaseViewModel<(Guid, EditTransac
     {
         _startupState = startupState;
         _accountState = accountState;
+        _categoryState = categoryState;
+
         _formSubmission = formSubmission;
         _clientNavigationManager = clientNavigationManager;
 
         RegisterState(_startupState);
         RegisterState(_accountState);
+        RegisterState(_categoryState);
     }
 
     public override async Task<bool> Initialize((Guid, EditTransactionFormViewModel?) payload)
@@ -40,7 +45,8 @@ public partial class EditTransactionViewModel : BaseViewModel<(Guid, EditTransac
 
         FormViewModel = payload.Item2 ?? new EditTransactionFormViewModel(
             _startupState,
-            _accountState)
+            _accountState,
+            _categoryState)
         {
             TransactionTypeId = _transactionTypeId
         };

@@ -56,8 +56,6 @@ public sealed class CreateTransactionCommandValidator : ICommandValidator<Create
 
     private async Task ValidateTransaction(CreateTransactionCommandResponse response, CreateTransactionDto transaction, ICurrentUserContext currentUserContext, CancellationToken cancellationToken)
     {
-        await Task.CompletedTask;
-
         if (transaction.Date == default)
         {
             response.Errors.Add(string.Format(VALIDATION_DATE, transaction.Id));
@@ -82,6 +80,11 @@ public sealed class CreateTransactionCommandValidator : ICommandValidator<Create
             transaction.ForeignCurrencyId.Value == transaction.CurrencyId)
         {
             response.Errors.Add(string.Format(VALIDATION_DUPLICATE_CURRENCY, transaction.Id));
+        }
+
+        if (transaction.CategoryId.HasValue && await _createTransctionValidationContext.GetCategoryById(transaction.CategoryId.Value, cancellationToken) is null)
+        {
+            response.Errors.Add(string.Format(VALIDATION_CATEGORY_ID, transaction.Id));
         }
     }
 }

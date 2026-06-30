@@ -22,7 +22,9 @@
                         <MudLink Href="@context.Item.Name?.Href">@context.Item.Name?.Text</MudLink>
                     </CellTemplate>
                 </TemplateColumn>
-                <TemplateColumn Sortable="false">
+                <TemplateColumn Sortable="false" 
+                                HeaderClass="column-auto"
+                                CellClass="column-auto">
                     <CellTemplate>
                         <CommandMenu Items="@ViewModel.CommandMenuItems" />
                     </CellTemplate>

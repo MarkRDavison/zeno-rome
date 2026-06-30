@@ -4,13 +4,16 @@ public sealed class EditTransactionFormViewModel : IFormViewModel
 {
     private readonly IStartupState _startupState;
     private readonly IAccountState _accountState;
+    private readonly ICategoryState _categoryState;
 
     public EditTransactionFormViewModel(
         IStartupState startupState,
-        IAccountState accountState)
+        IAccountState accountState,
+        ICategoryState categoryState)
     {
         _startupState = startupState;
         _accountState = accountState;
+        _categoryState = categoryState;
     }
 
     public Guid Id { get; set; }
@@ -85,12 +88,12 @@ public sealed class EditTransactionFormViewModel : IFormViewModel
         }
     }
 
-    public IEnumerable<IDropdownItem> CategoryItems => [];
-    /*CategoryState.Value.Categories.Select(_ => new DropdownItem
-    {
-        Id = _.Id,
-        Name = _.Name
-    });*/
+    public IEnumerable<IDropdownItem> CategoryItems =>
+        _categoryState.Categories.Select(_ => new DropdownItem
+        {
+            Id = _.Id,
+            Name = _.Name
+        });
 
     public IEnumerable<IDropdownItem> DestinationAccountItems
     {

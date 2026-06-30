@@ -44,7 +44,7 @@ public sealed class CreateDepositTransactionValidatorStrategyTests
             LastModified = DateTime.UtcNow
         };
 
-        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, sourceAccount.Id, destinationAccount.Id, DateOnly.MinValue, 0, null, Guid.Empty, null);
+        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, sourceAccount.Id, destinationAccount.Id, DateOnly.MinValue, 0, null, Guid.Empty, null, null);
         var request = new CreateTransactionCommandRequest
         {
             Transactions =
@@ -95,7 +95,7 @@ public sealed class CreateDepositTransactionValidatorStrategyTests
             LastModified = DateTime.UtcNow
         };
 
-        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, sourceAccount.Id, destinationAccount.Id, DateOnly.MinValue, 0, null, Guid.Empty, null);
+        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, sourceAccount.Id, destinationAccount.Id, DateOnly.MinValue, 0, null, Guid.Empty, null, null);
         var request = new CreateTransactionCommandRequest
         {
             Transactions =
@@ -145,7 +145,7 @@ public sealed class CreateDepositTransactionValidatorStrategyTests
             LastModified = DateTime.UtcNow
         };
 
-        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, sourceAccount.Id, destinationAccount.Id, DateOnly.MinValue, 0, null, Guid.Empty, null);
+        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, sourceAccount.Id, destinationAccount.Id, DateOnly.MinValue, 0, null, Guid.Empty, null, null);
         var request = new CreateTransactionCommandRequest
         {
             Transactions =
@@ -196,7 +196,7 @@ public sealed class CreateDepositTransactionValidatorStrategyTests
             LastModified = DateTime.UtcNow
         };
 
-        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, sourceAccount.Id, destinationAccount.Id, DateOnly.MinValue, 0, null, Guid.Empty, null);
+        var transaction = new CreateTransactionDto(Guid.NewGuid(), string.Empty, sourceAccount.Id, destinationAccount.Id, DateOnly.MinValue, 0, null, Guid.Empty, null, null);
         var request = new CreateTransactionCommandRequest
         {
             Transactions =

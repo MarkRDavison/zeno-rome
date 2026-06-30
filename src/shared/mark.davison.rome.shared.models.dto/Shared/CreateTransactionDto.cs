@@ -9,5 +9,6 @@ public sealed record CreateTransactionDto(
     long Amount,
     long? ForeignAmount,
     Guid CurrencyId,
-    Guid? ForeignCurrencyId
+    Guid? ForeignCurrencyId,
+    Guid? CategoryId
 );

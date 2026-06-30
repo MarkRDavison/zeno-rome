@@ -82,6 +82,7 @@ public sealed class UpsertAccountCommandProcessor : ICommandProcessor<UpsertAcco
                             request.UpsertAccountDto.OpeningBalance!.Value,
                             null,
                             account.CurrencyId,
+                            null,
                             null)
                     }
                 };

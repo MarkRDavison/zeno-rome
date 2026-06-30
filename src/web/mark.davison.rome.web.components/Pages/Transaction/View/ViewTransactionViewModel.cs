@@ -6,11 +6,13 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
     private Guid _transactionGroupId;
     private readonly IAccountState _accountState;
     private readonly IStartupState _startupState;
+    private readonly ICategoryState _categoryState;
     private readonly ITransactionState _transactionState;
 
     public ViewTransactionViewModel(
         IAccountState accountState,
         IStartupState startupState,
+        ICategoryState categoryState,
         ITransactionState transactionState,
         IAppContextService appContextService
     ) : base(
@@ -18,10 +20,12 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
     {
         _accountState = accountState;
         _startupState = startupState;
+        _categoryState = categoryState;
         _transactionState = transactionState;
 
         RegisterState(_accountState);
         RegisterState(_startupState);
+        RegisterState(_categoryState);
         RegisterState(_transactionState);
     }
 
@@ -124,6 +128,7 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
         return $"{(negative ? "-" : string.Empty)}{currency?.Symbol}{CurrencyRules.FromPersisted(amount).ToString($"N{currency?.DecimalPlaces ?? 2}")}";
     }
 
+    // TODO: REPLACE WITH SCSS class
     private static string GetAmountColour(Guid transactionTypeId, long amount)
     {
         if (transactionTypeId == TransactionTypeConstants.Transfer)
@@ -215,7 +220,7 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
                     return (ViewTransactionItem?)null;
                 }
 
-                object? category = null;// CategoryListState.Value.Categories.FirstOrDefault(__ => __.Id == source.CategoryId);
+                var category = _categoryState.Categories.FirstOrDefault(__ => __.Id == source.CategoryId);
 
                 var transactionType = _startupState.TransactionTypes.First(__ => __.Id == transactionTypeId);
 
@@ -241,8 +246,8 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
                     ForeignAmount = "",
                     Category = category == null ? null : new LinkDefinition
                     {
-                        Text = string.Empty, //category.Name,
-                        Href = string.Empty, //RouteHelpers.Category(category.Id)
+                        Text = category.Name,
+                        Href = RouteHelpers.Category(category.Id)
                     },
                     AmountStyle = GetAmountColour(transactionTypeId, source.Amount)
                 };

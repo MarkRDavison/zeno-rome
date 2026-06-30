@@ -35,4 +35,25 @@ public sealed class CreateTransctionValidationContextTests
 
         await Assert.That(first).IsNotNull();
     }
+
+    [Test]
+    public async Task GetCategoryById_FetchesFromRepository()
+    {
+        var categoryId = Guid.NewGuid();
+
+        await _dbContext.UpsertEntityAsync(new Category
+        {
+            Id = categoryId,
+            Name = Guid.NewGuid().ToString(),
+            UserId = Guid.Empty,
+            Created = DateTime.UtcNow,
+            LastModified = DateTime.UtcNow
+        }, CancellationToken.None);
+
+        await _dbContext.SaveChangesAsync(CancellationToken.None);
+
+        var first = await _context.GetCategoryById(categoryId, CancellationToken.None);
+
+        await Assert.That(first).IsNotNull();
+    }
 }

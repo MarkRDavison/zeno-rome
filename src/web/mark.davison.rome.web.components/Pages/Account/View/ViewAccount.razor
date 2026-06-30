@@ -84,7 +84,9 @@
                                 }
                             </CellTemplate>
                         </TemplateColumn>
-                        <TemplateColumn Sortable="false">
+                        <TemplateColumn Sortable="false"
+                                        HeaderClass="column-auto"
+                                        CellClass="column-auto">
                             <CellTemplate>
                                 @if (!context.Item.IsSubTransaction)
                                 {
