@@ -15,7 +15,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.1");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.13");
 
             modelBuilder.Entity("mark.davison.common.server.Models.ExternalLogin", b =>
                 {
@@ -46,7 +46,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
                     b.HasIndex("Provider", "ProviderSubject")
                         .IsUnique();
 
-                    b.ToTable("ExternalLogins");
+                    b.ToTable("ExternalLogins", (string)null);
                 });
 
             modelBuilder.Entity("mark.davison.common.server.Models.Role", b =>
@@ -74,7 +74,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("mark.davison.common.server.Models.Tenant", b =>
@@ -94,7 +94,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tenants");
+                    b.ToTable("Tenants", (string)null);
                 });
 
             modelBuilder.Entity("mark.davison.common.server.Models.User", b =>
@@ -125,7 +125,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("mark.davison.common.server.Models.UserRole", b =>
@@ -152,7 +152,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
                     b.HasIndex("UserId", "RoleId")
                         .IsUnique();
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.Account", b =>
@@ -202,7 +202,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", (string)null);
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.AccountType", b =>
@@ -228,7 +228,33 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AccountTypes");
+                    b.ToTable("AccountTypes", (string)null);
+                });
+
+            modelBuilder.Entity("mark.davison.rome.api.models.Entities.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("Created")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("LastModified")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.Currency", b =>
@@ -270,7 +296,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Currencies");
+                    b.ToTable("Currencies", (string)null);
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.CurrencyExchangeRate", b =>
@@ -310,7 +336,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CurrencyExchangeRates");
+                    b.ToTable("CurrencyExchangeRates", (string)null);
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.Job", b =>
@@ -368,7 +394,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Job");
+                    b.ToTable("Job", (string)null);
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.Transaction", b =>
@@ -426,7 +452,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Transactions", (string)null);
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.TransactionGroup", b =>
@@ -452,12 +478,15 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TransactionGroups");
+                    b.ToTable("TransactionGroups", (string)null);
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.TransactionJournal", b =>
                 {
                     b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("CategoryId")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("Completed")
@@ -497,6 +526,8 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.HasIndex("CurrencyId");
 
                     b.HasIndex("ForeignCurrencyId");
@@ -507,7 +538,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TransactionJournals");
+                    b.ToTable("TransactionJournals", (string)null);
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.TransactionType", b =>
@@ -533,7 +564,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TransactionTypes");
+                    b.ToTable("TransactionTypes", (string)null);
                 });
 
             modelBuilder.Entity("mark.davison.common.server.Models.ExternalLogin", b =>
@@ -616,6 +647,17 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.AccountType", b =>
+                {
+                    b.HasOne("mark.davison.common.server.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("mark.davison.rome.api.models.Entities.Category", b =>
                 {
                     b.HasOne("mark.davison.common.server.Models.User", "User")
                         .WithMany()
@@ -737,6 +779,10 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.TransactionJournal", b =>
                 {
+                    b.HasOne("mark.davison.rome.api.models.Entities.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId");
+
                     b.HasOne("mark.davison.rome.api.models.Entities.Currency", "Currency")
                         .WithMany()
                         .HasForeignKey("CurrencyId")
@@ -764,6 +810,8 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Category");
 
                     b.Navigation("Currency");
 

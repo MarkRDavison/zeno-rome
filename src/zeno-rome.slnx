@@ -37,6 +37,9 @@
     <File Path="../Docker/bff-web.dockerfile" />
     <File Path="../Docker/web.dockerfile" />
     <File Path="../scripts/CreateMigrations.ps1" />
+    <File Path="../scripts/create-migrations.sh" />
+    <File Path="../scripts/postgres-dev.sh" />
+    <File Path="../docker/docker-compose.postgres.yml" />
     <File Path="../Todo.md" />
   </Folder>
   <Folder Name="/web/">

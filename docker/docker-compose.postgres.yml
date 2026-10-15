@@ -1,0 +1,18 @@
+# Ephemeral local Postgres for EF migrations only (no persistent volume).
+# Matches AspireConstants / AppHost defaults. See scripts/postgres-dev.sh
+
+services:
+  rome-postgres:
+    image: postgres:16-alpine
+    container_name: rome-postgres-dev
+    ports:
+      - "5455:5432"
+    environment:
+      POSTGRES_USER: romedbuser
+      POSTGRES_PASSWORD: romedbpassword
+      POSTGRES_DB: PostgresDatabase
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U romedbuser -d PostgresDatabase"]
+      interval: 2s
+      timeout: 5s
+      retries: 15

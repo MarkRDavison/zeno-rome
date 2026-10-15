@@ -1,0 +1,9 @@
+{
+  "DATABASE": {
+    "HOST": "localhost",
+    "PORT": 5455,
+    "DATABASE": "PostgresDatabase",
+    "USERNAME": "romedbuser",
+    "PASSWORD": "romedbpassword"
+  }
+}
