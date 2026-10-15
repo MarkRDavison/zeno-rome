@@ -1,15 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 as BUILD
 WORKDIR /app 
 
-ENV CI_BUILD=true
-
 COPY / /app/
-
-RUN rm web/mark.davison.rome.web/wwwroot/css/*.css -f
-RUN rm web/mark.davison.rome.web/wwwroot/css/*.min.css -f
-
-RUN dotnet tool install Excubo.WebCompiler --global
-RUN /root/.dotnet/tools/webcompiler web/mark.davison.rome.web/wwwroot/css -r -m -o web/mark.davison.rome.web/wwwroot/css -z disable
 
 RUN dotnet restore web/mark.davison.rome.web/mark.davison.rome.web.csproj
 RUN dotnet publish -c Release -o /app/publish/ web/mark.davison.rome.web/mark.davison.rome.web.csproj

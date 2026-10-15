@@ -11,7 +11,6 @@ on:
 
 env:
   DOTNET_NOLOGO: true
-  CI_BUILD: true
 
 jobs:
   build-dotnet:
@@ -27,13 +26,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.x
-          
-      - name: install web compiler
-        run: dotnet tool install Excubo.WebCompiler --global
-
-      - name: build web artifacts
-        working-directory: ./src
-        run: webcompiler ./web/mark.davison.rome.web/compilerconfig.json
 
       - name: build
         working-directory: ./src
