@@ -24,6 +24,11 @@ public class EditAccountFormViewModel : IFormViewModel
     public IEnumerable<IDropdownItem> CurrencyItems => _startupState.Currencies.Select(_ => new DropdownItem { Id = _.Id, Name = _.Name });
     public IEnumerable<IDropdownItem> AccountTypes => _startupState.AccountTypes.Select(_ => new DropdownItem { Id = _.Id, Name = _.Type });
 
+    public string AccountTypeDisplayName =>
+        AccountTypeId is null
+            ? string.Empty
+            : _startupState.AccountTypes.FirstOrDefault(_ => _.Id == AccountTypeId)?.Type ?? string.Empty;
+
     public bool Valid =>
         !string.IsNullOrEmpty(Name) &&
         AccountTypeId != Guid.Empty && AccountTypeId != null &&

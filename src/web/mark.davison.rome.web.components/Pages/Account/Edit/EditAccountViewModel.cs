@@ -3,13 +3,17 @@
 public class EditAccountViewModel : BaseViewModel<(Guid, EditAccountFormViewModel?)>
 {
     private Guid _accountTypeId;
+    private Guid? _loadedAccountId;
     private readonly IStartupState _startupState;
+    private readonly IAccountState _accountState;
     private readonly IFormSubmission<EditAccountFormViewModel> _formSubmission;
     private readonly IClientNavigationManager _clientNavigationManager;
     private bool _isCreateNew;
+    private bool _initializing;
 
     public EditAccountViewModel(
         IStartupState startupState,
+        IAccountState accountState,
         IFormSubmission<EditAccountFormViewModel> formSubmission,
         IClientNavigationManager clientNavigationManager,
         IAppContextService appContextService
@@ -17,10 +21,45 @@ public class EditAccountViewModel : BaseViewModel<(Guid, EditAccountFormViewMode
         appContextService)
     {
         _startupState = startupState;
+        _accountState = accountState;
         _formSubmission = formSubmission;
         _clientNavigationManager = clientNavigationManager;
 
         RegisterState(_startupState);
+        RegisterState(_accountState);
+    }
+
+    public async Task<bool> InitializeForEdit(Guid accountId)
+    {
+        if (accountId == _loadedAccountId && FormViewModel is not null)
+        {
+            return false;
+        }
+
+        _loadedAccountId = accountId;
+        _isCreateNew = false;
+        _initializing = true;
+        FormViewModel = null!;
+        NotifyPropertyChanged(nameof(Loading));
+
+        await _accountState.FetchAccount(accountId);
+
+        var account = _accountState.Accounts.FirstOrDefault(a => a.Id == accountId);
+        if (account is null)
+        {
+            _initializing = false;
+            _clientNavigationManager.NavigateTo(Routes.NotFound);
+            return true;
+        }
+
+        FormViewModel = MapAccountToForm(account);
+
+        EditContext?.OnFieldChanged -= FieldChanged;
+        EditContext = new EditContext(FormViewModel);
+        EditContext.OnFieldChanged += FieldChanged;
+
+        _initializing = false;
+        return true;
     }
 
     // TODO: Handle null account type id, just have to select it
@@ -34,6 +73,7 @@ public class EditAccountViewModel : BaseViewModel<(Guid, EditAccountFormViewMode
         }
 
         _accountTypeId = payload.Item1;
+        _loadedAccountId = null;
 
         // TODO: Factory/from DI?
         _isCreateNew = payload.Item2 is null;
@@ -50,7 +90,7 @@ public class EditAccountViewModel : BaseViewModel<(Guid, EditAccountFormViewMode
         return true;
     }
 
-    public async Task OnCreate()
+    public async Task OnSave()
     {
         InProgress = true;
 
@@ -65,6 +105,31 @@ public class EditAccountViewModel : BaseViewModel<(Guid, EditAccountFormViewMode
         InProgress = false;
     }
 
+    internal static EditAccountFormViewModel MapAccountToForm(AccountDto account, IStartupState startupState)
+    {
+        var form = new EditAccountFormViewModel(startupState)
+        {
+            Id = account.Id,
+            Name = account.Name,
+            AccountNumber = account.AccountNumber,
+            AccountTypeId = account.AccountTypeId,
+            CurrencyId = account.CurrencyId,
+            HideAccountType = true,
+            VirtualBalance = account.VirtualBalance is null
+                ? null
+                : CurrencyRules.FromPersisted(account.VirtualBalance.Value),
+            OpeningBalance = account.OpeningBalance is null
+                ? null
+                : CurrencyRules.FromPersisted(account.OpeningBalance.Value),
+            OpeningBalanceDate = account.OpeningBalanceDate?.ToDateTime(TimeOnly.MinValue)
+        };
+
+        return form;
+    }
+
+    private EditAccountFormViewModel MapAccountToForm(AccountDto account) =>
+        MapAccountToForm(account, _startupState);
+
     protected override void Dispose(bool disposing)
     {
         if (disposing)
@@ -76,11 +141,11 @@ public class EditAccountViewModel : BaseViewModel<(Guid, EditAccountFormViewMode
     }
 
     public string Title => _isCreateNew ? "Create account" : "Edit account";
-    public bool Loading => FormViewModel is null;
+    public bool Loading => _initializing || FormViewModel is null || _accountState.Loading;
     public bool InProgress { get; private set; }
     public bool PrimaryDisabled => InProgress;
     public EditContext? EditContext { get; private set; }
     public required EditAccountFormViewModel FormViewModel { get; set; }
-    // TODO: BASE CLASS??
+
     private void FieldChanged(object? sender, FieldChangedEventArgs args) => this.State_StateChanged(this, EventArgs.Empty);
 }

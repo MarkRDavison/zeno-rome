@@ -9,6 +9,18 @@ public sealed class ViewAccountPage : RomeBasePage
         _title = title;
     }
 
+    public static Guid ParseAccountIdFromUrl(string url)
+    {
+        var segments = new Uri(url).AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        var accountIndex = Array.IndexOf(segments, "account");
+        if (accountIndex < 0 || accountIndex + 1 >= segments.Length)
+        {
+            throw new InvalidOperationException($"Could not parse account id from URL: {url}");
+        }
+
+        return Guid.Parse(segments[accountIndex + 1]);
+    }
+
     public static async Task<ViewAccountPage> Goto(IPage page, PlaywrightAppSettings appSettings)
     {
         var titleLocator = page.GetByTestId(DataTestIds.ViewAccountTitle);

@@ -183,12 +183,15 @@ public sealed class ViewAccountViewModelTests
         var appContextService = new Mock<IAppContextService>();
         appContextService.Setup(_ => _.State).Returns(appContext);
 
+        var navigation = new Mock<IClientNavigationManager>();
+
         var viewModel = new ViewAccountViewModel(
             accountState.Object,
             startupState.Object,
             transactionState.Object,
             categoryState.Object,
-            appContextService.Object);
+            appContextService.Object,
+            navigation.Object);
 
         viewModel.Initialize(accountId).GetAwaiter().GetResult();
 

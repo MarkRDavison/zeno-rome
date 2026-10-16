@@ -7,7 +7,6 @@ public partial class EditAccount : BaseView<EditAccountViewModel, (Guid, EditAcc
 
     protected override Task<bool> InitializeViewModel()
     {
-        Console.Error.WriteLine("TODO: Need to fetch the instance to pass through");
-        return ViewModel.Initialize((Guid.Empty, null));
+        return ViewModel.InitializeForEdit(Id);
     }
 }

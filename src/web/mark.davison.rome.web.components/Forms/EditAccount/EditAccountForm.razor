@@ -7,6 +7,14 @@
     {
         <Dropdown Id="edit-account-form-account-type" Label="Account type" Items="@FormViewModel.AccountTypes" Required="true" @bind-Value="FormViewModel.AccountTypeId" For="@(() => FormViewModel.AccountTypeId)" />
     }
+    else if (FormViewModel.AccountTypeId is not null)
+    {
+        <MudTextField id="edit-account-form-account-type-readonly"
+                      T="string"
+                      Label="Account type"
+                      Value="@FormViewModel.AccountTypeDisplayName"
+                      ReadOnly="true" />
+    }
     <Dropdown Id="edit-account-form-currency" Label="Currency" Items="@FormViewModel.CurrencyItems" Required="true" @bind-Value="FormViewModel.CurrencyId" For="@(() => FormViewModel.CurrencyId)" />
     <NumericField id="edit-account-form-opening-balance" HideSpinButtons Label="Opening balance" @bind-Value="FormViewModel.OpeningBalance" AllowNegative="false" DecimalPlaces="@FormViewModel.DecimalPlaces" For="@(() => FormViewModel.OpeningBalance)" />
     <NumericField id="edit-account-form-virtual-balance" HideSpinButtons Label="Virtual balance" @bind-Value="FormViewModel.VirtualBalance" AllowNegative="false" DecimalPlaces="@FormViewModel.DecimalPlaces" For="@(() => FormViewModel.VirtualBalance)" />

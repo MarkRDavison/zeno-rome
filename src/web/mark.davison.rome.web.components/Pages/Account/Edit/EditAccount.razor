@@ -15,12 +15,12 @@
             </MudItem>
     
             <MudItem Class="d-flex align-center justify-left mud-width-full py-8">            
-                <EditForm EditContext="@ViewModel.EditContext" OnSubmit="@ViewModel.OnCreate">
+                <EditForm EditContext="@ViewModel.EditContext" OnSubmit="@ViewModel.OnSave">
                     <EditAccountForm FormViewModel="@ViewModel.FormViewModel" />
                 </EditForm>
             </MudItem>
 
-            <MudButton Disabled="@ViewModel.PrimaryDisabled" Variant="Variant.Filled" OnClick="@ViewModel.OnCreate" Color="Color.Success">
+            <MudButton Disabled="@ViewModel.PrimaryDisabled" Variant="Variant.Filled" OnClick="@ViewModel.OnSave" Color="Color.Success">
                 @if (ViewModel.InProgress)
                 {
                     <MudProgressCircular Size="Size.Small" Color="Color.Success" Indeterminate="true" />

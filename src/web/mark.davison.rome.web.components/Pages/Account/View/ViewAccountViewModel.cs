@@ -8,13 +8,15 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
     private readonly ITransactionState _transactionState;
     private readonly ICategoryState _categoryState;
     private readonly IAppContextService _appContextService;
+    private readonly IClientNavigationManager _clientNavigationManager;
 
     public ViewAccountViewModel(
         IAccountState accountState,
         IStartupState startupState,
         ITransactionState transactionState,
         ICategoryState categoryState,
-        IAppContextService appContextService
+        IAppContextService appContextService,
+        IClientNavigationManager clientNavigationManager
     ) : base(
         appContextService)
     {
@@ -23,6 +25,7 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
         _transactionState = transactionState;
         _categoryState = categoryState;
         _appContextService = appContextService;
+        _clientNavigationManager = clientNavigationManager;
 
         RegisterState(_accountState);
         RegisterState(_startupState);
@@ -214,4 +217,12 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
         new CommandMenuItem{ Text = "Edit", Id = "EDIT" },
         new CommandMenuItem{ Text = "Delete", Id = "DELETE" }
     ];
+
+    public void OnCommandMenuItemSelected(CommandMenuItem menuItem)
+    {
+        if (menuItem.Id == "EDIT")
+        {
+            _clientNavigationManager.NavigateTo(RouteHelpers.AccountEdit(_accountId));
+        }
+    }
 }

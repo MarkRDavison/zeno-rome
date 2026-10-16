@@ -29,6 +29,7 @@ public sealed class Routes
 public sealed class RouteHelpers
 {
     public static string Account(Guid id) => Routes.Account.Replace("{id:guid}", id.ToString());
+    public static string AccountEdit(Guid id) => Routes.AccountEdit.Replace("{id:guid}", id.ToString());
     public static string Accounts(Guid type) => Routes.AccountsByType.Replace("{type:guid}", type.ToString());
     public static string AccountNew(Guid type) => Routes.AccountNew.Replace("{type:guid}", type.ToString());
     public static string TransactionNew(Guid type) => Routes.TransactionNew.Replace("{type:guid}", type.ToString());

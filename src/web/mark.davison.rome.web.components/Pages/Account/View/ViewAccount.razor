@@ -99,7 +99,8 @@
                             <CellTemplate>
                                 @if (!context.Item.IsSubTransaction)
                                 {
-                                    <CommandMenu Items="@ViewModel.CommandMenuItems" />
+                                    <CommandMenu Items="@ViewModel.CommandMenuItems"
+                                                 OnCommandMenuItemSelected="@(menuItem => ViewModel.OnCommandMenuItemSelected(menuItem))" />
                                 }
                             </CellTemplate>
                         </TemplateColumn>
