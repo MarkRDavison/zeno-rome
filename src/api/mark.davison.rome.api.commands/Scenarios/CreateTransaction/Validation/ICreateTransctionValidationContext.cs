@@ -6,4 +6,5 @@ public interface ICreateTransctionValidationContext
 
     Task<Category?> GetCategoryById(Guid categoryId, CancellationToken cancellationToken);
 
+    Task<Tag?> GetTagById(Guid tagId, CancellationToken cancellationToken);
 }

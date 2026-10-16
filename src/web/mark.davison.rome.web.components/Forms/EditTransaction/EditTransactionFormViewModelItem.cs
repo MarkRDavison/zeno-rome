@@ -8,6 +8,7 @@ public class EditTransactionFormViewModelItem
     public Guid? DestinationAccountId { get; set; }
     public decimal? Amount { get; set; }
     public Guid? CategoryId { get; set; }
+    public List<Guid> TagIds { get; set; } = [];
     public Guid? ForeignCurrencyId { get; set; }
     public decimal? ForeignAmount { get; set; }
 

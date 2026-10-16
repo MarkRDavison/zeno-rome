@@ -174,7 +174,8 @@ internal sealed class RomeDataSeeder : IDataSeeder
                     null,
                     CurrencyConstants.NZD,
                     null,
-                    null)]
+                    null,
+                    [])]
                 }, currentUserContext, cancellationToken);
             }
 
@@ -192,7 +193,8 @@ internal sealed class RomeDataSeeder : IDataSeeder
                     null,
                     CurrencyConstants.NZD,
                     null,
-                    categoryIds.FoodCategoryId)]
+                    categoryIds.FoodCategoryId,
+                    [])]
             }, currentUserContext, cancellationToken);
 
             await handler.Handle(new CreateTransactionCommandRequest
@@ -209,7 +211,8 @@ internal sealed class RomeDataSeeder : IDataSeeder
                     null,
                     CurrencyConstants.NZD,
                     null,
-                    null)]
+                    null,
+                    [])]
             }, currentUserContext, cancellationToken);
         }
     }

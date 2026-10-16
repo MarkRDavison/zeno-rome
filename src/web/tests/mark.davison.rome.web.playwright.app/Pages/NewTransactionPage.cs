@@ -9,7 +9,8 @@ public sealed record NewTransactionSplitInfo(
     string SourceAccountName,
     string DestinationAccountName,
     DateOnly Date,
-    decimal Amount);
+    decimal Amount,
+    IReadOnlyList<string>? TagNames = null);
 
 public sealed class NewTransactionPage : RomeBasePage
 {
@@ -24,6 +25,7 @@ public sealed class NewTransactionPage : RomeBasePage
     private const string SplitFieldDateLabel = "Date";
     private const string SplitFieldAmountLabel = "Amount";
     private const string SplitFieldCategoryLabel = "Category";
+    private const string SplitFieldTagsLabel = "Tags";
 
     private static string SplitById(int index) => $"edit-transaction-form-{index}";
 
@@ -76,7 +78,11 @@ public sealed class NewTransactionPage : RomeBasePage
             await FillField(this, splitLocator, SplitFieldDateLabel, splitInfo.Date);
         }
         await FillField(this, splitLocator, SplitFieldAmountLabel, splitInfo.Amount);
-        // TODO: CATEGORY
+
+        if (splitInfo.TagNames is { Count: > 0 })
+        {
+            await SelectMultiField(this, splitLocator, SplitFieldTagsLabel, splitInfo.TagNames);
+        }
     }
 
     public async Task<ViewTransactionPage> Submit()

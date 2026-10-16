@@ -12,6 +12,7 @@ global using mark.davison.rome.shared.models.dto.Scenarios.Commands.CreateTransa
 global using mark.davison.rome.shared.models.dto.Scenarios.Commands.SetUserContext;
 global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertAccount;
 global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertCategory;
+global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertTag;
 global using mark.davison.rome.shared.models.dto.Shared;
 global using mark.davison.rome.shared.server.Services;
 global using mark.davison.rome.shared.server.Utilities;

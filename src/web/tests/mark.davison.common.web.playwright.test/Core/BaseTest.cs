@@ -27,8 +27,19 @@ public abstract class BaseTest : PageTest, IAsyncDisposable
     private static PlaywrightAppSettings? CreateAppSettings()
     {
         var appSettings = new PlaywrightAppSettings();
+
+        var settingsPath = ResolveAppSettingsPath();
+        if (settingsPath is null)
+        {
+            Console.WriteLine(
+                "Playwright appsettings.Development.json not found. Expected under the test output directory " +
+                $"(AppContext.BaseDirectory={AppContext.BaseDirectory}) or current directory " +
+                $"({Directory.GetCurrentDirectory()}). Rebuild mark.davison.rome.web.playwright.tests after adding the file.");
+            return null;
+        }
+
         var config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.Development.json", true)
+            .AddJsonFile(settingsPath, optional: false)
             .Build();
 
         var section = config.GetSection(appSettings.Section);
@@ -37,11 +48,34 @@ public abstract class BaseTest : PageTest, IAsyncDisposable
 
         if (!appSettings.Validate())
         {
-            Console.WriteLine("Invalid app settings");
+            Console.WriteLine(
+                $"Invalid Playwright app settings in '{settingsPath}'. " +
+                $"Check section '{appSettings.Section}' has WEB_ORIGIN, APP_TITLE, AUTH_PROVIDER, and AUTH_PASSWORD set.");
             return null;
         }
 
         return appSettings;
+    }
+
+    private static string? ResolveAppSettingsPath()
+    {
+        const string fileName = "appsettings.Development.json";
+
+        foreach (var directory in new[] { AppContext.BaseDirectory, Directory.GetCurrentDirectory() })
+        {
+            if (string.IsNullOrWhiteSpace(directory))
+            {
+                continue;
+            }
+
+            var path = Path.Combine(directory, fileName);
+            if (File.Exists(path))
+            {
+                return path;
+            }
+        }
+
+        return null;
     }
 
     private static string AuthStateFullPath(string? tempDir) => $"{tempDir?.TrimEnd('/')}/{_authStateFilename}";
@@ -87,6 +121,7 @@ public abstract class BaseTest : PageTest, IAsyncDisposable
             _context ??= await _browser.NewContextAsync(new()
             {
                 Locale = "en-NZ",
+                IgnoreHTTPSErrors = AppSettings.IgnoreHttpsErrors,
                 StorageStatePath = File.Exists(AuthStateFullPath(AppSettings.TEMP_DIR))
                     ? AuthStateFullPath(AppSettings.TEMP_DIR)
                     : null

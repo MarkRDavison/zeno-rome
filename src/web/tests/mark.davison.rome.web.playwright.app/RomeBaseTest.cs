@@ -14,6 +14,7 @@ public abstract class RomeBaseTest : LoggedInTest
 
     protected string MakeAccountNumber() => _faker.Finance.Account();
     protected string MakeAccountName() => _faker.Finance.AccountName();
+    protected string MakeTagName() => $"e2e-{_faker.Hacker.Noun()}-{Guid.NewGuid():N}"[..32];
 
 #if SKIP_TUNIT_TESTS
 

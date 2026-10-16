@@ -9,5 +9,6 @@ public sealed class ViewTransactionItem
     public required long AmountValue { get; init; }
     public required string? ForeignAmount { get; init; }
     public required LinkDefinition? Category { get; init; }
+    public IReadOnlyList<TagDto> Tags { get; init; } = [];
     public required string AmountStyle { get; init; }
 }

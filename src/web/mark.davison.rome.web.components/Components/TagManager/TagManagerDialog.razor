@@ -1,0 +1,14 @@
+@namespace mark.davison.rome.web.components.Components.TagManager
+
+<MudDialog>
+    <DialogContent>
+        <TagManager ShowClose="false" OnClose="Close" />
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    private void Close() => MudDialog.Close();
+}

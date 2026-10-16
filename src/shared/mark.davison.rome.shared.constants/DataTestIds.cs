@@ -17,9 +17,23 @@
         public const string ViewTransactionDescription = "view-transaction-description";
         public const string ViewTransactionDate = "view-transaction-date";
         public const string ViewTransactionTotalAmount = "view-transaction-total";
+        public const string ViewTransactionSplitTagsPrefix = "view-transaction-split-tags-";
         public const string EditTransactionSplitDescription = "edit-transaction-split-description";
         public const string EditTransactionDeleteSplit = "edit-transaction-delete-split";
         public const string SourceAccounts = "source-accounts";
         public const string CategoryListTitle = "category-list-title";
+
+        public const string TagListTitle = "tag-list-title";
+        public const string TagList = "tag-list";
+        public const string TagListItemPrefix = "tag-list-item-";
+        public const string TagAddName = "tag-add-name";
+        public const string TagAddButton = "tag-add-button";
+        public const string TagEditNamePrefix = "tag-edit-name-";
+        public const string TagSaveEditPrefix = "tag-save-edit-";
+        public const string TagCancelEdit = "tag-cancel-edit";
+        public const string TagClose = "tag-close";
+        public const string NavTags = "nav-tags";
+        public const string ManageTagsLink = "manage-tags-link";
+        public const string TagMultiSelectPrefix = "tag-multi-select-";
     }
 }

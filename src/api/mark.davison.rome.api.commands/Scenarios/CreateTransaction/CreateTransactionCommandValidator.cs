@@ -9,6 +9,7 @@ public sealed class CreateTransactionCommandValidator : ICommandValidator<Create
     public const string VALIDATION_DUPLICATE_CURRENCY = "INVALID_DUPLICATE_CURRENCY${0}";
     public const string VALIDATION_GROUP_DESCRIPTION = "INVALID_GROUP_DESCR";
     public const string VALIDATION_CATEGORY_ID = "INVALID_CATEGORYID${0}";
+    public const string VALIDATION_TAG_ID = "INVALID_TAGID${0}";
     public const string VALIDATION_DATE = "INVALID_DATE${0}";
     public const string VALIDATION_DUPLICATE_SRC_DEST_ACCOUNT = "DUP_ACT${0}";
     public const string VALIDATION_DUPLICATE_TAGS = "DUP_TAG${0}";
@@ -85,6 +86,25 @@ public sealed class CreateTransactionCommandValidator : ICommandValidator<Create
         if (transaction.CategoryId.HasValue && await _createTransctionValidationContext.GetCategoryById(transaction.CategoryId.Value, cancellationToken) is null)
         {
             response.Errors.Add(string.Format(VALIDATION_CATEGORY_ID, transaction.Id));
+        }
+
+        if (transaction.TagIds.Count > 0)
+        {
+            if (transaction.TagIds.Distinct().Count() != transaction.TagIds.Count)
+            {
+                response.Errors.Add(string.Format(VALIDATION_DUPLICATE_TAGS, transaction.Id));
+            }
+            else
+            {
+                foreach (var tagId in transaction.TagIds)
+                {
+                    var tag = await _createTransctionValidationContext.GetTagById(tagId, cancellationToken);
+                    if (tag is null || tag.UserId != currentUserContext.UserId)
+                    {
+                        response.Errors.Add(string.Format(VALIDATION_TAG_ID, transaction.Id));
+                    }
+                }
+            }
         }
     }
 }

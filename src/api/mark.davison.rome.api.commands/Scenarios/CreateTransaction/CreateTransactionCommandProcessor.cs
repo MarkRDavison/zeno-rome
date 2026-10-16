@@ -31,6 +31,7 @@ public sealed class CreateTransactionCommandProcessor : ICommandProcessor<Create
         int order = 0;
         var journals = new List<TransactionJournal>();
         var transactions = new List<Transaction>();
+        var journalTags = new List<TransactionJournalTag>();
 
         foreach (var transaction in request.Transactions)
         {
@@ -84,11 +85,25 @@ public sealed class CreateTransactionCommandProcessor : ICommandProcessor<Create
             transactions.Add(sourceTransaction);
             transactions.Add(destinationTransaction);
             journals.Add(transactionJournal);
+
+            foreach (var tagId in transaction.TagIds.Distinct())
+            {
+                journalTags.Add(new TransactionJournalTag
+                {
+                    TransactionJournalId = transactionJournal.Id,
+                    TagId = tagId
+                });
+            }
         }
 
         await _dbContext.UpsertEntityAsync(transactionGroup, cancellationToken);
         await _dbContext.UpsertEntitiesAsync(journals, cancellationToken);
         await _dbContext.UpsertEntitiesAsync(transactions, cancellationToken);
+
+        foreach (var journalTag in journalTags)
+        {
+            await _dbContext.AddAsync(journalTag, cancellationToken);
+        }
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 
@@ -118,7 +133,8 @@ public sealed class CreateTransactionCommandProcessor : ICommandProcessor<Create
             SplitTransactionDescription = group.Title,
             TransactionGroupId = group.Id,
             TransactionJournalId = transaction.TransactionJournalId,
-            TransactionTypeId = journal.TransactionTypeId
+            TransactionTypeId = journal.TransactionTypeId,
+            Tags = []
         };
     }
 }

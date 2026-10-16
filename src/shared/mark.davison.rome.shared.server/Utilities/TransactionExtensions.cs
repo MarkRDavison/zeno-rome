@@ -22,7 +22,12 @@ public static class TransactionExtensions
             SplitTransactionDescription = transactionGroup.Title,
             TransactionGroupId = transactionGroup.Id,
             TransactionJournalId = transaction.TransactionJournalId,
-            TransactionTypeId = transactionJournal.TransactionTypeId
+            TransactionTypeId = transactionJournal.TransactionTypeId,
+            Tags = transactionJournal.JournalTags
+                .Where(jt => jt.Tag != null)
+                .Select(jt => jt.Tag!.ToDto())
+                .OrderBy(t => t.Name)
+                .ToList()
         };
     }
 

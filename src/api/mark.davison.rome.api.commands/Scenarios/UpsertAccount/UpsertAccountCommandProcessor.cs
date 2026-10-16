@@ -83,7 +83,8 @@ public sealed class UpsertAccountCommandProcessor : ICommandProcessor<UpsertAcco
                             null,
                             account.CurrencyId,
                             null,
-                            null)
+                            null,
+                            [])
                     }
                 };
                 var createTransactionResponse = await _commandDispatcher.Dispatch<CreateTransactionCommandRequest, CreateTransactionCommandResponse>(createTransactionRequest, cancellationToken);

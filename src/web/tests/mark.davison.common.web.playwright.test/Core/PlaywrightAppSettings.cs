@@ -18,4 +18,9 @@ public class PlaywrightAppSettings
     public string AUTH_USERNAME { get; set; } = string.Empty;
     public string AUTH_PASSWORD { get; set; } = string.Empty;
     public string APP_TITLE { get; set; } = string.Empty;
+
+    /// <summary>
+    /// When true, Playwright accepts self-signed / dev HTTPS (e.g. https://localhost from Aspire).
+    /// </summary>
+    public bool IgnoreHttpsErrors { get; set; } = true;
 }

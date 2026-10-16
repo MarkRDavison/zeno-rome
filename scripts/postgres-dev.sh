@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Postgres container + EF migrations against mark.davison.rome.api.migrations.postgres
+# Docs: docs/migrations.md
 #
 # Design-time config: section "DATABASE" (HOST, PORT, DATABASE, USERNAME, PASSWORD)
 # via env DATABASE__* — see PostgresContextFactory / zeno-dotnet-common.

@@ -54,4 +54,10 @@ public abstract class BasePage<TAppSettings> where TAppSettings : class
         await ComponentHelpers.SelectAsync(Page, locator, label, value);
         return page;
     }
+
+    protected async Task<TPage> SelectMultiField<TPage>(TPage page, ILocator locator, string label, IEnumerable<string> values) where TPage : BasePage<TAppSettings>
+    {
+        await ComponentHelpers.SelectMultiAsync(Page, locator, label, values);
+        return page;
+    }
 }

@@ -26,8 +26,8 @@ public class CreateTransactionCommandProcessorTests
             Description = "Split description",
             Transactions =
             {
-                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null),
-                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null)
+                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null, []),
+                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null, [])
             }
         };
 
@@ -51,7 +51,7 @@ public class CreateTransactionCommandProcessorTests
             Description = "Split description",
             Transactions =
             {
-                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null)
+                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null, [])
             }
         };
 
@@ -71,7 +71,7 @@ public class CreateTransactionCommandProcessorTests
     [Test]
     public async Task Process_CreatesTransactionJournals_WithExpectedValues()
     {
-        var createTransactionDto = new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null)
+        var createTransactionDto = new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.Empty, Guid.Empty, DateOnly.MinValue, 0, null, Guid.Empty, null, null, [])
         {
             Description = "Some transaction description",
             CurrencyId = Guid.NewGuid(),
@@ -116,7 +116,7 @@ public class CreateTransactionCommandProcessorTests
     [Test]
     public async Task Process_CreatesTransactions_AsExpected()
     {
-        var transaction = new CreateTransactionDto(Guid.NewGuid(), "transaction description", Guid.NewGuid(), Guid.NewGuid(), DateOnly.MinValue, 100, 125, Guid.NewGuid(), Guid.NewGuid(), null);
+        var transaction = new CreateTransactionDto(Guid.NewGuid(), "transaction description", Guid.NewGuid(), Guid.NewGuid(), DateOnly.MinValue, 100, 125, Guid.NewGuid(), Guid.NewGuid(), null, []);
         var request = new CreateTransactionCommandRequest
         {
             Transactions =
@@ -167,4 +167,105 @@ public class CreateTransactionCommandProcessorTests
         }
     }
 
+    [Test]
+    public async Task Process_WithTags_PersistsJournalTagJoins()
+    {
+        var tag1Id = Guid.NewGuid();
+        var tag2Id = Guid.NewGuid();
+        await SeedTags(tag1Id, tag2Id);
+
+        var splitId = Guid.NewGuid();
+        var transaction = new CreateTransactionDto(splitId, string.Empty, Guid.NewGuid(), Guid.NewGuid(), DateOnly.FromDateTime(DateTime.Today), 100, null, Guid.NewGuid(), null, null, [tag1Id, tag2Id]);
+        var request = new CreateTransactionCommandRequest
+        {
+            TransactionTypeId = TransactionTypeConstants.Deposit,
+            Transactions = [transaction]
+        };
+
+        var response = await _processor.ProcessAsync(request, _currentUserContext.Object, CancellationToken.None);
+
+        await Assert.That(response.Success).IsTrue();
+        await Assert.That(response.Journals).Count().IsEqualTo(1);
+
+        var journalId = response.Journals[0].Id;
+        var joins = await _dbContext
+            .Set<TransactionJournalTag>()
+            .Where(_ => _.TransactionJournalId == journalId)
+            .ToListAsync(CancellationToken.None);
+
+        await Assert.That(joins).Count().IsEqualTo(2);
+        await Assert.That(joins.Any(_ => _.TagId == tag1Id)).IsTrue();
+        await Assert.That(joins.Any(_ => _.TagId == tag2Id)).IsTrue();
+    }
+
+    [Test]
+    public async Task Process_WithTags_MultiSplit()
+    {
+        var tag1Id = Guid.NewGuid();
+        var tag2Id = Guid.NewGuid();
+        await SeedTags(tag1Id, tag2Id);
+
+        var request = new CreateTransactionCommandRequest
+        {
+            TransactionTypeId = TransactionTypeConstants.Deposit,
+            Transactions =
+            [
+                new CreateTransactionDto(Guid.NewGuid(), "a", Guid.NewGuid(), Guid.NewGuid(), DateOnly.FromDateTime(DateTime.Today), 10, null, Guid.NewGuid(), null, null, [tag1Id]),
+                new CreateTransactionDto(Guid.NewGuid(), "b", Guid.NewGuid(), Guid.NewGuid(), DateOnly.FromDateTime(DateTime.Today), 20, null, Guid.NewGuid(), null, null, [tag2Id])
+            ]
+        };
+
+        var response = await _processor.ProcessAsync(request, _currentUserContext.Object, CancellationToken.None);
+
+        await Assert.That(response.Success).IsTrue();
+        await Assert.That(response.Journals).Count().IsEqualTo(2);
+
+        var journal1Id = response.Journals[0].Id;
+        var journal2Id = response.Journals[1].Id;
+
+        var joins1 = await _dbContext.Set<TransactionJournalTag>().Where(_ => _.TransactionJournalId == journal1Id).ToListAsync(CancellationToken.None);
+        var joins2 = await _dbContext.Set<TransactionJournalTag>().Where(_ => _.TransactionJournalId == journal2Id).ToListAsync(CancellationToken.None);
+
+        await Assert.That(joins1).Count().IsEqualTo(1);
+        await Assert.That(joins1[0].TagId).IsEqualTo(tag1Id);
+        await Assert.That(joins2).Count().IsEqualTo(1);
+        await Assert.That(joins2[0].TagId).IsEqualTo(tag2Id);
+    }
+
+    [Test]
+    public async Task Process_WithoutTags_NoJoinRows()
+    {
+        var request = new CreateTransactionCommandRequest
+        {
+            TransactionTypeId = TransactionTypeConstants.Deposit,
+            Transactions =
+            [
+                new CreateTransactionDto(Guid.NewGuid(), string.Empty, Guid.NewGuid(), Guid.NewGuid(), DateOnly.FromDateTime(DateTime.Today), 0, null, Guid.NewGuid(), null, null, [])
+            ]
+        };
+
+        var response = await _processor.ProcessAsync(request, _currentUserContext.Object, CancellationToken.None);
+
+        await Assert.That(response.Success).IsTrue();
+
+        var joinCount = await _dbContext.Set<TransactionJournalTag>().CountAsync(CancellationToken.None);
+        await Assert.That(joinCount).IsEqualTo(0);
+    }
+
+    private async Task SeedTags(params Guid[] tagIds)
+    {
+        foreach (var tagId in tagIds)
+        {
+            await _dbContext.UpsertEntityAsync(new Tag
+            {
+                Id = tagId,
+                Name = tagId.ToString(),
+                UserId = Guid.Empty,
+                Created = DateTime.UtcNow,
+                LastModified = DateTime.UtcNow
+            }, CancellationToken.None);
+        }
+
+        await _dbContext.SaveChangesAsync(CancellationToken.None);
+    }
 }

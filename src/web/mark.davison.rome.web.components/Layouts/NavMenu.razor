@@ -16,6 +16,6 @@
     </MudNavGroup>
     <MudNavGroup Title="Classification" Expanded="true">
         <MudNavLink Href="@Routes.Categories" Match="NavLinkMatch.Prefix">Categories</MudNavLink>
-        <MudNavLink Href="@Routes.Tags" Match="NavLinkMatch.Prefix">Tags</MudNavLink>
+        <MudNavLink OnClick="OpenTags"><span data-testid="@DataTestIds.NavTags">Tags</span></MudNavLink>
     </MudNavGroup>
 </MudNavMenu>

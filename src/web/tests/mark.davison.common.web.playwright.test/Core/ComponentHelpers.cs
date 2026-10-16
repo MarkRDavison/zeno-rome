@@ -87,6 +87,38 @@ public static class ComponentHelpers
         Assert.Fail(string.Format("Could not find '{0}' for '{1}' control.", value, label));
     }
 
+    public static async Task SelectMultiAsync(IPage page, ILocator locator, string label, IEnumerable<string> values)
+    {
+        var control = locator.GetByLabel(label);
+
+        await control.ClickAsync();
+
+        foreach (var value in values)
+        {
+            var matched = false;
+            var popupOptions = await page.Locator(".mud-popover-open .mud-list-item").AllAsync();
+
+            foreach (var option in popupOptions)
+            {
+                var text = (await option.TextContentAsync())?.Trim();
+
+                if (text == value)
+                {
+                    await option.ClickAsync();
+                    matched = true;
+                    break;
+                }
+            }
+
+            if (!matched)
+            {
+                Assert.Fail(string.Format("Could not find '{0}' for multi-select '{1}' control.", value, label));
+            }
+        }
+
+        await page.Keyboard.PressAsync("Escape");
+    }
+
     public static async Task SelectDate(IPage page, string label, DateOnly value)
     {
         var datePicker = page.GetByLabel(label, new()

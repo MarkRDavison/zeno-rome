@@ -4,7 +4,12 @@ public sealed class ViewTransactionPage : RomeBasePage
 {
     private readonly string _title;
 
-    public sealed record SplitInfo(string Description, string SourceAccount, string DestinationAccount, decimal Amount);
+    public sealed record SplitInfo(
+        string Description,
+        string SourceAccount,
+        string DestinationAccount,
+        decimal Amount,
+        IReadOnlyList<string>? TagNames = null);
 
     private ViewTransactionPage(IPage page, PlaywrightAppSettings appSettings, string title) : base(page, appSettings)
     {
@@ -102,6 +107,15 @@ public sealed class ViewTransactionPage : RomeBasePage
             await Assert.That(cardContents[0]).Contains(split.SourceAccount);
             await Assert.That(cardContents[1]).Contains(split.Amount.ToString());
             await Assert.That(cardContents[2]).Contains(split.DestinationAccount);
+
+            if (split.TagNames is { Count: > 0 })
+            {
+                var tagChips = transactionCard.GetByTestId($"{DataTestIds.ViewTransactionSplitTagsPrefix}{i}");
+                foreach (var tagName in split.TagNames)
+                {
+                    await Assertions.Expect(tagChips).ToContainTextAsync(tagName);
+                }
+            }
         }
 
         return this;

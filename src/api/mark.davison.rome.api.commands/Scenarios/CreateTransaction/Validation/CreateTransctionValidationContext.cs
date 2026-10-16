@@ -6,6 +6,7 @@ internal sealed class CreateTransctionValidationContext : ICreateTransctionValid
 
     private readonly IDictionary<Guid, Account?> _accounts;
     private readonly IDictionary<Guid, Category?> _categories;
+    private readonly IDictionary<Guid, Tag?> _tags;
 
     public CreateTransctionValidationContext(
         IDbContext<RomeDbContext> dbContext
@@ -15,11 +16,14 @@ internal sealed class CreateTransctionValidationContext : ICreateTransctionValid
 
         _accounts = new Dictionary<Guid, Account?>();
         _categories = new Dictionary<Guid, Category?>();
+        _tags = new Dictionary<Guid, Tag?>();
     }
 
     public Task<Account?> GetAccountById(Guid accountId, CancellationToken cancellationToken) => GetEntityById(accountId, _accounts, cancellationToken);
 
     public Task<Category?> GetCategoryById(Guid categoryId, CancellationToken cancellationToken) => GetEntityById(categoryId, _categories, cancellationToken);
+
+    public Task<Tag?> GetTagById(Guid tagId, CancellationToken cancellationToken) => GetEntityById(tagId, _tags, cancellationToken);
 
     private async Task<T?> GetEntityById<T>(Guid id, IDictionary<Guid, T?> cache, CancellationToken cancellationToken)
         where T : BaseEntity

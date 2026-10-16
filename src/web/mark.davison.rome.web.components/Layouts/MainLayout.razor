@@ -8,7 +8,11 @@
 @inject IClientHttpRepository _clientRepository;
 @inject IStartupState _startupState
 @inject ICategoryState _categoryState
+@inject ITagState _tagState
 @inject IAppContextService _appContext
+@inject ITagManagerShell _tagManagerShell
+@inject IDialogService _dialogService
+@inject IBrowserViewportService _viewportService
 
 <MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
 <MudDialogProvider />
@@ -17,7 +21,11 @@
 
 <MudLayout>
     <MudAppBar Elevation="1">
-        @if (!string.IsNullOrEmpty(_navigationManager.ToBaseRelativePath(_navigationManager.Uri)))
+        @if (_tagManagerShell.IsOpen && !_useDialogBreakpoint)
+        {
+            <MudIconButton data-testid="@DataTestIds.TagClose" Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Inherit" Edge="Edge.Start" OnClick="CloseTagManager" />
+        }
+        else if (!string.IsNullOrEmpty(_navigationManager.ToBaseRelativePath(_navigationManager.Uri)))
         {
             <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Inherit" Edge="Edge.Start" Href="@Routes.Dashboard" />
         }
@@ -58,7 +66,14 @@
     </AuthorizeView>
     <MudMainContent>
         <MudContainer Class="ma-4">
-            @Body
+            @if (_tagManagerShell.IsOpen && !_useDialogBreakpoint)
+            {
+                <TagManager ShowClose="true" OnClose="CloseTagManager" />
+            }
+            else
+            {
+                @Body
+            }
         </MudContainer>
     </MudMainContent>
 </MudLayout>
@@ -69,6 +84,9 @@
     private bool _isDarkMode;
     private MudThemeProvider? _mudThemeProvider;
     private bool disposedValue;
+    private bool _useDialogBreakpoint = true;
+    private IDialogReference? _tagManagerDialog;
+    private readonly Guid _viewportObserverId = Guid.NewGuid();
 
     void DrawerToggle()
     {
@@ -81,6 +99,11 @@
 
     protected override async Task OnInitializedAsync()
     {
+        _useDialogBreakpoint = await _viewportService.GetCurrentBreakpointAsync() >= Breakpoint.Md;
+        await _viewportService.SubscribeAsync(_viewportObserverId, OnViewportChanged, fireImmediately: false);
+        _tagManagerShell.OpenChanged += OnTagManagerOpenChanged;
+        _tagManagerShell.Closed += OnTagManagerClosed;
+
         _appContext.RangeUpdated += async (o, e) =>
         {
             await InvokeAsync(StateHasChanged);
@@ -110,7 +133,7 @@
             var startupResponseTask = _clientRepository.Get<StartupQueryRequest, StartupQueryResponse>(CancellationToken.None);
 
             var startupResponse = await startupResponseTask;
-            await _categoryState.FetchState();
+            await Task.WhenAll(_categoryState.FetchState(), _tagState.FetchState());
 
             if (startupResponse.SuccessWithValue)
             {
@@ -132,12 +155,81 @@
         }
     }
 
+    private void OnViewportChanged(BrowserViewportEventArgs args)
+    {
+        _useDialogBreakpoint = args.Breakpoint >= Breakpoint.Md;
+        _ = InvokeAsync(HandleTagManagerPresentationAsync);
+    }
+
+    private void OnTagManagerOpenChanged(object? sender, EventArgs e)
+    {
+        _ = InvokeAsync(HandleTagManagerPresentationAsync);
+    }
+
+    private void OnTagManagerClosed(object? sender, EventArgs e)
+    {
+        _ = InvokeAsync(async () =>
+        {
+            await _tagState.FetchState();
+            StateHasChanged();
+        });
+    }
+
+    private async Task HandleTagManagerPresentationAsync()
+    {
+        if (_tagManagerShell.IsOpen)
+        {
+            await _tagState.FetchState();
+
+            if (_useDialogBreakpoint)
+            {
+                if (_tagManagerDialog is null)
+                {
+                    var options = new DialogOptions
+                    {
+                        MaxWidth = MaxWidth.Small,
+                        FullWidth = true,
+                        CloseOnEscapeKey = true
+                    };
+
+                    _tagManagerDialog = await _dialogService.ShowAsync<TagManagerDialog>(null, options);
+                    _ = _tagManagerDialog.Result.ContinueWith(_ =>
+                    {
+                        _tagManagerDialog = null;
+                        if (_tagManagerShell.IsOpen)
+                        {
+                            _tagManagerShell.Close();
+                        }
+                    }, TaskScheduler.Default);
+                }
+            }
+        }
+        else
+        {
+            if (_tagManagerDialog is not null)
+            {
+                _tagManagerDialog.Close();
+                _tagManagerDialog = null;
+            }
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void CloseTagManager()
+    {
+        _tagManagerShell.Close();
+    }
+
     public void Dispose()
     {
         if (!disposedValue)
         {
             disposedValue = true;
             _auth.AuthenticationStateChanged -= OnAuthStateChanged;
+            _ = _viewportService.UnsubscribeAsync(_viewportObserverId);
+            _tagManagerShell.OpenChanged -= OnTagManagerOpenChanged;
+            _tagManagerShell.Closed -= OnTagManagerClosed;
         }
     }
 

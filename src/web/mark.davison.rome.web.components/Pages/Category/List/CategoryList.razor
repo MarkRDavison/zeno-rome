@@ -26,7 +26,8 @@
                                 HeaderClass="column-auto"
                                 CellClass="column-auto">
                     <CellTemplate>
-                        <CommandMenu Items="@ViewModel.CommandMenuItems" />
+                        <CommandMenu Items="@ViewModel.CommandMenuItems"
+                                     OnCommandMenuItemSelected="@(menuItem => ViewModel.OnCommandMenuItemSelected(context.Item, menuItem))" />
                     </CellTemplate>
                 </TemplateColumn>
             </Columns>

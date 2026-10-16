@@ -5,16 +5,21 @@ public sealed class EditTransactionFormViewModel : IFormViewModel
     private readonly IStartupState _startupState;
     private readonly IAccountState _accountState;
     private readonly ICategoryState _categoryState;
+    private readonly ITagState _tagState;
 
     public EditTransactionFormViewModel(
         IStartupState startupState,
         IAccountState accountState,
-        ICategoryState categoryState)
+        ICategoryState categoryState,
+        ITagState tagState)
     {
         _startupState = startupState;
         _accountState = accountState;
         _categoryState = categoryState;
+        _tagState = tagState;
     }
+
+    public bool HasTags => _tagState.Tags.Count > 0;
 
     public Guid Id { get; set; }
     public Guid TransactionTypeId { get; set; }
@@ -90,6 +95,13 @@ public sealed class EditTransactionFormViewModel : IFormViewModel
 
     public IEnumerable<IDropdownItem> CategoryItems =>
         _categoryState.Categories.Select(_ => new DropdownItem
+        {
+            Id = _.Id,
+            Name = _.Name
+        });
+
+    public IEnumerable<IDropdownItem> TagItems =>
+        _tagState.Tags.Select(_ => new DropdownItem
         {
             Id = _.Id,
             Name = _.Name

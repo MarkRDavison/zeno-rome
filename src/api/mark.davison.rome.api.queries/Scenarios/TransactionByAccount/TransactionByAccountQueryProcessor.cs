@@ -47,7 +47,8 @@ public sealed class TransactionByAccountQueryProcessor : IQueryProcessor<Transac
                 ForeignAmount = _.ForeignAmount,
                 Reconciled = _.Reconciled,
                 Source = _.IsSource,
-                TransactionTypeId = tj.TransactionTypeId
+                TransactionTypeId = tj.TransactionTypeId,
+                Tags = []
             }));
         }
 

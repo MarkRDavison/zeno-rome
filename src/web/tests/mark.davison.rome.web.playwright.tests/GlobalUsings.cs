@@ -1,5 +1,6 @@
 ﻿global using mark.davison.common.web.playwright.test.Core;
 global using mark.davison.rome.web.playwright.app;
+global using mark.davison.rome.web.playwright.app.Components;
 global using mark.davison.rome.web.playwright.app.Helpers;
 global using mark.davison.rome.web.playwright.app.Pages;
 

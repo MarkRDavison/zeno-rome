@@ -3,6 +3,8 @@
 <ActivityMonitor Loading="@Loading">
     <ChildContent>
         <MudForm>
+            <MudLink data-testid="@DataTestIds.ManageTagsLink" OnClick="OpenTagManager" Class="mb-4 d-inline-block">Manage tags…</MudLink>
+
             @for (var index = 0; index < FormViewModel.Items.Count; ++index)
             {
                 int indexActual = index;
@@ -27,6 +29,26 @@
                     <NumericField id="@Id("edit-transaction-form-amount", indexActual)" HideSpinButtons Label="Amount" @bind-Value="FormViewModel.Items[indexActual].Amount" AllowNegative="false" DecimalPlaces="@FormViewModel.GetDecimalPlacesForCurrencyId(FormViewModel.Items[indexActual].SourceAccountId)" For="@(() => FormViewModel.Items[indexActual].Amount)" />
 
                     <Dropdown Id="@Id("edit-transaction-form-category", indexActual)" Label="Category" Items="@FormViewModel.CategoryItems" @bind-Value="FormViewModel.Items[indexActual].CategoryId" For="@(() => FormViewModel.Items[indexActual].CategoryId)" />
+
+                    @if (FormViewModel.HasTags)
+                    {
+                        <MudSelect T="Guid"
+                                   Label="Tags"
+                                   MultiSelection="true"
+                                   MultiSelectionTextFunc="FormatSelectedTagNames"
+                                   data-testid="@($"{DataTestIds.TagMultiSelectPrefix}{indexActual}")"
+                                   SelectedValues="FormViewModel.Items[indexActual].TagIds"
+                                   SelectedValuesChanged="@(values => OnTagIdsChanged(indexActual, values))">
+                            @foreach (var tag in FormViewModel.TagItems)
+                            {
+                                <MudSelectItem T="Guid" Value="@tag.Id">@tag.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.body2" Class="mt-2">No tags yet.</MudText>
+                    }
                 </MudPaper>
             }
 

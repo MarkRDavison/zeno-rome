@@ -53,6 +53,7 @@ public class EditTransactionFormSubmission : IFormSubmission<EditTransactionForm
             item.ForeignAmount == null ? null : CurrencyRules.ToPersisted(item.ForeignAmount!.Value),
             account?.CurrencyId ?? Guid.Empty,
             item.ForeignCurrencyId,
-            item.CategoryId);
+            item.CategoryId,
+            item.TagIds);
     }
 }

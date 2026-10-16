@@ -14,9 +14,6 @@ public sealed class Routes
     public const string Category = "/classification/categories/{id:guid}";
     public const string CategoryNew = "/classification/categories/new";
 
-    public const string Tags = "/classification/tags";
-    public const string Tag = "/classification/tag/{id:guid}";
-
     public const string Accounts = "/accounts";
     public const string AccountsByType = "/accounts/{type:guid}";
     public const string Account = "/account/{id:guid}";
@@ -38,5 +35,4 @@ public sealed class RouteHelpers
     public static string Transaction(Guid id) => Routes.Transaction.Replace("{id:guid}", id.ToString());
     public static string Transactions(Guid type) => Routes.TransactionsByType.Replace("{type:guid}", type.ToString());
     public static string Category(Guid id) => Routes.Category.Replace("{id:guid}", id.ToString());
-    public static string Tag(Guid id) => Routes.Tag.Replace("{id:guid}", id.ToString());
 }

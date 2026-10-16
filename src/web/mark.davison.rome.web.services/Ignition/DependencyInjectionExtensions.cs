@@ -9,6 +9,7 @@ public static class DependencyInjectionExtensions
             .AddScoped<IAccountState, AccountState>()
             .AddScoped<ITransactionState, TransactionState>()
             .AddScoped<ICategoryState, CategoryState>()
+            .AddScoped<ITagState, TagState>()
             .AddScoped<IAppContextService, AppContextService>()
             .AddScoped<IDateService>(_ => new DateService(DateService.DateMode.Local));
     }

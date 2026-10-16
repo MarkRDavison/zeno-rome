@@ -18,4 +18,5 @@ public class TransactionJournal : RomeEntity
     public virtual Currency? Currency { get; set; }
     public virtual Currency? ForeignCurrency { get; set; }
     public virtual Category? Category { get; set; }
+    public virtual List<TransactionJournalTag> JournalTags { get; set; } = [];
 }

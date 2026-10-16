@@ -46,7 +46,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
                     b.HasIndex("Provider", "ProviderSubject")
                         .IsUnique();
 
-                    b.ToTable("ExternalLogins", (string)null);
+                    b.ToTable("ExternalLogins");
                 });
 
             modelBuilder.Entity("mark.davison.common.server.Models.Role", b =>
@@ -74,7 +74,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("mark.davison.common.server.Models.Tenant", b =>
@@ -94,7 +94,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tenants", (string)null);
+                    b.ToTable("Tenants");
                 });
 
             modelBuilder.Entity("mark.davison.common.server.Models.User", b =>
@@ -125,7 +125,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("mark.davison.common.server.Models.UserRole", b =>
@@ -152,7 +152,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
                     b.HasIndex("UserId", "RoleId")
                         .IsUnique();
 
-                    b.ToTable("UserRoles", (string)null);
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.Account", b =>
@@ -202,7 +202,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Accounts", (string)null);
+                    b.ToTable("Accounts");
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.AccountType", b =>
@@ -228,7 +228,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AccountTypes", (string)null);
+                    b.ToTable("AccountTypes");
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.Category", b =>
@@ -254,7 +254,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.Currency", b =>
@@ -296,7 +296,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Currencies", (string)null);
+                    b.ToTable("Currencies");
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.CurrencyExchangeRate", b =>
@@ -336,7 +336,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CurrencyExchangeRates", (string)null);
+                    b.ToTable("CurrencyExchangeRates");
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.Job", b =>
@@ -394,7 +394,34 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Job", (string)null);
+                    b.ToTable("Job");
+                });
+
+            modelBuilder.Entity("mark.davison.rome.api.models.Entities.Tag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("Created")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("LastModified")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.Transaction", b =>
@@ -452,7 +479,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Transactions", (string)null);
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.TransactionGroup", b =>
@@ -478,7 +505,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TransactionGroups", (string)null);
+                    b.ToTable("TransactionGroups");
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.TransactionJournal", b =>
@@ -538,7 +565,22 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TransactionJournals", (string)null);
+                    b.ToTable("TransactionJournals");
+                });
+
+            modelBuilder.Entity("mark.davison.rome.api.models.Entities.TransactionJournalTag", b =>
+                {
+                    b.Property<Guid>("TransactionJournalId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("TagId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("TransactionJournalId", "TagId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("TransactionJournalTags");
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.TransactionType", b =>
@@ -564,7 +606,7 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TransactionTypes", (string)null);
+                    b.ToTable("TransactionTypes");
                 });
 
             modelBuilder.Entity("mark.davison.common.server.Models.ExternalLogin", b =>
@@ -725,6 +767,17 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("mark.davison.rome.api.models.Entities.Tag", b =>
+                {
+                    b.HasOne("mark.davison.common.server.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.Transaction", b =>
                 {
                     b.HasOne("mark.davison.rome.api.models.Entities.Account", "Account")
@@ -824,6 +877,25 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("mark.davison.rome.api.models.Entities.TransactionJournalTag", b =>
+                {
+                    b.HasOne("mark.davison.rome.api.models.Entities.Tag", "Tag")
+                        .WithMany("JournalTags")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("mark.davison.rome.api.models.Entities.TransactionJournal", "TransactionJournal")
+                        .WithMany("JournalTags")
+                        .HasForeignKey("TransactionJournalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tag");
+
+                    b.Navigation("TransactionJournal");
+                });
+
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.TransactionType", b =>
                 {
                     b.HasOne("mark.davison.common.server.Models.User", "User")
@@ -847,8 +919,15 @@ namespace mark.davison.rome.api.migrations.sqlite.Migrations
                     b.Navigation("UserRoles");
                 });
 
+            modelBuilder.Entity("mark.davison.rome.api.models.Entities.Tag", b =>
+                {
+                    b.Navigation("JournalTags");
+                });
+
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.TransactionJournal", b =>
                 {
+                    b.Navigation("JournalTags");
+
                     b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618

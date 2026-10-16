@@ -249,6 +249,7 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
                         Text = category.Name,
                         Href = RouteHelpers.Category(category.Id)
                     },
+                    Tags = source.Tags,
                     AmountStyle = GetAmountColour(transactionTypeId, source.Amount)
                 };
             })

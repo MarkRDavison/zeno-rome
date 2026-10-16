@@ -23,6 +23,10 @@ public static class DependencyInjectionExtensions
             .AddScoped<CategoryListViewModel>()
             .AddScoped<EditCategoryViewModel>();
 
+        services
+            .AddScoped<ITagManagerShell, TagManagerShell>()
+            .AddScoped<TagManagerViewModel>();
+
         return services;
     }
 }

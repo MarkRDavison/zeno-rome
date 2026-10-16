@@ -18,6 +18,8 @@ public sealed class FetchTransactionQueryProcessor : IQueryProcessor<FetchTransa
             .AsNoTracking()
             .Include(_ => _.Transactions)
             .Include(_ => _.TransactionGroup)
+            .Include(_ => _.JournalTags)
+                .ThenInclude(jt => jt.Tag)
             .Where(_ => _.TransactionGroupId == request.TransactionGroupId)
             .ToListAsync(cancellationToken);
 

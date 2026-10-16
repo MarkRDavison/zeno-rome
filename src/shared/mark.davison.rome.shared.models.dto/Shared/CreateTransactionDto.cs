@@ -10,5 +10,5 @@ public sealed record CreateTransactionDto(
     long? ForeignAmount,
     Guid CurrencyId,
     Guid? ForeignCurrencyId,
-    Guid? CategoryId
-);
+    Guid? CategoryId,
+    IReadOnlyList<Guid> TagIds);

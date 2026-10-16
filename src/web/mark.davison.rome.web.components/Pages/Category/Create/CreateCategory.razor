@@ -1,6 +1,6 @@
 ﻿@attribute [Route(Routes.CategoryNew)]
 
-@inherits BaseView<EditCategoryViewModel, EditCategoryFormViewModel?>
+@inherits BaseView<EditCategoryViewModel, Guid?>
 
 <MudPaper Class="pa-10">
     @if (ViewModel.Loading)
@@ -15,19 +15,19 @@
             </MudItem>
 
             <MudItem Class="d-flex align-center justify-left mud-width-full py-8">
-                <EditForm EditContext="@ViewModel.EditContext" OnSubmit="@ViewModel.OnCreate">
-                    <EditCategoryForm FormViewModel="@ViewModel.FormViewModel" />
+                <EditForm EditContext="@ViewModel.EditContext" OnSubmit="@ViewModel.OnSave">
+                    <EditCategoryForm FormViewModel="@(ViewModel.FormViewModel!)" />
                 </EditForm>
             </MudItem>
 
-            <MudButton Disabled="@ViewModel.PrimaryDisabled" Variant="Variant.Filled" OnClick="@ViewModel.OnCreate" Color="Color.Success">
+            <MudButton Disabled="@ViewModel.PrimaryDisabled" Variant="Variant.Filled" OnClick="@ViewModel.OnSave" Color="Color.Success">
                 @if (ViewModel.InProgress)
                 {
                     <MudProgressCircular Size="Size.Small" Color="Color.Success" Indeterminate="true" />
                 }
                 else
                 {
-                    <span>Create category</span>
+                    <span>@ViewModel.PrimaryButtonText</span>
                 }
             </MudButton>
         </MudGrid>

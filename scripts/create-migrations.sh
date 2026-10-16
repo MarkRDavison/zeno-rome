@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Add the same EF migration to sqlite and postgres projects, then update postgres.
-# Usage: ./scripts/create-migrations.sh MigrationName
+# Add the same EF migration to sqlite and postgres projects (optional postgres update).
+# Usage: ./scripts/create-migrations.sh MigrationName [--update-postgres]
+# Docs: docs/migrations.md
 # Requires: dotnet ef (dotnet tool install --global dotnet-ef)
 
 set -euo pipefail

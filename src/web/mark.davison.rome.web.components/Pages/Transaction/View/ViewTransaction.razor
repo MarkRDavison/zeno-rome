@@ -92,8 +92,13 @@
                 <MudText Typo="Typo.h5">Splits</MudText>
             </MudItem>
         }
+        @{
+            var splitIndex = 0;
+        }
         @foreach (var item in ViewModel.Items)
         {
+            var splitTagsTestId = $"{DataTestIds.ViewTransactionSplitTagsPrefix}{splitIndex}";
+            splitIndex++;
             <MudItem sm="12" md="6" lg="4" Class="transaction-card">
                 <MudCard Outlined="true">
                     <MudCardHeader>
@@ -121,6 +126,18 @@
                                 </MudItem>
                                 <MudItem xs="6">
                                     <MudLink Href="@item.Category.Href">@item.Category.Text</MudLink>
+                                </MudItem>
+                            }
+                            @if (item.Tags.Count > 0)
+                            {
+                                <MudItem xs="12">
+                                    <MudText Typo="Typo.caption">Tags</MudText>
+                                    <MudChipSet T="string" data-testid="@splitTagsTestId">
+                                        @foreach (var tag in item.Tags)
+                                        {
+                                            <MudChip T="string" Size="Size.Small">@tag.Name</MudChip>
+                                        }
+                                    </MudChipSet>
                                 </MudItem>
                             }
                         </MudGrid>

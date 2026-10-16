@@ -56,4 +56,25 @@ public sealed class CreateTransctionValidationContextTests
 
         await Assert.That(first).IsNotNull();
     }
+
+    [Test]
+    public async Task GetTagById_FetchesFromRepository()
+    {
+        var tagId = Guid.NewGuid();
+
+        await _dbContext.UpsertEntityAsync(new Tag
+        {
+            Id = tagId,
+            Name = Guid.NewGuid().ToString(),
+            UserId = Guid.Empty,
+            Created = DateTime.UtcNow,
+            LastModified = DateTime.UtcNow
+        }, CancellationToken.None);
+
+        await _dbContext.SaveChangesAsync(CancellationToken.None);
+
+        var first = await _context.GetTagById(tagId, CancellationToken.None);
+
+        await Assert.That(first).IsNotNull();
+    }
 }

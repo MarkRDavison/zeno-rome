@@ -41,7 +41,12 @@ public abstract class BaseViewModel<TPayload> : INotifyPropertyChanged, IDisposa
 
     protected void State_StateChanged(object? sender, EventArgs e)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
+        NotifyPropertyChanged();
+    }
+
+    protected void NotifyPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
     protected virtual void Dispose(bool disposing)

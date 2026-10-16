@@ -1,0 +1,81 @@
+@namespace mark.davison.rome.web.components.Components.TagManager
+
+<MudStack Spacing="3">
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+        <MudText Typo="Typo.h5" data-testid="@DataTestIds.TagListTitle">Tags</MudText>
+        @if (ShowClose)
+        {
+            <MudIconButton data-testid="@DataTestIds.TagClose"
+                           Icon="@Icons.Material.Filled.Close"
+                           OnClick="CloseAsync" />
+        }
+    </MudStack>
+
+    @if (!string.IsNullOrEmpty(ViewModel.ErrorMessage))
+    {
+        <MudAlert Severity="Severity.Error">@ViewModel.ErrorMessage</MudAlert>
+    }
+
+    <ActivityMonitor Loading="@ViewModel.Loading">
+        <ChildContent>
+            <MudPaper Class="pa-4" Style="max-height: 320px; overflow-y: auto;" data-testid="@DataTestIds.TagList">
+                <MudList T="string" Dense="true">
+                    @foreach (var tag in ViewModel.Tags)
+                    {
+                        <MudListItem data-testid="@($"{DataTestIds.TagListItemPrefix}{tag.Id}")">
+                            @if (ViewModel.EditingTagId == tag.Id)
+                            {
+                                <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center" Class="flex-grow-1">
+                                    <MudTextField T="string"
+                                                  data-testid="@($"{DataTestIds.TagEditNamePrefix}{tag.Id}")"
+                                                  @bind-Value="ViewModel.EditingName"
+                                                  Immediate="true"
+                                                  Class="flex-grow-1" />
+                                    <MudIconButton data-testid="@($"{DataTestIds.TagSaveEditPrefix}{tag.Id}")"
+                                                   Icon="@Icons.Material.Filled.Check"
+                                                   Color="Color.Primary"
+                                                   Disabled="@(!ViewModel.CanSaveEdit)"
+                                                   OnClick="SaveEditAsync" />
+                                    <MudIconButton data-testid="@DataTestIds.TagCancelEdit"
+                                                   Icon="@Icons.Material.Filled.Close"
+                                                   OnClick="ViewModel.CancelEdit" />
+                                </MudStack>
+                            }
+                            else
+                            {
+                                <MudButton Variant="Variant.Text"
+                                           Class="justify-start text-left"
+                                           OnClick="@(() => ViewModel.StartEdit(tag))">
+                                    @tag.Name
+                                </MudButton>
+                            }
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudPaper>
+
+            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Class="mt-4">
+                <MudTextField T="string"
+                              Label="New tag"
+                              @bind-Value="ViewModel.NewTagName"
+                              Immediate="true"
+                              Class="flex-grow-1"
+                              InputAttributes="@_tagAddNameInputAttributes" />
+                <MudButton data-testid="@DataTestIds.TagAddButton"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Disabled="@(!ViewModel.CanAddNew)"
+                           OnClick="SaveNewAsync">
+                    Add
+                </MudButton>
+            </MudStack>
+        </ChildContent>
+    </ActivityMonitor>
+
+    @if (!ShowClose)
+    {
+        <MudStack Row="true" Justify="Justify.FlexEnd">
+            <MudButton data-testid="@DataTestIds.TagClose" Variant="Variant.Text" OnClick="CloseAsync">Close</MudButton>
+        </MudStack>
+    }
+</MudStack>

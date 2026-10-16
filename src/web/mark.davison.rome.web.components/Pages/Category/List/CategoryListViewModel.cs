@@ -50,9 +50,16 @@ public sealed class CategoryListViewModel : BaseViewModel<object?>
 
     public List<CommandMenuItem> CommandMenuItems { get; set; } =
     [
-        new CommandMenuItem{ Text = "Edit", Id = "EDIT" },
-        new CommandMenuItem{ Text = "Delete", Id = "DELETE" }
+        new CommandMenuItem { Text = "Edit", Id = "EDIT" }
     ];
+
+    public void OnCommandMenuItemSelected(CategoryListItemViewModel item, CommandMenuItem menuItem)
+    {
+        if (menuItem.Id == "EDIT")
+        {
+            _clientNavigationManager.NavigateTo(RouteHelpers.Category(item.Id));
+        }
+    }
 
     public void AddCategory()
     {
