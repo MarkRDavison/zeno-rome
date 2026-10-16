@@ -18,5 +18,6 @@ public sealed class TransactionDto
     public bool Reconciled { get; set; }
     public bool Source { get; set; }
     public Guid TransactionTypeId { get; set; }
+    public int JournalOrder { get; set; }
     public List<TagDto> Tags { get; set; } = [];
 }

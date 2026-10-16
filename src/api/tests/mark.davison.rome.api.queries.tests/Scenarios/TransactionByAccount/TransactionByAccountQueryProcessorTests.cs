@@ -20,56 +20,7 @@ public sealed class TransactionByAccountQueryProcessorTests
         var sourceAccountId = Guid.NewGuid();
         var destinationAccountId = Guid.NewGuid();
 
-        var transactionGroup = new TransactionGroup
-        {
-            Id = Guid.NewGuid(),
-            Created = DateTime.Now,
-            LastModified = DateTime.Now,
-            UserId = Guid.Empty
-        };
-        var transactionJournal = new TransactionJournal
-        {
-            Id = Guid.NewGuid(),
-            TransactionGroupId = transactionGroup.Id,
-            Created = DateTime.Now,
-            LastModified = DateTime.Now,
-            UserId = Guid.Empty
-        };
-        var transactions = new List<Transaction>
-        {
-            new Transaction
-            {
-                Id = Guid.NewGuid(),
-                TransactionJournalId = transactionJournal.Id,
-                Created = DateTime.Now,
-                LastModified = DateTime.Now,
-                UserId = Guid.Empty,
-                IsSource = true,
-                AccountId = sourceAccountId
-            },
-            new Transaction
-            {
-                Id = Guid.NewGuid(),
-                TransactionJournalId = transactionJournal.Id,
-                Created = DateTime.Now,
-                LastModified = DateTime.Now,
-                UserId = Guid.Empty,
-                IsSource = false,
-                AccountId = destinationAccountId
-            }
-        };
-
-        {
-            await _dbContext.AddAsync(transactionGroup, CancellationToken.None);
-            await _dbContext.AddAsync(transactionJournal, CancellationToken.None);
-
-            foreach (var t in transactions)
-            {
-                await _dbContext.AddAsync(t, CancellationToken.None);
-            }
-
-            await _dbContext.SaveChangesAsync(true, CancellationToken.None);
-        }
+        await SeedJournalPair(sourceAccountId, destinationAccountId, order: 0, categoryId: null, groupTitle: string.Empty);
 
         var request = new TransactionByAccountQueryRequest { AccountId = sourceAccountId };
 
@@ -79,4 +30,120 @@ public sealed class TransactionByAccountQueryProcessorTests
         await Assert.That(response.SuccessWithValue).IsTrue();
         await Assert.That(response.Value).Count().IsEqualTo(2);
     }
+
+    [Test]
+    public async Task ProcessAsync_MultiJournalSplit_OrdersByJournalOrderAndMapsCategory()
+    {
+        var assetAccountId = Guid.NewGuid();
+        var expense1Id = Guid.NewGuid();
+        var expense2Id = Guid.NewGuid();
+        var categoryId = Guid.NewGuid();
+        var groupId = Guid.NewGuid();
+        var today = DateOnly.FromDateTime(DateTime.Today);
+
+        var transactionGroup = new TransactionGroup
+        {
+            Id = groupId,
+            Title = "Split shop",
+            Created = DateTime.Now,
+            LastModified = DateTime.Now,
+            UserId = Guid.Empty
+        };
+
+        var journal0 = CreateJournal(groupId, order: 0, date: today, categoryId: categoryId);
+        var journal1 = CreateJournal(groupId, order: 1, date: today, categoryId: null);
+
+        await _dbContext.AddAsync(transactionGroup, CancellationToken.None);
+        await _dbContext.AddAsync(journal0, CancellationToken.None);
+        await _dbContext.AddAsync(journal1, CancellationToken.None);
+
+        await _dbContext.AddAsync(CreateLeg(journal0.Id, assetAccountId, -1000, true), CancellationToken.None);
+        await _dbContext.AddAsync(CreateLeg(journal0.Id, expense1Id, 1000, false), CancellationToken.None);
+        await _dbContext.AddAsync(CreateLeg(journal1.Id, assetAccountId, -2000, true), CancellationToken.None);
+        await _dbContext.AddAsync(CreateLeg(journal1.Id, expense2Id, 2000, false), CancellationToken.None);
+
+        await _dbContext.SaveChangesAsync(true, CancellationToken.None);
+
+        var response = await _transactionByAccountQueryProcessor.ProcessAsync(
+            new TransactionByAccountQueryRequest { AccountId = assetAccountId },
+            _currentUserContextMock.Object,
+            CancellationToken.None);
+
+        await Assert.That(response.Value).Count().IsEqualTo(4);
+
+        var assetRows = response.Value.Where(_ => _.AccountId == assetAccountId).ToList();
+        await Assert.That(assetRows).Count().IsEqualTo(2);
+        await Assert.That(assetRows[0].JournalOrder).IsEqualTo(0);
+        await Assert.That(assetRows[1].JournalOrder).IsEqualTo(1);
+        await Assert.That(assetRows[0].CategoryId).IsEqualTo(categoryId);
+        await Assert.That(assetRows[0].SplitTransactionDescription).IsEqualTo("Split shop");
+
+        await Assert.That(response.Value.Any(_ => _.AccountId == expense1Id)).IsTrue();
+        await Assert.That(response.Value.Any(_ => _.AccountId == expense2Id)).IsTrue();
+    }
+
+    [Test]
+    public async Task ProcessAsync_DoesNotReturnJournalsForOtherAccounts()
+    {
+        var assetAccountId = Guid.NewGuid();
+        var otherAssetId = Guid.NewGuid();
+        var expenseId = Guid.NewGuid();
+
+        await SeedJournalPair(assetAccountId, expenseId, order: 0, categoryId: null, groupTitle: string.Empty);
+        await SeedJournalPair(otherAssetId, expenseId, order: 0, categoryId: null, groupTitle: string.Empty);
+
+        var response = await _transactionByAccountQueryProcessor.ProcessAsync(
+            new TransactionByAccountQueryRequest { AccountId = assetAccountId },
+            _currentUserContextMock.Object,
+            CancellationToken.None);
+
+        await Assert.That(response.Value).Count().IsEqualTo(2);
+        await Assert.That(response.Value.All(_ => _.AccountId == assetAccountId || _.AccountId == expenseId)).IsTrue();
+        await Assert.That(response.Value.Any(_ => _.AccountId == otherAssetId)).IsFalse();
+    }
+
+    private async Task SeedJournalPair(Guid sourceAccountId, Guid destinationAccountId, int order, Guid? categoryId, string groupTitle)
+    {
+        var transactionGroup = new TransactionGroup
+        {
+            Id = Guid.NewGuid(),
+            Title = groupTitle,
+            Created = DateTime.Now,
+            LastModified = DateTime.Now,
+            UserId = Guid.Empty
+        };
+        var transactionJournal = CreateJournal(transactionGroup.Id, order, DateOnly.FromDateTime(DateTime.Today), categoryId);
+
+        await _dbContext.AddAsync(transactionGroup, CancellationToken.None);
+        await _dbContext.AddAsync(transactionJournal, CancellationToken.None);
+        await _dbContext.AddAsync(CreateLeg(transactionJournal.Id, sourceAccountId, -100, true), CancellationToken.None);
+        await _dbContext.AddAsync(CreateLeg(transactionJournal.Id, destinationAccountId, 100, false), CancellationToken.None);
+        await _dbContext.SaveChangesAsync(true, CancellationToken.None);
+    }
+
+    private static TransactionJournal CreateJournal(Guid groupId, int order, DateOnly date, Guid? categoryId) =>
+        new()
+        {
+            Id = Guid.NewGuid(),
+            TransactionGroupId = groupId,
+            Order = order,
+            Date = date,
+            CategoryId = categoryId,
+            Created = DateTime.Now,
+            LastModified = DateTime.Now,
+            UserId = Guid.Empty
+        };
+
+    private static Transaction CreateLeg(Guid journalId, Guid accountId, long amount, bool isSource) =>
+        new()
+        {
+            Id = Guid.NewGuid(),
+            TransactionJournalId = journalId,
+            Created = DateTime.Now,
+            LastModified = DateTime.Now,
+            UserId = Guid.Empty,
+            IsSource = isSource,
+            AccountId = accountId,
+            Amount = amount
+        };
 }

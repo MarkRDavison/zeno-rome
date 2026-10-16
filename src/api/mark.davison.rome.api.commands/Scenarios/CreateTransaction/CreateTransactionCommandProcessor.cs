@@ -134,6 +134,7 @@ public sealed class CreateTransactionCommandProcessor : ICommandProcessor<Create
             TransactionGroupId = group.Id,
             TransactionJournalId = transaction.TransactionJournalId,
             TransactionTypeId = journal.TransactionTypeId,
+            JournalOrder = journal.Order,
             Tags = []
         };
     }

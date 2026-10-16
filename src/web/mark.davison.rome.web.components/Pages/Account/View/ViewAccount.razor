@@ -13,7 +13,10 @@
                                 Class="@GetAccountCurrentBalanceCssClasses()"
                                 Typo="Typo.h5">@ViewModel.GetFormattedAmount(ViewModel.Account?.CurrencyId, ViewModel.Account?.CurrentBalance)</MudText>
                 </MudStack>
-                <MudDataGrid Items="@ViewModel.GenerateRows()" RowClassFunc=@ViewModel.RowClassFunc>
+                <MudDataGrid data-testid="@DataTestIds.ViewAccountRegister"
+                             Items="@ViewModel.GenerateRows()"
+                             RowClassFunc=@ViewModel.RowClassFunc
+                             SortMode="SortMode.None">
                     <Columns>
                         <TemplateColumn SortBy="_ => _.TransactionType" Title="">
                             <CellTemplate>
@@ -36,6 +39,7 @@
                         </TemplateColumn>
                         <TemplateColumn Title="Description" SortBy="_ => _.Description.Text">
                             <CellTemplate>
+                                <span data-testid="@($"{DataTestIds.ViewAccountRegisterRowPrefix}{context.Item.RegisterIndex}")">
                                 @if (string.IsNullOrEmpty(context.Item.Description.Href) || context.Item.IsSubTransaction)
                                 {
                                     @context.Item.Description.Text
@@ -44,6 +48,7 @@
                                 {
                                     <MudLink Href="@context.Item.Description.Href">@context.Item.Description.Text</MudLink>
                                 }
+                                </span>
                             </CellTemplate>
                         </TemplateColumn>
                         <PropertyColumn Property="_ => _.Amount" Format="N2" CellStyleFunc="@ViewModel.AmountCellStyle" />

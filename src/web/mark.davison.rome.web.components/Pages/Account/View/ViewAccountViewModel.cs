@@ -6,12 +6,14 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
     private readonly IAccountState _accountState;
     private readonly IStartupState _startupState;
     private readonly ITransactionState _transactionState;
+    private readonly ICategoryState _categoryState;
     private readonly IAppContextService _appContextService;
 
     public ViewAccountViewModel(
         IAccountState accountState,
         IStartupState startupState,
         ITransactionState transactionState,
+        ICategoryState categoryState,
         IAppContextService appContextService
     ) : base(
         appContextService)
@@ -19,11 +21,13 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
         _accountState = accountState;
         _startupState = startupState;
         _transactionState = transactionState;
+        _categoryState = categoryState;
         _appContextService = appContextService;
 
         RegisterState(_accountState);
         RegisterState(_startupState);
         RegisterState(_transactionState);
+        RegisterState(_categoryState);
     }
 
     public override async Task<bool> Initialize(Guid payload)
@@ -44,6 +48,7 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
     {
         await _accountState.FetchAccount(_accountId);
         await _transactionState.FetchTransactionsForAccount(_accountId);
+        await _categoryState.FetchState();
     }
 
     public string GetFormattedAmount(Guid? currencyId, long? amount)
@@ -60,22 +65,27 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
 
     public IEnumerable<ViewAccountGridRow> GenerateRows()
     {
+        var rangeStart = _appContextService.State.RangeStart;
+        var rangeEnd = _appContextService.State.RangeEnd;
         List<ViewAccountGridRow> items = [];
+        var registerIndex = 0;
 
-        foreach (var tGroup in _transactionState.Transactions
+        var groups = _transactionState.Transactions
             .GroupBy(_ => _.TransactionGroupId)
-            .Where(_ => _appContextService.State.RangeStart <= _.First().Date || _appContextService.State.RangeEnd <= _.First().Date)
-            .OrderByDescending(_ => _.First().Date)) // TODO: Sorting with multi line entries
+            .Where(g => g.Any(t =>
+                t.AccountId == _accountId &&
+                rangeStart <= t.Date &&
+                t.Date <= rangeEnd))
+            .OrderByDescending(g => g.Where(t => t.AccountId == _accountId).Max(t => t.Date))
+            .ThenByDescending(g => g.Key);
+
+        foreach (var tGroup in groups)
         {
             var splitDescription = tGroup.First().SplitTransactionDescription ?? string.Empty;
-
-            var transactionsByJournal = tGroup.GroupBy(_ => _.TransactionJournalId);
-
-            // TODO: Helper method on transaction state to get data in useful format by account/category/tag etc etc
-            if (!transactionsByJournal.Any(g => g.Any(t => t.AccountId == _accountId)))
-            {
-                continue;
-            }
+            var transactionsByJournal = tGroup
+                .GroupBy(_ => _.TransactionJournalId)
+                .Where(g => g.Any(t => t.AccountId == _accountId))
+                .OrderBy(g => g.First().JournalOrder);
 
             if (string.IsNullOrEmpty(splitDescription) && transactionsByJournal.Count() > 1)
             {
@@ -83,28 +93,27 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
             }
 
             bool isSplit = !string.IsNullOrEmpty(splitDescription);
+            var groupDate = tGroup.Where(t => t.AccountId == _accountId).Max(t => t.Date);
 
-            if (!string.IsNullOrEmpty(splitDescription))
+            if (isSplit)
             {
                 items.Add(new ViewAccountGridRow
                 {
+                    RegisterIndex = registerIndex++,
                     IsSplit = true,
+                    Date = groupDate,
                     Description = new()
                     {
                         Href = RouteHelpers.Transaction(tGroup.Key),
                         Text = splitDescription
                     },
                     Amount = CurrencyRules.FromPersisted(transactionsByJournal
-                        // Dont sum splits for other accounts for the total
-                        .Where(_ => _.Any(__ => __.AccountId == _accountId))
-                        .Sum(_ => _.First(_ => _.Source).Amount)) // TODO: BETTER
+                        .Sum(j => j.First(t => t.AccountId == _accountId).Amount))
                 });
             }
 
             foreach (var tbjs in transactionsByJournal)
             {
-                // TODO: When navigating here directly, if there are splits this account is
-                // not directly involved in, they are not loaded
                 if (tbjs.Count() != 2)
                 {
                     throw new InvalidDataException("Not 2 transactions under a journal");
@@ -113,10 +122,10 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
                 var sourceTransaction = tbjs.First(_ => _.Source);
                 var destinationTransaction = tbjs.First(_ => !_.Source);
 
-                var sourceAccount = _accountState.Accounts.FirstOrDefault(_ => _.Id == sourceTransaction.AccountId); ;
-                var destAccount = _accountState.Accounts.FirstOrDefault(_ => _.Id == destinationTransaction.AccountId); ;
+                var sourceAccount = _accountState.Accounts.FirstOrDefault(_ => _.Id == sourceTransaction.AccountId);
+                var destAccount = _accountState.Accounts.FirstOrDefault(_ => _.Id == destinationTransaction.AccountId);
 
-                var thisAccountTransaction = sourceAccount == null ? destinationTransaction : (sourceAccount.Id == _accountId ? sourceTransaction : destinationTransaction);
+                var thisAccountTransaction = tbjs.First(t => t.AccountId == _accountId);
 
                 var transactionType = _startupState.TransactionTypes.First(_ => _.Id == thisAccountTransaction.TransactionTypeId);
 
@@ -132,14 +141,19 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
                     Href = destAccount == null ? string.Empty : RouteHelpers.Account(destAccount.Id)
                 };
 
+                var category = thisAccountTransaction.CategoryId == null
+                    ? null
+                    : _categoryState.Categories.FirstOrDefault(c => c.Id == thisAccountTransaction.CategoryId);
+
                 var categoryLinkInfo = new LinkDefinition
                 {
-                    Text = string.Empty, //thisAccountTransaction.CategoryId == null ? string.Empty : CategoryListState.Value.Categories.FirstOrDefault(_ => _.Id == thisAccountTransaction.CategoryId)?.Name ?? string.Empty,
-                    Href = string.Empty //thisAccountTransaction.CategoryId == null ? string.Empty : RouteHelpers.Category(thisAccountTransaction.CategoryId.Value)
+                    Text = category?.Name ?? string.Empty,
+                    Href = category == null ? string.Empty : RouteHelpers.Category(category.Id)
                 };
 
                 items.Add(new ViewAccountGridRow
                 {
+                    RegisterIndex = registerIndex++,
                     IsSplit = false,
                     IsSubTransaction = isSplit,
                     Description = new()
@@ -147,10 +161,11 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
                         Text = thisAccountTransaction.Description,
                         Href = RouteHelpers.Transaction(tGroup.Key)
                     },
-                    Amount = CurrencyRules.FromPersisted(thisAccountTransaction.Amount), // TODO: Re-use from ViewTransaction.razor.cs GetAmountText? maybe helper classes etc
+                    Amount = CurrencyRules.FromPersisted(thisAccountTransaction.Amount),
                     Date = thisAccountTransaction.Date,
                     TransactionGroupId = tGroup.Key,
-                    TransactionType = transactionType.Type,// TODO: TransactionTypeId???
+                    TransactionType = transactionType.Type,
+                    TransactionTypeId = thisAccountTransaction.TransactionTypeId,
                     Category = categoryLinkInfo,
                     SourceAccount = sourceAccountLinkInfo,
                     DestinationAccount = destAccountLinkInfo
@@ -158,22 +173,21 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
             }
         }
 
-        return items.OrderByDescending(_ => _.Date);
+        return items;
     }
 
-    public Func<ViewAccountGridRow, string> AmountCellStyle => _ =>
+    public Func<ViewAccountGridRow, string> AmountCellStyle => row =>
     {
         string style = "";
 
-        if (_.TransactionType == "Transfer") // TODO: Id???
+        if (row.TransactionTypeId == TransactionTypeConstants.Transfer)
         {
             style += "color: #47b2f5; ";
         }
-        else if (_.Amount != null)
+        else if (row.Amount != null)
         {
-            if (_.Amount < 0.0M)
+            if (row.Amount < 0.0M)
             {
-                // TODO: Common utility
                 style += "color: #e47365; ";
             }
             else
@@ -187,9 +201,7 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
 
     public string RowClassFunc(ViewAccountGridRow row, int index)
     {
-        // This is the style that sets the borders
-        // mud-table-cell > border-bottom: 1px solid etc...
-        return " border-style: none;"; // border style based on whether it is a split, the last of a day etc
+        return " border-style: none;";
     }
 
     public AccountDto? Account => _accountState.Accounts.FirstOrDefault(_ => _.Id == _accountId);

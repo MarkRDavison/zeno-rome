@@ -11,47 +11,29 @@ public sealed class TransactionByAccountQueryProcessor : IQueryProcessor<Transac
 
     public async Task<TransactionByAccountQueryResponse> ProcessAsync(TransactionByAccountQueryRequest request, ICurrentUserContext currentUserContext, CancellationToken cancellationToken)
     {
-        var response = new TransactionByAccountQueryResponse
-        {
-            Value = []
-        };
-
         var transactionJournals = await _dbContext
             .Set<TransactionJournal>()
             .AsNoTracking()
             .Include(_ => _.Transactions)
             .Include(_ => _.TransactionGroup)
+            .Include(_ => _.JournalTags)
+                .ThenInclude(jt => jt.Tag)
             .Where(_ => _.Transactions.Any(t => t.AccountId == request.AccountId))
+            .OrderByDescending(_ => _.Date)
+            .ThenBy(_ => _.Order)
             .ToListAsync(cancellationToken);
 
-        // TODO: Return transaction journal??? Need source/destination account etc
+        var dtos = new List<TransactionDto>();
 
-        foreach (var tj in transactionJournals)
+        foreach (var journal in transactionJournals)
         {
-            var tg = tj.TransactionGroup;
-
-            response.Value.AddRange(tj.Transactions.Select(_ => new TransactionDto
-            {
-                Id = _.Id,
-                UserId = _.UserId,
-                AccountId = _.AccountId,
-                TransactionJournalId = _.TransactionJournalId,
-                TransactionGroupId = tj.TransactionGroupId,
-                CurrencyId = _.CurrencyId,
-                ForeignCurrencyId = _.ForeignCurrencyId,
-                CategoryId = null, //_.TransactionJournal?.CategoryId,
-                SplitTransactionDescription = tg?.Title ?? string.Empty,
-                Description = _.Description,
-                Date = _.TransactionJournal!.Date,
-                Amount = _.Amount,
-                ForeignAmount = _.ForeignAmount,
-                Reconciled = _.Reconciled,
-                Source = _.IsSource,
-                TransactionTypeId = tj.TransactionTypeId,
-                Tags = []
-            }));
+            var group = journal.TransactionGroup!;
+            dtos.AddRange(journal.Transactions.Select(t => t.ToDto(journal, group)));
         }
 
-        return response;
+        return new TransactionByAccountQueryResponse
+        {
+            Value = dtos
+        };
     }
 }

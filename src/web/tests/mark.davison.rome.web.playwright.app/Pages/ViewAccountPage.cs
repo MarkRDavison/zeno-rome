@@ -22,9 +22,44 @@ public sealed class ViewAccountPage : RomeBasePage
         return viewAccountPage;
     }
 
+    public static async Task<ViewAccountPage> OpenAssetAccountByName(IPage page, PlaywrightAppSettings appSettings, string accountName)
+    {
+        await page.GetByRole(AriaRole.Link, new() { Name = "Asset accounts" }).ClickAsync();
+        await page.GetByRole(AriaRole.Link, new() { Name = accountName, Exact = true }).ClickAsync();
+        return await Goto(page, appSettings);
+    }
+
     public async Task<ViewAccountPage> ExpectAccountName(string name)
     {
         await Assert.That(_title).IsEqualTo(name);
+
+        return this;
+    }
+
+    public async Task<ViewAccountPage> ExpectCurrentBalanceContains(string amountFragment)
+    {
+        var balance = await Page.GetByTestId(DataTestIds.ViewAccountCurrentBalance).InnerTextAsync();
+        await Assert.That(balance).Contains(amountFragment);
+
+        return this;
+    }
+
+    /// <summary>
+    /// Asserts the first N register rows in visual order (top of grid).
+    /// </summary>
+    public async Task<ViewAccountPage> ExpectRegisterLeadingRows(params string[] expectedTextsInOrder)
+    {
+        var rows = Page
+            .GetByTestId(DataTestIds.ViewAccountRegister)
+            .Locator($"[data-testid^='{DataTestIds.ViewAccountRegisterRowPrefix}']");
+
+        await rows.First.WaitForAsync();
+
+        for (var i = 0; i < expectedTextsInOrder.Length; i++)
+        {
+            var text = await rows.Nth(i).InnerTextAsync();
+            await Assert.That(text).Contains(expectedTextsInOrder[i]);
+        }
 
         return this;
     }

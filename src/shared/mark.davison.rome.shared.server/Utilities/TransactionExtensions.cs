@@ -23,6 +23,7 @@ public static class TransactionExtensions
             TransactionGroupId = transactionGroup.Id,
             TransactionJournalId = transaction.TransactionJournalId,
             TransactionTypeId = transactionJournal.TransactionTypeId,
+            JournalOrder = transactionJournal.Order,
             Tags = transactionJournal.JournalTags
                 .Where(jt => jt.Tag != null)
                 .Select(jt => jt.Tag!.ToDto())
