@@ -25,6 +25,10 @@ public abstract class RomeBaseTest : LoggedInTest
     }
 
     protected DashboardPage Dashboard => throw new NotImplementedException();
+
+    protected IPage CurrentPage => throw new NotImplementedException();
+
+    protected PlaywrightAppSettings AppSettings => throw new NotImplementedException();
 #else
     protected DashboardPage Dashboard => new(CurrentPage, AppSettings);
 #endif

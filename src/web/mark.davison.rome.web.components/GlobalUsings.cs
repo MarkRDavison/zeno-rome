@@ -5,6 +5,7 @@ global using mark.davison.common.client.web.Components;
 global using mark.davison.common.client.web.Ignition;
 global using mark.davison.common.CQRS;
 global using mark.davison.rome.shared.accounting.constants;
+global using mark.davison.rome.shared.constants;
 global using mark.davison.rome.shared.accounting.rules;
 global using mark.davison.rome.shared.models.dto.Scenarios.Commands.CreateTransaction;
 global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertAccount;
