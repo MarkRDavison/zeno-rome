@@ -17,6 +17,7 @@ global using mark.davison.rome.shared.accounting.constants;
 global using mark.davison.rome.shared.models.dto.Scenarios.Commands.CreateTransaction;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.AccountList;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.TransactionByAccount;
+global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertAccount;
 global using mark.davison.rome.shared.models.dto.Shared;
 global using mark.davison.rome.shared.server.Services;
 global using mark.davison.rome.api.tests.Framework;

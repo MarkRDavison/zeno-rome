@@ -1,6 +1,11 @@
 ﻿namespace mark.davison.rome.web.playwright.app.Pages;
 
-public sealed record NewAccountInfo(string Name, string AccountNumber, string Currency);
+public sealed record NewAccountInfo(
+    string Name,
+    string AccountNumber,
+    string Currency,
+    string? OpeningBalance = null,
+    DateOnly? OpeningBalanceDate = null);
 
 public sealed class NewAccountPage : RomeBasePage
 {
@@ -9,6 +14,8 @@ public sealed class NewAccountPage : RomeBasePage
     private const string NameLabel = "Name";
     private const string AccountNumberLabel = "Account number";
     private const string CurrencyLabel = "Currency";
+    private const string OpeningBalanceLabel = "Opening balance";
+    private const string OpeningBalanceDateLabel = "Opening balance date";
     private const string CreateAccountButton = "Create account";
 
     public NewAccountPage(
@@ -27,6 +34,17 @@ public sealed class NewAccountPage : RomeBasePage
         await FillField(this, NameLabel, info.Name);
         await FillField(this, AccountNumberLabel, info.AccountNumber);
         await SelectField(this, CurrencyLabel, info.Currency);
+
+        if (!string.IsNullOrEmpty(info.OpeningBalance))
+        {
+            await FillField(this, OpeningBalanceLabel, info.OpeningBalance);
+        }
+
+        if (info.OpeningBalanceDate is { } openingBalanceDate)
+        {
+            await FillField(this, OpeningBalanceDateLabel, openingBalanceDate);
+        }
+
         return await Submit();
     }
 

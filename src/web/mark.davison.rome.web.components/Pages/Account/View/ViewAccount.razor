@@ -34,6 +34,10 @@
                                     {
                                         <MudIcon Icon="@Icons.Material.Filled.SyncAlt" Title="Transfer" />
                                     }
+                                    else if (context.Item.TransactionType == "Opening balance")
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Filled.Flag" Title="Opening balance" />
+                                    }
                                 }
                             </CellTemplate>
                         </TemplateColumn>

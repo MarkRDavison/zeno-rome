@@ -16,6 +16,10 @@ internal sealed class CreateTransactionValidatorStrategyFactory : ICreateTransac
         {
             return new CreateTransferTransactionValidatorStrategy();
         }
+        else if (transactionTypeId == TransactionTypeConstants.OpeningBalance)
+        {
+            return new CreateOpeningBalanceTransactionValidatorStrategy();
+        }
 
         return new NullCreateTransactionValidatorStrategy();
     }

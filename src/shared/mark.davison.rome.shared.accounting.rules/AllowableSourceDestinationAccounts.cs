@@ -211,13 +211,61 @@ public static class AllowableSourceDestinationAccounts
                         }
                     },
                     {
+                        AccountTypeConstants.Expense,
+                        new HashSet<Guid>
+                        {
+                            AccountTypeConstants.InitialBalance
+                        }
+                    },
+                    {
+                        AccountTypeConstants.Revenue,
+                        new HashSet<Guid>
+                        {
+                            AccountTypeConstants.InitialBalance
+                        }
+                    },
+                    {
+                        AccountTypeConstants.Cash,
+                        new HashSet<Guid>
+                        {
+                            AccountTypeConstants.InitialBalance
+                        }
+                    },
+                    {
+                        AccountTypeConstants.Default,
+                        new HashSet<Guid>
+                        {
+                            AccountTypeConstants.InitialBalance
+                        }
+                    },
+                    {
+                        AccountTypeConstants.LiabilityCredit,
+                        new HashSet<Guid>
+                        {
+                            AccountTypeConstants.InitialBalance
+                        }
+                    },
+                    {
+                        AccountTypeConstants.Beneficiary,
+                        new HashSet<Guid>
+                        {
+                            AccountTypeConstants.InitialBalance
+                        }
+                    },
+                    {
                         AccountTypeConstants.InitialBalance,
                         new HashSet<Guid>
                         {
                             AccountTypeConstants.Asset,
                             AccountTypeConstants.Loan,
                             AccountTypeConstants.Debt,
-                            AccountTypeConstants.Mortgage
+                            AccountTypeConstants.Mortgage,
+                            AccountTypeConstants.Expense,
+                            AccountTypeConstants.Revenue,
+                            AccountTypeConstants.Cash,
+                            AccountTypeConstants.Default,
+                            AccountTypeConstants.LiabilityCredit,
+                            AccountTypeConstants.Beneficiary
                         }
                     }
                 }

@@ -121,90 +121,45 @@ public static class ComponentHelpers
 
     public static async Task SelectDate(IPage page, string label, DateOnly value)
     {
-        var datePicker = page.GetByLabel(label, new()
-        {
-            Exact = true
-        });
-
-        var id = await datePicker.GetAttributeAsync("id");
-
-        await page.GetByRole(AriaRole.Button, new()
-        {
-            Name = label
-        }).ClickAsync();
-
-        var popup = page.Locator($".mud-popover-provider #{id}");
-
-        var yearButton = popup.Locator(".mud-button-year");
-
-        await yearButton.ClickAsync();
-
-        var pickerIdYear = await popup.Locator(".mud-picker-year").First.GetAttributeAsync("id");
-
-        if (string.IsNullOrEmpty(pickerIdYear) || pickerIdYear.Length < 4)
-        {
-            throw new InvalidOperationException("Could not find the picker year id");
-        }
-
-        var pickerId = pickerIdYear[..^4];
-
-        var expectedId = pickerId + value.ToString("yyyy");
-
-        await popup.Locator($"div[id=\"{expectedId}\"]").ClickAsync();
-
-        var month = value.ToString("MMMM");
-
-        await popup.GetByLabel(month[..3]).ClickAsync();
-
-        var day = value.Day.ToString();
-
-        await popup.GetByText(day, new LocatorGetByTextOptions
-        {
-            Exact = true
-        }).ClickAsync();
+        var datePicker = page.GetByLabel(label, new PageGetByLabelOptions { Exact = true });
+        await SelectMudDatePickerAsync(page, datePicker, value);
     }
+
     public static async Task SelectDate(IPage page, ILocator locator, string label, DateOnly value)
     {
-        var datePicker = locator.GetByLabel(label, new()
+        var datePicker = locator.GetByLabel(label, new LocatorGetByLabelOptions { Exact = true });
+        await SelectMudDatePickerAsync(page, datePicker, value);
+    }
+
+    private static async Task SelectMudDatePickerAsync(IPage page, ILocator datePickerInput, DateOnly value)
+    {
+        var id = await datePickerInput.GetAttributeAsync("id");
+        if (string.IsNullOrEmpty(id))
         {
-            Exact = true
-        });
+            throw new InvalidOperationException("MudDatePicker input must have an id attribute for popover selection.");
+        }
 
-        var id = await datePicker.GetAttributeAsync("id");
-
-        await locator.GetByRole(AriaRole.Button, new()
-        {
-
-        }).ClickAsync();
+        var controlScope = datePickerInput.Locator("xpath=ancestor::div[contains(@class,'mud-input-control')]");
+        await controlScope.GetByRole(AriaRole.Button).ClickAsync();
 
         var popup = page.Locator($".mud-popover-provider #{id}");
 
-        var yearButton = popup.Locator(".mud-button-year");
-
-        await yearButton.ClickAsync();
+        await popup.Locator(".mud-button-year").ClickAsync();
 
         var pickerIdYear = await popup.Locator(".mud-picker-year").First.GetAttributeAsync("id");
-
         if (string.IsNullOrEmpty(pickerIdYear) || pickerIdYear.Length < 4)
         {
             throw new InvalidOperationException("Could not find the picker year id");
         }
 
         var pickerId = pickerIdYear[..^4];
-
         var expectedId = pickerId + value.ToString("yyyy");
-
         await popup.Locator($"div[id=\"{expectedId}\"]").ClickAsync();
 
         var months = popup.Locator(".mud-picker-month-container button");
-
         await months.Nth(value.Month - 1).ClickAsync();
 
         var day = value.Day.ToString();
-
-        await popup.GetByText(day, new LocatorGetByTextOptions
-        {
-            Exact = true
-        }).ClickAsync();
+        await popup.GetByText(day, new LocatorGetByTextOptions { Exact = true }).ClickAsync();
     }
 }

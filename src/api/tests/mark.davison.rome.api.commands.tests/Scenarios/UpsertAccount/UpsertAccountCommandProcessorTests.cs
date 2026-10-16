@@ -5,7 +5,7 @@ public class UpsertAccountCommandProcessorTests
     private readonly IDbContext<RomeDbContext> _dbContext;
     private readonly Mock<ICurrentUserContext> _currentUserContextMock;
     private readonly Mock<IDateService> _dateService;
-    private readonly Mock<ICommandDispatcher> _commandDispatcherMock;
+    private readonly Mock<ICommandHandler<CreateTransactionCommandRequest, CreateTransactionCommandResponse>> _createTransactionHandlerMock;
     private readonly UpsertAccountCommandProcessor _upsertAccountCommandProcessor;
 
     public UpsertAccountCommandProcessorTests()
@@ -13,16 +13,17 @@ public class UpsertAccountCommandProcessorTests
         _dbContext = DbContextHelpers.CreateInMemory(_ => new RomeDbContext(_));
         _currentUserContextMock = new(MockBehavior.Strict);
         _dateService = new(MockBehavior.Strict);
-        _commandDispatcherMock = new(MockBehavior.Strict);
+        _createTransactionHandlerMock = new(MockBehavior.Strict);
 
-        _upsertAccountCommandProcessor = new(_dateService.Object, _dbContext, _commandDispatcherMock.Object);
+        _upsertAccountCommandProcessor = new(_dateService.Object, _dbContext, _createTransactionHandlerMock.Object);
 
         _currentUserContextMock.Setup(_ => _.UserId).Returns(Guid.Empty);
         _dateService.Setup(_ => _.Now).Returns(DateTime.Now);
 
-        _commandDispatcherMock
-            .Setup(_ => _.Dispatch<CreateTransactionCommandRequest, CreateTransactionCommandResponse>(
+        _createTransactionHandlerMock
+            .Setup(_ => _.Handle(
                 It.IsAny<CreateTransactionCommandRequest>(),
+                It.IsAny<ICurrentUserContext>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(new CreateTransactionCommandResponse());
     }
@@ -35,11 +36,12 @@ public class UpsertAccountCommandProcessorTests
             UpsertAccountDto = new UpsertAccountDto(Guid.Empty, string.Empty, null, string.Empty, Guid.Empty, CurrencyConstants.NZD, CurrencyRules.ToPersisted(100.0M), DateOnly.FromDateTime(DateTime.Today))
         };
 
-        _commandDispatcherMock
-            .Setup(_ => _.Dispatch<CreateTransactionCommandRequest, CreateTransactionCommandResponse>(
+        _createTransactionHandlerMock
+            .Setup(_ => _.Handle(
                 It.IsAny<CreateTransactionCommandRequest>(),
+                It.IsAny<ICurrentUserContext>(),
                 It.IsAny<CancellationToken>()))
-            .Returns(async (CreateTransactionCommandRequest r, CancellationToken c) =>
+            .Returns(async (CreateTransactionCommandRequest r, ICurrentUserContext _, CancellationToken c) =>
             {
                 await Assert.That(r.TransactionTypeId).EqualTo(TransactionTypeConstants.OpeningBalance);
                 var transaction = r.Transactions[0];
@@ -62,12 +64,57 @@ public class UpsertAccountCommandProcessorTests
 
         await Assert.That(persistedAccount).IsNotNull();
 
-        _commandDispatcherMock
+        _createTransactionHandlerMock
             .Verify(_ =>
-                _.Dispatch<CreateTransactionCommandRequest, CreateTransactionCommandResponse>(
+                _.Handle(
                     It.IsAny<CreateTransactionCommandRequest>(),
+                    It.IsAny<ICurrentUserContext>(),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
+    }
+
+    [Test]
+    public async Task WhenCreateOpeningBalanceFails_ReturnsErrorsWithoutThrowing()
+    {
+        var request = new UpsertAccountCommandRequest
+        {
+            UpsertAccountDto = new UpsertAccountDto(
+                Guid.NewGuid(),
+                "Test",
+                null,
+                string.Empty,
+                AccountTypeConstants.Asset,
+                CurrencyConstants.NZD,
+                CurrencyRules.ToPersisted(100.0M),
+                DateOnly.FromDateTime(DateTime.Today))
+        };
+
+        _createTransactionHandlerMock
+            .Setup(_ => _.Handle(
+                It.IsAny<CreateTransactionCommandRequest>(),
+                It.IsAny<ICurrentUserContext>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new CreateTransactionCommandResponse
+            {
+                Errors = [CreateTransactionCommandValidator.VALIDATION_INVALID_ACCOUNT_PAIR]
+            });
+
+        var response = await _upsertAccountCommandProcessor.ProcessAsync(
+            request,
+            _currentUserContextMock.Object,
+            CancellationToken.None);
+
+        await Assert.That(response.Success).IsFalse();
+        await Assert.That(response.Errors).Contains(CreateTransactionCommandValidator.VALIDATION_INVALID_ACCOUNT_PAIR);
+
+        var openingJournalCount = await _dbContext
+            .Set<TransactionJournal>()
+            .CountAsync(_ =>
+                _.TransactionTypeId == TransactionTypeConstants.OpeningBalance &&
+                _.Transactions.Any(t => t.AccountId == request.UpsertAccountDto.Id),
+                CancellationToken.None);
+
+        await Assert.That(openingJournalCount).IsEqualTo(0);
     }
 
     [Test]
@@ -78,18 +125,20 @@ public class UpsertAccountCommandProcessorTests
             UpsertAccountDto = new UpsertAccountDto(Guid.Empty, string.Empty, null, string.Empty, Guid.Empty, CurrencyConstants.NZD, null, null)
         };
 
-        _commandDispatcherMock
-            .Setup(_ => _.Dispatch<CreateTransactionCommandRequest, CreateTransactionCommandResponse>(
+        _createTransactionHandlerMock
+            .Setup(_ => _.Handle(
                 It.IsAny<CreateTransactionCommandRequest>(),
+                It.IsAny<ICurrentUserContext>(),
                 It.IsAny<CancellationToken>()))
             .Verifiable();
 
         await _upsertAccountCommandProcessor.ProcessAsync(request, _currentUserContextMock.Object, CancellationToken.None);
 
-        _commandDispatcherMock
+        _createTransactionHandlerMock
             .Verify(_ =>
-                _.Dispatch<CreateTransactionCommandRequest, CreateTransactionCommandResponse>(
+                _.Handle(
                     It.IsAny<CreateTransactionCommandRequest>(),
+                    It.IsAny<ICurrentUserContext>(),
                     It.IsAny<CancellationToken>()),
                 Times.Never);
     }
@@ -113,19 +162,21 @@ public class UpsertAccountCommandProcessorTests
         await _dbContext.AddAsync(account, CancellationToken.None);
         await _dbContext.SaveChangesAsync(CancellationToken.None);
 
-        _commandDispatcherMock
-            .Setup(_ => _.Dispatch<CreateTransactionCommandRequest, CreateTransactionCommandResponse>(
+        _createTransactionHandlerMock
+            .Setup(_ => _.Handle(
                 It.IsAny<CreateTransactionCommandRequest>(),
+                It.IsAny<ICurrentUserContext>(),
                 It.IsAny<CancellationToken>()))
-            .Returns(async (CreateTransactionCommandRequest r, CancellationToken c) => new CreateTransactionCommandResponse())
+            .Returns(async (CreateTransactionCommandRequest r, ICurrentUserContext _, CancellationToken c) => new CreateTransactionCommandResponse())
             .Verifiable();
 
         await _upsertAccountCommandProcessor.ProcessAsync(request, _currentUserContextMock.Object, CancellationToken.None);
 
-        _commandDispatcherMock
+        _createTransactionHandlerMock
             .Verify(_ =>
-                _.Dispatch<CreateTransactionCommandRequest, CreateTransactionCommandResponse>(
+                _.Handle(
                     It.IsAny<CreateTransactionCommandRequest>(),
+                    It.IsAny<ICurrentUserContext>(),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
     }

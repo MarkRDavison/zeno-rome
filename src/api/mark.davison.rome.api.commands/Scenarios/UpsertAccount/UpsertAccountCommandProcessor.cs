@@ -4,16 +4,16 @@ public sealed class UpsertAccountCommandProcessor : ICommandProcessor<UpsertAcco
 {
     private readonly IDateService _dateService;
     private readonly IDbContext<RomeDbContext> _dbContext;
-    private readonly ICommandDispatcher _commandDispatcher;
+    private readonly ICommandHandler<CreateTransactionCommandRequest, CreateTransactionCommandResponse> _createTransactionHandler;
 
     public UpsertAccountCommandProcessor(
         IDateService dateService,
         IDbContext<RomeDbContext> dbContext,
-        ICommandDispatcher commandDispatcher)
+        ICommandHandler<CreateTransactionCommandRequest, CreateTransactionCommandResponse> createTransactionHandler)
     {
         _dateService = dateService;
         _dbContext = dbContext;
-        _commandDispatcher = commandDispatcher;
+        _createTransactionHandler = createTransactionHandler;
     }
 
     public async Task<UpsertAccountCommandResponse> ProcessAsync(UpsertAccountCommandRequest request, ICurrentUserContext currentUserContext, CancellationToken cancellationToken)
@@ -68,6 +68,8 @@ public sealed class UpsertAccountCommandProcessor : ICommandProcessor<UpsertAcco
 
             if (requestHasOpeningBalance && existingOpeningBalanceTransactionJournal == null)
             {
+                await _dbContext.SaveChangesAsync(cancellationToken);
+
                 var createTransactionRequest = new CreateTransactionCommandRequest()
                 {
                     TransactionTypeId = TransactionTypeConstants.OpeningBalance,
@@ -87,11 +89,17 @@ public sealed class UpsertAccountCommandProcessor : ICommandProcessor<UpsertAcco
                             [])
                     }
                 };
-                var createTransactionResponse = await _commandDispatcher.Dispatch<CreateTransactionCommandRequest, CreateTransactionCommandResponse>(createTransactionRequest, cancellationToken);
+                var createTransactionResponse = await _createTransactionHandler.Handle(
+                    createTransactionRequest,
+                    currentUserContext,
+                    cancellationToken);
 
                 if (!createTransactionResponse.Success)
                 {
-                    throw new NotImplementedException("TODO: HANDLE INVALID CREATE OPENING BALANCE");
+                    return new UpsertAccountCommandResponse
+                    {
+                        Errors = createTransactionResponse.Errors
+                    };
                 }
             }
             else if (openingBalanceNeedsEditing || openingBalanceNeedsDeleting)

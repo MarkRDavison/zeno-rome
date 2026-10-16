@@ -18,12 +18,12 @@ public abstract class BasePage<TAppSettings> where TAppSettings : class
 
     protected async Task<TPage> FillField<TPage>(TPage page, string label, string value) where TPage : BasePage<TAppSettings>
     {
-        await Page.GetByLabel(label).FillAsync(value);
+        await Page.GetByLabel(label, new PageGetByLabelOptions { Exact = true }).FillAsync(value);
         return page;
     }
     protected async Task<TPage> FillField<TPage>(TPage page, ILocator locator, string label, string value) where TPage : BasePage<TAppSettings>
     {
-        await locator.GetByLabel(label).FillAsync(value);
+        await locator.GetByLabel(label, new LocatorGetByLabelOptions { Exact = true }).FillAsync(value);
         return page;
     }
     protected async Task<TPage> FillField<TPage>(TPage page, string label, decimal value) where TPage : BasePage<TAppSettings>

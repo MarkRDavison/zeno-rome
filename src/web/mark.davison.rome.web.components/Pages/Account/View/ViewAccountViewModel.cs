@@ -81,7 +81,9 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
 
         foreach (var tGroup in groups)
         {
-            var splitDescription = tGroup.First().SplitTransactionDescription ?? string.Empty;
+            var splitDescription = tGroup
+                .Select(t => t.SplitTransactionDescription)
+                .FirstOrDefault(s => !string.IsNullOrEmpty(s)) ?? string.Empty;
             var transactionsByJournal = tGroup
                 .GroupBy(_ => _.TransactionJournalId)
                 .Where(g => g.Any(t => t.AccountId == _accountId))

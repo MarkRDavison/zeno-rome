@@ -18,7 +18,6 @@ public sealed class NewTransactionPage : RomeBasePage
 
     private const string AddSplitButtonLabel = "Add another split";
     private const string CreateTransactionButtonLabel = "Create transaction";
-    private const string SplitTransactionDescriptionLabel = "Split transaction description";
     private const string SplitFieldNameLabel = "Name";
     private const string SplitFieldSourceAccountLabel = "Source account";
     private const string SplitFieldDestinationAccountLabel = "Destination account";
@@ -57,7 +56,8 @@ public sealed class NewTransactionPage : RomeBasePage
                     await FillSplit(i, info.Splits[i]);
                 }
 
-                await FillField(this, SplitTransactionDescriptionLabel, info.Description ?? string.Empty);
+                await Page.GetByTestId(DataTestIds.EditTransactionSplitDescription)
+                    .FillAsync(info.Description ?? string.Empty);
             }
         }
 

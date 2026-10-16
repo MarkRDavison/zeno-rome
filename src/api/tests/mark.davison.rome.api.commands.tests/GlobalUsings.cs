@@ -1,6 +1,7 @@
 ﻿global using mark.davison.common.abstractions.Services;
 global using mark.davison.common.authentication.server.abstractions.Services;
 global using mark.davison.common.CQRS;
+global using mark.davison.common.server.abstractions.CQRS;
 global using mark.davison.common.persistence;
 global using mark.davison.common.server.test.Persistence;
 global using mark.davison.common.Services;

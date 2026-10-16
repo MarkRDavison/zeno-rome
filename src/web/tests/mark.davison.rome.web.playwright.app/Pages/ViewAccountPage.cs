@@ -49,15 +49,11 @@ public sealed class ViewAccountPage : RomeBasePage
     /// </summary>
     public async Task<ViewAccountPage> ExpectRegisterLeadingRows(params string[] expectedTextsInOrder)
     {
-        var rows = Page
-            .GetByTestId(DataTestIds.ViewAccountRegister)
-            .Locator($"[data-testid^='{DataTestIds.ViewAccountRegisterRowPrefix}']");
-
-        await rows.First.WaitForAsync();
-
         for (var i = 0; i < expectedTextsInOrder.Length; i++)
         {
-            var text = await rows.Nth(i).InnerTextAsync();
+            var row = Page.GetByTestId($"{DataTestIds.ViewAccountRegisterRowPrefix}{i}");
+            await row.WaitForAsync();
+            var text = await row.InnerTextAsync();
             await Assert.That(text).Contains(expectedTextsInOrder[i]);
         }
 
