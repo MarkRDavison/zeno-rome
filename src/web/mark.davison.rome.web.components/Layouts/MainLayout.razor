@@ -10,6 +10,7 @@
 @inject ICategoryState _categoryState
 @inject ITagState _tagState
 @inject IAppContextService _appContext
+@inject IAppSessionBootstrap _appSessionBootstrap
 @inject ITagManagerShell _tagManagerShell
 @inject IDialogService _dialogService
 @inject IBrowserViewportService _viewportService
@@ -117,6 +118,9 @@
         {
             _startupState.NotifyStateChanged(response.Value.AuthProviders);
         }
+
+        var authState = await _auth.GetAuthenticationStateAsync();
+        await EnsureAuthenticatedSessionAsync(authState);
     }
 
     private void OnAuthStateChanged(Task<AuthenticationState> authState)
@@ -126,23 +130,17 @@
 
     private async Task HandleAuthStateChanged(Task<AuthenticationState> authState)
     {
-        var newState = await authState;
-
-        if (newState.User.Identity?.IsAuthenticated ?? false)
-        {
-            var startupResponseTask = _clientRepository.Get<StartupQueryRequest, StartupQueryResponse>(CancellationToken.None);
-
-            var startupResponse = await startupResponseTask;
-            await Task.WhenAll(_categoryState.FetchState(), _tagState.FetchState());
-
-            if (startupResponse.SuccessWithValue)
-            {
-                _startupState.NotifyStateChanged(startupResponse.Value);
-                _appContext.UpdateRange(startupResponse.Value.UserContext.StartRange, startupResponse.Value.UserContext.EndRange);
-            }
-        }
-
+        await EnsureAuthenticatedSessionAsync(await authState);
         await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task EnsureAuthenticatedSessionAsync(AuthenticationState authState)
+    {
+        if (authState.User.Identity?.IsAuthenticated ?? false)
+        {
+            await _appSessionBootstrap.EnsureAuthenticatedStartupAsync();
+            await Task.WhenAll(_categoryState.FetchState(), _tagState.FetchState());
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

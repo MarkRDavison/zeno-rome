@@ -6,6 +6,7 @@ public static class DependencyInjectionExtensions
     {
         return services
             .AddScoped<IStartupState, StartupState>()
+            .AddScoped<IAppSessionBootstrap, AppSessionBootstrap>()
             .AddScoped<IAccountState, AccountState>()
             .AddScoped<ITransactionState, TransactionState>()
             .AddScoped<ICategoryState, CategoryState>()

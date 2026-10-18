@@ -8,13 +8,17 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
     private readonly IStartupState _startupState;
     private readonly ICategoryState _categoryState;
     private readonly ITransactionState _transactionState;
+    private readonly IAppSessionBootstrap _appSessionBootstrap;
+    private readonly IClientNavigationManager _clientNavigationManager;
 
     public ViewTransactionViewModel(
         IAccountState accountState,
         IStartupState startupState,
         ICategoryState categoryState,
         ITransactionState transactionState,
-        IAppContextService appContextService
+        IAppContextService appContextService,
+        IAppSessionBootstrap appSessionBootstrap,
+        IClientNavigationManager clientNavigationManager
     ) : base(
         appContextService)
     {
@@ -22,6 +26,8 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
         _startupState = startupState;
         _categoryState = categoryState;
         _transactionState = transactionState;
+        _appSessionBootstrap = appSessionBootstrap;
+        _clientNavigationManager = clientNavigationManager;
 
         RegisterState(_accountState);
         RegisterState(_startupState);
@@ -34,8 +40,19 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
         _initialized = false;
         _transactionGroupId = payload;
 
-        await _transactionState.FetchTransactions(_transactionGroupId);
-        await _accountState.FetchState(null);
+        await _appSessionBootstrap.EnsureAuthenticatedStartupAsync();
+
+        await Task.WhenAll(
+            _transactionState.FetchTransactions(_transactionGroupId),
+            _accountState.FetchState(null),
+            _categoryState.FetchState());
+
+        if (_transactionState.Loaded &&
+            !_transactionState.Transactions.Any(t => t.TransactionGroupId == _transactionGroupId))
+        {
+            _clientNavigationManager.NavigateTo(Routes.NotFound);
+            return true;
+        }
 
         _initialized = true;
         return true;
@@ -49,14 +66,18 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
     public string? TotalAmountStyle { get; private set; }
     public List<LinkDefinition> SourceAccounts { get; private set; } = [];
 
-    public bool Loading => !_initialized || IsStateLoading || _transactionGroupId == Guid.Empty;
+    public bool Loading =>
+        !_startupState.ReferenceDataLoaded ||
+        !_initialized ||
+        IsStateLoading ||
+        _transactionGroupId == Guid.Empty;
 
     // TODO: To helper
-    private TransactionDto GetSourceTransaction(Guid transactionTypeId, List<TransactionDto> transactions)
+    private TransactionDto? GetSourceTransaction(Guid transactionTypeId, List<TransactionDto> transactions)
     {
         if (transactionTypeId == TransactionTypeConstants.Transfer)
         {
-            return transactions.First(_ => _.Source);
+            return transactions.FirstOrDefault(_ => _.Source);
         }
         else if (
             transactionTypeId == TransactionTypeConstants.Deposit ||
@@ -65,25 +86,22 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
         {
             var sourceTransactionAccountTypes = AllowableSourceDestinationAccounts.GetSourceAccountTypes(transactionTypeId);
 
-            return transactions.First(_ =>
+            return transactions.FirstOrDefault(_ =>
             {
-                // TODO: Helper on account list state to go from id -> accountType???
-                // TODO: Loading this page directly crashes here, state not loaded???
-                var account = _accountState.Accounts.First(__ => __.Id == _.AccountId);
-
-                return sourceTransactionAccountTypes.Contains(account.AccountTypeId);
+                var account = _accountState.Accounts.FirstOrDefault(__ => __.Id == _.AccountId);
+                return account is not null && sourceTransactionAccountTypes.Contains(account.AccountTypeId);
             });
         }
 
-        return transactions.First(_ => _.Source);
+        return transactions.FirstOrDefault(_ => _.Source);
     }
 
     // TODO: To helper
-    private TransactionDto GetDestinationTransaction(Guid transactionTypeId, Guid sourceAccountId, Guid sourceAccountTypeId, List<TransactionDto> transactions)
+    private TransactionDto? GetDestinationTransaction(Guid transactionTypeId, Guid sourceAccountId, Guid sourceAccountTypeId, List<TransactionDto> transactions)
     {
         if (transactionTypeId == TransactionTypeConstants.Transfer)
         {
-            return transactions.First(_ => !_.Source);
+            return transactions.FirstOrDefault(_ => !_.Source);
         }
         else if (
             transactionTypeId == TransactionTypeConstants.Deposit ||
@@ -92,21 +110,19 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
         {
             var destTransactionAccountTypes = AllowableSourceDestinationAccounts.GetDestinationAccountTypesForSource(transactionTypeId, sourceAccountTypeId);
 
-            return transactions.First(_ =>
+            return transactions.FirstOrDefault(_ =>
             {
                 if (_.AccountId == sourceAccountId)
                 {
                     return false;
                 }
 
-                // TODO: Helper on account list state to go from id -> accountType???
-                var account = _accountState.Accounts.First(__ => __.Id == _.AccountId);
-
-                return destTransactionAccountTypes.Contains(account.AccountTypeId);
+                var account = _accountState.Accounts.FirstOrDefault(__ => __.Id == _.AccountId);
+                return account is not null && destTransactionAccountTypes.Contains(account.AccountTypeId);
             });
         }
 
-        return transactions.First(_ => !_.Source);
+        return transactions.FirstOrDefault(_ => !_.Source);
     }
 
     // TODO: Re-use/helperise, ViewAccount.razor.cs
@@ -197,6 +213,11 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
 
                 var source = GetSourceTransaction(transactionTypeId, transactions);
 
+                if (source is null)
+                {
+                    return (ViewTransactionItem?)null;
+                }
+
                 var sourceAccount = _accountState.Accounts.FirstOrDefault(__ => __.Id == source.AccountId);
 
                 if (sourceAccount == null)
@@ -205,6 +226,11 @@ public class ViewTransactionViewModel : BaseViewModel<Guid>
                 }
 
                 var dest = GetDestinationTransaction(transactionTypeId, source.AccountId, sourceAccount.AccountTypeId, transactions);
+
+                if (dest is null)
+                {
+                    return (ViewTransactionItem?)null;
+                }
 
                 var destAccount = _accountState.Accounts.FirstOrDefault(__ => __.Id == dest.AccountId);
 

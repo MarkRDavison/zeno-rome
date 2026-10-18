@@ -4,6 +4,7 @@ public interface IStartupState : IStateService
 {
 
     bool BootstrapComplete { get; }
+    bool ReferenceDataLoaded { get; }
     IList<string> AuthProviders { get; }
     List<AccountTypeDto> AccountTypes { get; }
     List<CurrencyDto> Currencies { get; }

@@ -16,6 +16,24 @@ public sealed class ViewTransactionPage : RomeBasePage
         _title = title;
     }
 
+    public static Guid ParseTransactionGroupIdFromUrl(string url)
+    {
+        var segments = new Uri(url).AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        var index = Array.IndexOf(segments, "transaction");
+        if (index < 0 || index + 1 >= segments.Length)
+        {
+            throw new InvalidOperationException($"Could not parse transaction id from URL: {url}");
+        }
+
+        return Guid.Parse(segments[index + 1]);
+    }
+
+    public static async Task<ViewTransactionPage> GotoTransaction(IPage page, PlaywrightAppSettings appSettings, Guid transactionGroupId)
+    {
+        await page.GotoAsync($"{appSettings.WEB_ORIGIN}/transaction/{transactionGroupId}");
+        return await Goto(page, appSettings);
+    }
+
     public static async Task<ViewTransactionPage> Goto(IPage page, PlaywrightAppSettings appSettings)
     {
         var titleLocator = page.GetByTestId(DataTestIds.ViewTransactionTitle);

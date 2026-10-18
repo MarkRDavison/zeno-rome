@@ -1,4 +1,6 @@
-﻿namespace mark.davison.rome.web.services.State;
+﻿using mark.davison.rome.shared.models.dto.Scenarios.Queries.AccountById;
+
+namespace mark.davison.rome.web.services.State;
 
 internal sealed class AccountState : IAccountState
 {
@@ -25,6 +27,18 @@ internal sealed class AccountState : IAccountState
         Accounts = [.. accounts];
         Loading = false;
         Loaded = true;
+        NotifyStateChanged();
+    }
+
+    public void MergeAccounts(IEnumerable<AccountDto> accounts)
+    {
+        var merged = Accounts.ToDictionary(_ => _.Id);
+        foreach (var account in accounts)
+        {
+            merged[account.Id] = account;
+        }
+
+        Accounts = merged.Values.ToList();
         NotifyStateChanged();
     }
 
@@ -57,12 +71,12 @@ internal sealed class AccountState : IAccountState
 
         NotifyStateChanged();
 
-        var request = new AccountListQueryRequest { AccountType = null }; // TODO: Replace this with a FetchTransactionsByAccount/account info query
-        var response = await _clientRepository.Get<AccountListQueryRequest, AccountListQueryResponse>(request, CancellationToken.None);
+        var request = new AccountByIdQueryRequest { AccountId = accountId };
+        var response = await _clientRepository.Get<AccountByIdQueryRequest, AccountByIdQueryResponse>(request, CancellationToken.None);
 
         if (response.SuccessWithValue)
         {
-            SetState([.. response.Value]);
+            SetState([response.Value]);
         }
         else
         {

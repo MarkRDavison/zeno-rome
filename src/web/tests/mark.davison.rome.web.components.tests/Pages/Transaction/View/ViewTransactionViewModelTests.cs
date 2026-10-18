@@ -62,6 +62,7 @@ public sealed class ViewTransactionViewModelTests
         var startupState = new Mock<IStartupState>();
         startupState.Setup(_ => _.Currencies).Returns([new CurrencyDto(currencyId, "NZD", "New Zealand Dollar", "$", 2)]);
         startupState.Setup(_ => _.TransactionTypes).Returns([new TransactionTypeDto(TransactionTypeConstants.Withdrawal, "Withdrawal")]);
+        startupState.Setup(_ => _.ReferenceDataLoaded).Returns(true);
         startupState.Setup(_ => _.Loading).Returns(false);
         startupState.Setup(_ => _.Loaded).Returns(true);
 
@@ -69,13 +70,21 @@ public sealed class ViewTransactionViewModelTests
         categoryState.Setup(_ => _.Categories).Returns([]);
         categoryState.Setup(_ => _.Loading).Returns(false);
         categoryState.Setup(_ => _.Loaded).Returns(true);
+        categoryState.Setup(_ => _.FetchState()).Returns(Task.CompletedTask);
+
+        accountState.Setup(_ => _.FetchState(It.IsAny<Guid?>())).Returns(Task.CompletedTask);
+
+        var bootstrap = new Mock<IAppSessionBootstrap>();
+        bootstrap.Setup(_ => _.EnsureAuthenticatedStartupAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
         var viewModel = new ViewTransactionViewModel(
             accountState.Object,
             startupState.Object,
             categoryState.Object,
             transactionState.Object,
-            new Mock<IAppContextService>().Object);
+            new Mock<IAppContextService>().Object,
+            bootstrap.Object,
+            new Mock<IClientNavigationManager>().Object);
 
         await viewModel.Initialize(transactionGroupId);
 

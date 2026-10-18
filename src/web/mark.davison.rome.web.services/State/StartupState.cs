@@ -3,6 +3,7 @@
 internal sealed class StartupState : IStartupState
 {
     public bool BootstrapComplete { get; private set; }
+    public bool ReferenceDataLoaded { get; private set; }
     public IList<string> AuthProviders { get; private set; } = [];
 
     public List<AccountTypeDto> AccountTypes { get; private set; } = [];
@@ -25,6 +26,7 @@ internal sealed class StartupState : IStartupState
         AccountTypes = [.. startupData.AccountTypes];
         Currencies = [.. startupData.Currencies];
         TransactionTypes = [.. startupData.TransactionTypes];
+        ReferenceDataLoaded = true;
 
         NotifyStateChanged();
     }

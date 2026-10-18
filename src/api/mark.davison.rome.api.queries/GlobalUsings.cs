@@ -5,6 +5,8 @@ global using mark.davison.common.server.abstractions.CQRS;
 global using mark.davison.rome.api.models.Entities;
 global using mark.davison.rome.api.persistence;
 global using mark.davison.rome.shared.accounting.constants;
+global using mark.davison.rome.api.queries.Scenarios.AccountQueries;
+global using mark.davison.rome.shared.models.dto.Scenarios.Queries.AccountById;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.AccountList;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.CategoryList;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.TagList;

@@ -65,6 +65,7 @@ public sealed class ViewAccountTests
         var startupState = new Mock<IStartupState>();
         startupState.Setup(_ => _.Currencies).Returns([new CurrencyDto(currencyId, "NZD", "NZ Dollar", "$", 2)]);
         startupState.Setup(_ => _.TransactionTypes).Returns([new TransactionTypeDto(TransactionTypeConstants.Withdrawal, "Withdrawal")]);
+        startupState.Setup(_ => _.ReferenceDataLoaded).Returns(true);
         startupState.Setup(_ => _.Loading).Returns(false);
         startupState.Setup(_ => _.Loaded).Returns(true);
 
@@ -79,6 +80,8 @@ public sealed class ViewAccountTests
         appContextService.Setup(_ => _.State).Returns(new AppContextState(monthRange.Item1, monthRange.Item2));
 
         var navigation = new Mock<IClientNavigationManager>();
+        var bootstrap = new Mock<IAppSessionBootstrap>();
+        bootstrap.Setup(_ => _.EnsureAuthenticatedStartupAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
         var viewModel = new ViewAccountViewModel(
             accountState.Object,
@@ -86,7 +89,8 @@ public sealed class ViewAccountTests
             transactionState.Object,
             categoryState.Object,
             appContextService.Object,
-            navigation.Object);
+            navigation.Object,
+            bootstrap.Object);
 
         viewModel.Initialize(accountId).GetAwaiter().GetResult();
         return viewModel;

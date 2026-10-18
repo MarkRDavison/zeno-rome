@@ -8,6 +8,7 @@ public class EditAccountViewModel : BaseViewModel<(Guid, EditAccountFormViewMode
     private readonly IAccountState _accountState;
     private readonly IFormSubmission<EditAccountFormViewModel> _formSubmission;
     private readonly IClientNavigationManager _clientNavigationManager;
+    private readonly IAppSessionBootstrap _appSessionBootstrap;
     private bool _isCreateNew;
     private bool _initializing;
 
@@ -16,7 +17,8 @@ public class EditAccountViewModel : BaseViewModel<(Guid, EditAccountFormViewMode
         IAccountState accountState,
         IFormSubmission<EditAccountFormViewModel> formSubmission,
         IClientNavigationManager clientNavigationManager,
-        IAppContextService appContextService
+        IAppContextService appContextService,
+        IAppSessionBootstrap appSessionBootstrap
     ) : base(
         appContextService)
     {
@@ -24,6 +26,7 @@ public class EditAccountViewModel : BaseViewModel<(Guid, EditAccountFormViewMode
         _accountState = accountState;
         _formSubmission = formSubmission;
         _clientNavigationManager = clientNavigationManager;
+        _appSessionBootstrap = appSessionBootstrap;
 
         RegisterState(_startupState);
         RegisterState(_accountState);
@@ -42,6 +45,7 @@ public class EditAccountViewModel : BaseViewModel<(Guid, EditAccountFormViewMode
         FormViewModel = null!;
         NotifyPropertyChanged(nameof(Loading));
 
+        await _appSessionBootstrap.EnsureAuthenticatedStartupAsync();
         await _accountState.FetchAccount(accountId);
 
         var account = _accountState.Accounts.FirstOrDefault(a => a.Id == accountId);
@@ -141,7 +145,7 @@ public class EditAccountViewModel : BaseViewModel<(Guid, EditAccountFormViewMode
     }
 
     public string Title => _isCreateNew ? "Create account" : "Edit account";
-    public bool Loading => _initializing || FormViewModel is null || _accountState.Loading;
+    public bool Loading => _initializing || FormViewModel is null || _accountState.Loading || !_startupState.ReferenceDataLoaded;
     public bool InProgress { get; private set; }
     public bool PrimaryDisabled => InProgress;
     public EditContext? EditContext { get; private set; }

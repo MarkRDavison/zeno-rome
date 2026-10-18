@@ -102,6 +102,7 @@ public sealed class EditAccountViewModelTests
         var startupState = new Mock<IStartupState>();
         startupState.Setup(_ => _.Currencies).Returns([new CurrencyDto(CurrencyConstants.NZD, "NZD", "NZ Dollar", "$", 2)]);
         startupState.Setup(_ => _.AccountTypes).Returns([new AccountTypeDto(AccountTypeConstants.Asset, "Asset")]);
+        startupState.Setup(_ => _.ReferenceDataLoaded).Returns(true);
         startupState.Setup(_ => _.Loading).Returns(false);
         startupState.Setup(_ => _.Loaded).Returns(true);
 
@@ -109,12 +110,16 @@ public sealed class EditAccountViewModelTests
         var month = DateOnly.FromDateTime(DateTime.Today).GetMonthRange();
         appContext.Setup(_ => _.State).Returns(new AppContextState(month.Item1, month.Item2));
 
+        var bootstrap = new Mock<IAppSessionBootstrap>();
+        bootstrap.Setup(_ => _.EnsureAuthenticatedStartupAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+
         return new EditAccountViewModel(
             startupState.Object,
             accountState.Object,
             submission.Object,
             navigation.Object,
-            appContext.Object)
+            appContext.Object,
+            bootstrap.Object)
         {
             FormViewModel = new EditAccountFormViewModel(startupState.Object)
         };

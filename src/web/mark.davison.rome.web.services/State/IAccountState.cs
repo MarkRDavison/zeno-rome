@@ -9,4 +9,6 @@ public interface IAccountState : IStateService
     IList<AccountDto> Accounts { get; }
 
     Task FetchAccount(Guid accountId);
+
+    void MergeAccounts(IEnumerable<AccountDto> accounts);
 }

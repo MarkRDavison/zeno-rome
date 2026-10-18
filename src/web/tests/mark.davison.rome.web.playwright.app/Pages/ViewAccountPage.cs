@@ -21,6 +21,12 @@ public sealed class ViewAccountPage : RomeBasePage
         return Guid.Parse(segments[accountIndex + 1]);
     }
 
+    public static async Task<ViewAccountPage> GotoAccount(IPage page, PlaywrightAppSettings appSettings, Guid accountId)
+    {
+        await page.GotoAsync($"{appSettings.WEB_ORIGIN}/account/{accountId}");
+        return await Goto(page, appSettings);
+    }
+
     public static async Task<ViewAccountPage> Goto(IPage page, PlaywrightAppSettings appSettings)
     {
         var titleLocator = page.GetByTestId(DataTestIds.ViewAccountTitle);

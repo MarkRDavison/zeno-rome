@@ -9,6 +9,7 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
     private readonly ICategoryState _categoryState;
     private readonly IAppContextService _appContextService;
     private readonly IClientNavigationManager _clientNavigationManager;
+    private readonly IAppSessionBootstrap _appSessionBootstrap;
 
     public ViewAccountViewModel(
         IAccountState accountState,
@@ -16,7 +17,8 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
         ITransactionState transactionState,
         ICategoryState categoryState,
         IAppContextService appContextService,
-        IClientNavigationManager clientNavigationManager
+        IClientNavigationManager clientNavigationManager,
+        IAppSessionBootstrap appSessionBootstrap
     ) : base(
         appContextService)
     {
@@ -26,6 +28,7 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
         _categoryState = categoryState;
         _appContextService = appContextService;
         _clientNavigationManager = clientNavigationManager;
+        _appSessionBootstrap = appSessionBootstrap;
 
         RegisterState(_accountState);
         RegisterState(_startupState);
@@ -49,9 +52,32 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
 
     protected async Task LoadAccountState()
     {
-        await _accountState.FetchAccount(_accountId);
-        await _transactionState.FetchTransactionsForAccount(_accountId);
-        await _categoryState.FetchState();
+        await _appSessionBootstrap.EnsureAuthenticatedStartupAsync();
+
+        await Task.WhenAll(
+            _accountState.FetchAccount(_accountId),
+            _transactionState.FetchTransactionsForAccount(_accountId),
+            _categoryState.FetchState());
+
+        if (_accountState.Loaded && Account is null)
+        {
+            _clientNavigationManager.NavigateTo(Routes.NotFound);
+            return;
+        }
+
+        await EnsurePeerAccountsLoadedAsync();
+    }
+
+    private async Task EnsurePeerAccountsLoadedAsync()
+    {
+        var knownIds = _accountState.Accounts.Select(_ => _.Id).ToHashSet();
+        var needsFullList = _transactionState.Transactions
+            .Any(t => !knownIds.Contains(t.AccountId));
+
+        if (needsFullList)
+        {
+            await _accountState.FetchState(null);
+        }
     }
 
     public string GetFormattedAmount(Guid? currencyId, long? amount)
@@ -61,7 +87,11 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
             return string.Empty;
         }
 
-        var currency = _startupState.Currencies.First(_ => _.Id == currencyId);
+        var currency = _startupState.Currencies.FirstOrDefault(_ => _.Id == currencyId);
+        if (currency is null)
+        {
+            return string.Empty;
+        }
 
         return CurrencyRules.FromPersistedToFormatted(amount.Value, currency.Symbol, currency.DecimalPlaces);
     }
@@ -210,7 +240,10 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
     }
 
     public AccountDto? Account => _accountState.Accounts.FirstOrDefault(_ => _.Id == _accountId);
-    public bool Loading => _accountId != Guid.Empty && Account is null || IsStateLoading;
+    public bool Loading =>
+        !_startupState.ReferenceDataLoaded ||
+        (_accountId != Guid.Empty && Account is null && _accountState.Loading) ||
+        IsStateLoading;
     public string Title => Account?.Name ?? string.Empty;
     public List<CommandMenuItem> CommandMenuItems { get; set; } =
     [

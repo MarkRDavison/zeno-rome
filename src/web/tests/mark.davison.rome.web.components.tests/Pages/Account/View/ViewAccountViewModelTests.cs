@@ -171,6 +171,7 @@ public sealed class ViewAccountViewModelTests
             new TransactionTypeDto(TransactionTypeConstants.Transfer, "Transfer"),
             new TransactionTypeDto(TransactionTypeConstants.Deposit, "Deposit"),
         ]);
+        startupState.Setup(_ => _.ReferenceDataLoaded).Returns(true);
         startupState.Setup(_ => _.Loading).Returns(false);
         startupState.Setup(_ => _.Loaded).Returns(true);
 
@@ -184,6 +185,8 @@ public sealed class ViewAccountViewModelTests
         appContextService.Setup(_ => _.State).Returns(appContext);
 
         var navigation = new Mock<IClientNavigationManager>();
+        var bootstrap = new Mock<IAppSessionBootstrap>();
+        bootstrap.Setup(_ => _.EnsureAuthenticatedStartupAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
         var viewModel = new ViewAccountViewModel(
             accountState.Object,
@@ -191,7 +194,8 @@ public sealed class ViewAccountViewModelTests
             transactionState.Object,
             categoryState.Object,
             appContextService.Object,
-            navigation.Object);
+            navigation.Object,
+            bootstrap.Object);
 
         viewModel.Initialize(accountId).GetAwaiter().GetResult();
 

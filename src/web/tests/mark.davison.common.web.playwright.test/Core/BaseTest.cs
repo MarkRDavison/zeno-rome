@@ -1,7 +1,8 @@
 ﻿namespace mark.davison.common.web.playwright.test.Core;
 
-public abstract class BaseTest : PageTest, IAsyncDisposable
+public abstract class BaseTest : IAsyncDisposable
 {
+    private static IPlaywright? _playwright;
     private static IBrowser? _browser;
     private static IBrowserContext? _context;
     protected readonly Faker _faker = new Faker();
@@ -98,11 +99,19 @@ public abstract class BaseTest : PageTest, IAsyncDisposable
         if (_context is not null)
         {
             await _context.DisposeAsync();
+            _context = null;
         }
 
         if (_browser is not null)
         {
             await _browser.DisposeAsync();
+            _browser = null;
+        }
+
+        if (_playwright is not null)
+        {
+            _playwright.Dispose();
+            _playwright = null;
         }
     }
 
@@ -112,7 +121,10 @@ public abstract class BaseTest : PageTest, IAsyncDisposable
         if (AppSettings is not null)
         {
             await OnPreTestInitialise();
-            _browser ??= await Playwright.Firefox.LaunchAsync(new()
+            _playwright ??= await Microsoft.Playwright.Playwright.CreateAsync();
+            _playwright.Selectors.SetTestIdAttribute("data-testid");
+
+            _browser ??= await _playwright.Firefox.LaunchAsync(new()
             {
                 Headless = !Debug,
                 SlowMo = Debug ? 250 : null
@@ -139,6 +151,11 @@ public abstract class BaseTest : PageTest, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        if (AppSettings is null || CurrentPage is null)
+        {
+            return;
+        }
+
         var testContext = TestContext.Current;
 
         if ((testContext?.Execution?.Result?.State is TestState.Failed or TestState.Timeout) &&
