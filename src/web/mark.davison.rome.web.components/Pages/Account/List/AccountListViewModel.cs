@@ -40,6 +40,14 @@ public class AccountListViewModel : BaseViewModel<Guid?>
         return true;
     }
 
+    protected override async Task OnAppContextUpdated(AppContextState state)
+    {
+        if (!_isLoading)
+        {
+            await _accountState.FetchState(_accountTypeId);
+        }
+    }
+
     public bool Loading =>
         _isLoading ||
         !_startupState.BootstrapComplete ||
@@ -81,9 +89,9 @@ public class AccountListViewModel : BaseViewModel<Guid?>
             AccountType = _startupState.AccountTypes.First(_ => _.Id == account.AccountTypeId).Type,
             Active = account.Active,
             BalanceDifference = CurrencyRules.FromPersistedToFormatted(account.BalanceDifference, currency.Symbol, currency.DecimalPlaces),
-            BalanceDifferenceAmount = 0,
+            BalanceDifferenceAmount = account.BalanceDifference,
             CurrentBalance = CurrencyRules.FromPersistedToFormatted(account.CurrentBalance, currency.Symbol, currency.DecimalPlaces),
-            CurrentBalanceAmount = 0,
+            CurrentBalanceAmount = account.CurrentBalance,
             LastModified = account.LastModified.LocalDateTime,
             Name = new LinkDefinition { Text = account.Name, Href = RouteHelpers.Account(account.Id) },
         };

@@ -8,20 +8,20 @@ public sealed class ViewAccountViewModelTests
     private readonly DateOnly _today = DateOnly.FromDateTime(DateTime.Today);
 
     [Test]
-    public async Task GenerateRows_ExcludesTransactionsOutsideDateRange()
+    public async Task GenerateRows_IncludesAllTransactionsReturnedFromApi()
     {
         var accountId = Guid.NewGuid();
         var inRange = CreatePair(accountId, Guid.NewGuid(), _today, groupId: Guid.NewGuid(), journalId: Guid.NewGuid(), journalOrder: 0);
-        var outOfRange = CreatePair(accountId, Guid.NewGuid(), _today.AddMonths(-2), groupId: Guid.NewGuid(), journalId: Guid.NewGuid(), journalOrder: 0);
+        var other = CreatePair(accountId, Guid.NewGuid(), _today.AddMonths(-2), groupId: Guid.NewGuid(), journalId: Guid.NewGuid(), journalOrder: 0);
 
         var viewModel = CreateViewModel(
             accountId,
-            [inRange.source, inRange.dest, outOfRange.source, outOfRange.dest],
+            [inRange.source, inRange.dest, other.source, other.dest],
             new AppContextState(_today.AddDays(-7), _today.AddDays(7)));
 
         var rows = viewModel.GenerateRows().ToList();
 
-        await Assert.That(rows.Count(_ => !_.IsSplit)).IsEqualTo(1);
+        await Assert.That(rows.Count(_ => !_.IsSplit)).IsEqualTo(2);
     }
 
     [Test]

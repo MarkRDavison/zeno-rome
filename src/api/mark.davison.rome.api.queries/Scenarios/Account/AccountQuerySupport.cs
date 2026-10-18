@@ -50,13 +50,16 @@ internal static class AccountQuerySupport
         IReadOnlyList<DatedTransactionAmount> amounts,
         IFinanceUserContext financeUserContext)
     {
-        var currentBalance = amounts
+        var balanceAtEnd = amounts
             .Where(_ => _.Date <= financeUserContext.RangeEnd)
             .Sum(_ => _.Amount);
 
-        var balanceDifference = amounts
-            .Where(_ => financeUserContext.RangeStart <= _.Date && _.Date <= financeUserContext.RangeEnd)
+        var balanceAtStart = amounts
+            .Where(_ => _.Date < financeUserContext.RangeStart)
             .Sum(_ => _.Amount);
+
+        var currentBalance = balanceAtEnd;
+        var balanceDifference = balanceAtEnd - balanceAtStart;
 
         return new AccountDto(
             account.Id,

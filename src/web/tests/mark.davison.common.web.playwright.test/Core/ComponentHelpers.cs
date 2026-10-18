@@ -1,4 +1,6 @@
-﻿namespace mark.davison.common.web.playwright.test.Core;
+﻿using System.Globalization;
+
+namespace mark.davison.common.web.playwright.test.Core;
 
 public static class ComponentHelpers
 {
@@ -47,7 +49,7 @@ public static class ComponentHelpers
     {
         var control = page.GetByLabel(label);
 
-        await control.ClickAsync();
+        await OpenMudSelectAsync(control);
 
         var popupOptions = await page.Locator(".mud-popover-open p").AllAsync();
 
@@ -67,9 +69,9 @@ public static class ComponentHelpers
 
     public static async Task SelectAsync(IPage page, ILocator locator, string label, string value)
     {
-        var control = locator.GetByLabel(label);
+        var control = locator.GetByLabel(label, new LocatorGetByLabelOptions { Exact = true });
 
-        await control.ClickAsync();
+        await OpenMudSelectAsync(control);
 
         var popupOptions = await page.Locator(".mud-popover-open p").AllAsync();
 
@@ -131,6 +133,18 @@ public static class ComponentHelpers
         await SelectMudDatePickerAsync(page, datePicker, value);
     }
 
+    private static async Task OpenMudSelectAsync(ILocator labeledControl)
+    {
+        if (await labeledControl.IsVisibleAsync())
+        {
+            await labeledControl.ClickAsync();
+            return;
+        }
+
+        var controlScope = labeledControl.Locator("xpath=ancestor::div[contains(@class,'mud-input-control')]");
+        await controlScope.GetByRole(AriaRole.Button).First.ClickAsync();
+    }
+
     private static async Task SelectMudDatePickerAsync(IPage page, ILocator datePickerInput, DateOnly value)
     {
         var id = await datePickerInput.GetAttributeAsync("id");
@@ -159,7 +173,50 @@ public static class ComponentHelpers
         var months = popup.Locator(".mud-picker-month-container button");
         await months.Nth(value.Month - 1).ClickAsync();
 
-        var day = value.Day.ToString();
-        await popup.GetByText(day, new LocatorGetByTextOptions { Exact = true }).ClickAsync();
+        await ClickCalendarDayAsync(popup, value);
+    }
+
+    public static async Task SelectDateInOpenMudPopover(ILocator popover, DateOnly date)
+    {
+        await NavigateMudPopoverToYearMonthAsync(popover, date);
+        await ClickCalendarDayAsync(popover, date);
+    }
+
+    private static async Task NavigateMudPopoverToYearMonthAsync(ILocator popover, DateOnly date)
+    {
+        await popover.Locator(".mud-button-year").ClickAsync();
+
+        var pickerIdYear = await popover.Locator(".mud-picker-year").First.GetAttributeAsync("id");
+        if (string.IsNullOrEmpty(pickerIdYear) || pickerIdYear.Length < 4)
+        {
+            throw new InvalidOperationException("Could not find the picker year id");
+        }
+
+        var pickerId = pickerIdYear[..^4];
+        var expectedId = pickerId + date.ToString("yyyy", CultureInfo.InvariantCulture);
+        await popover.Locator($"div[id=\"{expectedId}\"]").ClickAsync();
+
+        var months = popover.Locator(".mud-picker-month-container button");
+        await months.Nth(date.Month - 1).ClickAsync();
+    }
+
+    private static async Task ClickCalendarDayAsync(ILocator popover, DateOnly date)
+    {
+        var monthName = date.ToString("MMMM", CultureInfo.InvariantCulture);
+        var day = date.Day.ToString(CultureInfo.InvariantCulture);
+
+        var header = popover
+            .Locator(".mud-picker-calendar-header")
+            .Filter(new LocatorFilterOptions { HasTextString = monthName })
+            .Filter(new LocatorFilterOptions { HasTextString = date.Year.ToString(CultureInfo.InvariantCulture) });
+
+        var calendar = header
+            .First
+            .Locator("xpath=following-sibling::div[contains(@class,'mud-picker-calendar-transition')]");
+
+        await calendar
+            .Locator("button.mud-picker-calendar-day:not(.mud-hidden)")
+            .GetByText(day, new LocatorGetByTextOptions { Exact = true })
+            .ClickAsync();
     }
 }

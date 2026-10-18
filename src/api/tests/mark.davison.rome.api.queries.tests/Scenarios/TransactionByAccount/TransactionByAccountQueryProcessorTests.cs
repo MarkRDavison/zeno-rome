@@ -4,14 +4,19 @@ public sealed class TransactionByAccountQueryProcessorTests
 {
     private readonly IDbContext<RomeDbContext> _dbContext;
     private readonly Mock<ICurrentUserContext> _currentUserContextMock;
+    private readonly Mock<IFinanceUserContext> _financeUserContextMock;
     private readonly TransactionByAccountQueryProcessor _transactionByAccountQueryProcessor;
 
     public TransactionByAccountQueryProcessorTests()
     {
         _dbContext = DbContextHelpers.CreateInMemory(_ => new RomeDbContext(_));
         _currentUserContextMock = new(MockBehavior.Strict);
+        _financeUserContextMock = new(MockBehavior.Strict);
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        _financeUserContextMock.Setup(_ => _.RangeStart).Returns(today.AddYears(-10));
+        _financeUserContextMock.Setup(_ => _.RangeEnd).Returns(today.AddYears(10));
 
-        _transactionByAccountQueryProcessor = new(_dbContext);
+        _transactionByAccountQueryProcessor = new(_dbContext, _financeUserContextMock.Object);
     }
 
     [Test]
@@ -83,6 +88,29 @@ public sealed class TransactionByAccountQueryProcessorTests
     }
 
     [Test]
+    public async Task ProcessAsync_ExcludesJournalsOutsideDateRange()
+    {
+        var assetAccountId = Guid.NewGuid();
+        var expenseId = Guid.NewGuid();
+        var inRangeDate = new DateOnly(2026, 3, 15);
+        var outOfRangeDate = new DateOnly(2026, 1, 10);
+
+        await SeedJournalPair(assetAccountId, expenseId, order: 0, categoryId: null, groupTitle: string.Empty, inRangeDate);
+        await SeedJournalPair(assetAccountId, expenseId, order: 0, categoryId: null, groupTitle: string.Empty, outOfRangeDate);
+
+        _financeUserContextMock.Setup(_ => _.RangeStart).Returns(new DateOnly(2026, 3, 1));
+        _financeUserContextMock.Setup(_ => _.RangeEnd).Returns(new DateOnly(2026, 3, 31));
+
+        var response = await _transactionByAccountQueryProcessor.ProcessAsync(
+            new TransactionByAccountQueryRequest { AccountId = assetAccountId },
+            _currentUserContextMock.Object,
+            CancellationToken.None);
+
+        await Assert.That(response.Value).Count().IsEqualTo(2);
+        await Assert.That(response.Value.All(_ => _.Date == inRangeDate)).IsTrue();
+    }
+
+    [Test]
     public async Task ProcessAsync_DoesNotReturnJournalsForOtherAccounts()
     {
         var assetAccountId = Guid.NewGuid();
@@ -102,8 +130,15 @@ public sealed class TransactionByAccountQueryProcessorTests
         await Assert.That(response.Value.Any(_ => _.AccountId == otherAssetId)).IsFalse();
     }
 
-    private async Task SeedJournalPair(Guid sourceAccountId, Guid destinationAccountId, int order, Guid? categoryId, string groupTitle)
+    private async Task SeedJournalPair(
+        Guid sourceAccountId,
+        Guid destinationAccountId,
+        int order,
+        Guid? categoryId,
+        string groupTitle,
+        DateOnly? date = null)
     {
+        var journalDate = date ?? DateOnly.FromDateTime(DateTime.Today);
         var transactionGroup = new TransactionGroup
         {
             Id = Guid.NewGuid(),
@@ -112,7 +147,7 @@ public sealed class TransactionByAccountQueryProcessorTests
             LastModified = DateTime.Now,
             UserId = Guid.Empty
         };
-        var transactionJournal = CreateJournal(transactionGroup.Id, order, DateOnly.FromDateTime(DateTime.Today), categoryId);
+        var transactionJournal = CreateJournal(transactionGroup.Id, order, journalDate, categoryId);
 
         await _dbContext.AddAsync(transactionGroup, CancellationToken.None);
         await _dbContext.AddAsync(transactionJournal, CancellationToken.None);

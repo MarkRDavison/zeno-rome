@@ -17,6 +17,9 @@ public partial class AppContext
     [Inject]
     public required IAuthenticationService AuthenticationService { get; set; }
 
+    [Inject]
+    public required ISnackbar Snackbar { get; set; }
+
     [AllowNull]
     private MudDateRangePicker _picker;
 
@@ -76,37 +79,56 @@ public partial class AppContext
 
     private async Task DateRangeChanged(DateRange range)
     {
-        if (!_changeInProgress)
+        if (_changeInProgress || range.Start is null || range.End is null)
         {
-            _changeInProgress = true;
+            return;
+        }
 
-            _range = range;
+        var start = DateOnly.FromDateTime(range.Start.Value);
+        var end = DateOnly.FromDateTime(range.End.Value);
 
-            try
+        if (start > end)
+        {
+            Snackbar.Add("End date must be on or after start date.", Severity.Error);
+            UpdateRangeFromAppContextService();
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        _changeInProgress = true;
+
+        _range = range;
+
+        try
+        {
+            var request = new SetUserContextCommandRequest
             {
-                var request = new SetUserContextCommandRequest
-                {
-                    StartRange = DateOnly.FromDateTime(range.Start!.Value),
-                    EndRange = DateOnly.FromDateTime(range.End!.Value)
-                };
+                StartRange = start,
+                EndRange = end
+            };
 
-                var response = await ClientHttpRepository.Post<SetUserContextCommandRequest, SetUserContextCommandResponse>(request, CancellationToken.None);
+            var response = await ClientHttpRepository.Post<SetUserContextCommandRequest, SetUserContextCommandResponse>(request, CancellationToken.None);
 
-                if (response.SuccessWithValue)
-                {
-                    _range = new(
-                        response.Value.StartRange.ToDateTime(TimeOnly.MinValue),
-                        response.Value.EndRange.ToDateTime(TimeOnly.MinValue));
-
-                    AppContextService.UpdateRange(
-                        DateOnly.FromDateTime(_range.Start!.Value),
-                        DateOnly.FromDateTime(_range.End!.Value));
-                }
-            }
-            finally
+            if (response.SuccessWithValue)
             {
-                _changeInProgress = false;
+                _range = new(
+                    response.Value.StartRange.ToDateTime(TimeOnly.MinValue),
+                    response.Value.EndRange.ToDateTime(TimeOnly.MinValue));
+
+                AppContextService.UpdateRange(
+                    DateOnly.FromDateTime(_range.Start!.Value),
+                    DateOnly.FromDateTime(_range.End!.Value));
             }
+            else
+            {
+                Snackbar.Add("Could not save date range. Please try again.", Severity.Error);
+                UpdateRangeFromAppContextService();
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        finally
+        {
+            _changeInProgress = false;
         }
     }
 

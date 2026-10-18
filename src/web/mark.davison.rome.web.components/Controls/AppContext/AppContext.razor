@@ -6,7 +6,7 @@
 
 <MudStack Class="app-context" Row AlignItems="AlignItems.Center">
     <MudSpacer />
-    <MudButton OnClick="@OpenPicker">@FormattedRange</MudButton>
+    <MudButton data-testid="@DataTestIds.AppContextDateRangeButton" OnClick="@OpenPicker">@FormattedRange</MudButton>
     <MudDateRangePicker @ref="_picker" DateRange="@_range" DateRangeChanged="@DateRangeChanged" AutoClose="true">
         <PickerActions>
             <MudButton Class="mr-auto align-self-start" OnClick="@Close">Cancel</MudButton>

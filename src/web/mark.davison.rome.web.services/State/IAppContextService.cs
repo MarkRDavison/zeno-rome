@@ -7,6 +7,4 @@ public interface IAppContextService
     void UpdateRange(DateOnly start, DateOnly end);
 
     event EventHandler RangeUpdated;
-
-    AppContextState? GetChangedState(AppContextState existing);
 }

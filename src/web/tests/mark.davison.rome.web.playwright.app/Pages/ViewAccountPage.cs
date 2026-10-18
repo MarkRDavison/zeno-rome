@@ -77,4 +77,24 @@ public sealed class ViewAccountPage : RomeBasePage
 
         return this;
     }
+
+    public async Task<ViewAccountPage> ExpectRegisterContains(string expectedText)
+    {
+        var register = Page.GetByTestId(DataTestIds.ViewAccountRegister);
+        await register.WaitForAsync();
+        var body = await register.InnerTextAsync();
+        await Assert.That(body).Contains(expectedText);
+
+        return this;
+    }
+
+    public async Task<ViewAccountPage> ExpectRegisterDoesNotContain(string text)
+    {
+        var register = Page.GetByTestId(DataTestIds.ViewAccountRegister);
+        await register.WaitForAsync();
+        var body = await register.InnerTextAsync();
+        await Assert.That(body).DoesNotContain(text);
+
+        return this;
+    }
 }

@@ -98,17 +98,12 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
 
     public IEnumerable<ViewAccountGridRow> GenerateRows()
     {
-        var rangeStart = _appContextService.State.RangeStart;
-        var rangeEnd = _appContextService.State.RangeEnd;
         List<ViewAccountGridRow> items = [];
         var registerIndex = 0;
 
         var groups = _transactionState.Transactions
             .GroupBy(_ => _.TransactionGroupId)
-            .Where(g => g.Any(t =>
-                t.AccountId == _accountId &&
-                rangeStart <= t.Date &&
-                t.Date <= rangeEnd))
+            .Where(g => g.Any(t => t.AccountId == _accountId))
             .OrderByDescending(g => g.Where(t => t.AccountId == _accountId).Max(t => t.Date))
             .ThenByDescending(g => g.Key);
 
@@ -238,6 +233,9 @@ public class ViewAccountViewModel : BaseViewModel<Guid>
     {
         return " border-style: none;";
     }
+
+    public string BalanceAsOfPeriodEndTooltip =>
+        $"Balance as of {_appContextService.State.RangeEnd.ToOrdinalShortDate()}";
 
     public AccountDto? Account => _accountState.Accounts.FirstOrDefault(_ => _.Id == _accountId);
     public bool Loading =>

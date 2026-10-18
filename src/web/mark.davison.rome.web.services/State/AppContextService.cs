@@ -23,19 +23,4 @@ internal sealed class AppContextService : IAppContextService
 
         RangeUpdated?.Invoke(this, EventArgs.Empty);
     }
-
-    public AppContextState? GetChangedState(AppContextState existing)
-    {
-        if (State.RangeStart != existing.RangeStart ||
-            State.RangeEnd != existing.RangeEnd)
-        {
-            Console.WriteLine("GetChangedState - changed!");
-            return State;
-        }
-
-        Console.WriteLine("GetChangedState - not changed");
-        Console.WriteLine(" - start: {0} vs {1}", State.RangeStart, existing.RangeStart);
-        Console.WriteLine(" - end:   {0} vs {1}", State.RangeEnd, existing.RangeEnd);
-        return null;
-    }
 }

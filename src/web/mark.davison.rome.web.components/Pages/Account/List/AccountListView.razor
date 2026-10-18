@@ -25,8 +25,8 @@
                 </TemplateColumn>
                 <PropertyColumn Title="Account type" Property="_ => _.AccountType" Hidden="@(Type is null)" />
                 <PropertyColumn Title="Account number" Property="_ => _.AccountNumber" />
-                <PropertyColumn Title="Current balance" Property="_ => _.CurrentBalance" CellStyleFunc="@ViewModel.AmountCellStyleFunc(_ => _.CurrentBalanceAmount)" />
-                <PropertyColumn Title="Balance difference" Property="_ => _.BalanceDifference" CellStyleFunc="@ViewModel.AmountCellStyleFunc(_ => _.BalanceDifferenceAmount)" />
+                <PropertyColumn Title="Balance (period end)" Property="_ => _.CurrentBalance" CellStyleFunc="@ViewModel.AmountCellStyleFunc(_ => _.CurrentBalanceAmount)" />
+                <PropertyColumn Title="Change in period" Property="_ => _.BalanceDifference" CellStyleFunc="@ViewModel.AmountCellStyleFunc(_ => _.BalanceDifferenceAmount)" />
                 <TemplateColumn Title="Last modified">
                     <CellTemplate>
                         <MudText>@context.Item.LastModified.ToShortDateString()</MudText>

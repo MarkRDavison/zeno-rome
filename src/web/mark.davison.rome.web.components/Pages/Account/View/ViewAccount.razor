@@ -9,9 +9,11 @@
                 <MudStack Row="true">
                     <MudText data-testid="@DataTestIds.ViewAccountTitle" 
                              Typo="Typo.h4">@ViewModel.Title</MudText>
-                    <MudText data-testid="@DataTestIds.ViewAccountCurrentBalance" 
-                                Class="@GetAccountCurrentBalanceCssClasses()"
-                                Typo="Typo.h5">@ViewModel.GetFormattedAmount(ViewModel.Account?.CurrencyId, ViewModel.Account?.CurrentBalance)</MudText>
+                    <MudTooltip Text="@ViewModel.BalanceAsOfPeriodEndTooltip">
+                        <MudText data-testid="@DataTestIds.ViewAccountCurrentBalance" 
+                                    Class="@GetAccountCurrentBalanceCssClasses()"
+                                    Typo="Typo.h5">@ViewModel.GetFormattedAmount(ViewModel.Account?.CurrencyId, ViewModel.Account?.CurrentBalance)</MudText>
+                    </MudTooltip>
                 </MudStack>
                 <MudDataGrid data-testid="@DataTestIds.ViewAccountRegister"
                              Items="@ViewModel.GenerateRows()"

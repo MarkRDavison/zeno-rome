@@ -3,6 +3,7 @@
     public static class DataTestIds
     {
         public const string Username = "username";
+        public const string AppContextDateRangeButton = "app-context-date-range-button";
         public const string ManageIcon = "manage-icon";
         public const string AdminIcon = "admin-icon";
 
