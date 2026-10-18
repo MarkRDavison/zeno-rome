@@ -56,6 +56,7 @@ public sealed class UpsertAccountCommandProcessor : ICommandProcessor<UpsertAcco
             account.AccountNumber = request.UpsertAccountDto.AccountNumber;
             account.AccountTypeId = request.UpsertAccountDto.AccountTypeId;
             account.CurrencyId = request.UpsertAccountDto.CurrencyId;
+            account.IsFavourite = request.UpsertAccountDto.IsFavourite;
 
             await _dbContext.UpsertEntityAsync(account, cancellationToken);
 
@@ -161,6 +162,7 @@ public sealed class UpsertAccountCommandProcessor : ICommandProcessor<UpsertAcco
                     account.AccountNumber,
                     request.UpsertAccountDto.OpeningBalance ?? 0,
                     account.IsActive,
+                    account.IsFavourite,
                     account.LastModified,
                     request.UpsertAccountDto.OpeningBalance ?? 0,
                     account.CurrencyId,

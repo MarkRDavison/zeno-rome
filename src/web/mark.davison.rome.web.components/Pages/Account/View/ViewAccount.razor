@@ -6,9 +6,10 @@
     <ActivityMonitor Loading="@ViewModel.Loading">
         <ChildContent>
             <MudStack>
-                <MudStack Row="true">
+                <MudStack Row="true" AlignItems="AlignItems.Center">
                     <MudText data-testid="@DataTestIds.ViewAccountTitle" 
                              Typo="Typo.h4">@ViewModel.Title</MudText>
+                    <MudCheckBox data-testid="view-account-favourite" T="bool" Label="Favourite" Value="@(ViewModel.Account?.IsFavourite ?? false)" ReadOnly="true" Disabled="true" />
                     <MudTooltip Text="@ViewModel.BalanceAsOfPeriodEndTooltip">
                         <MudText data-testid="@DataTestIds.ViewAccountCurrentBalance" 
                                     Class="@GetAccountCurrentBalanceCssClasses()"

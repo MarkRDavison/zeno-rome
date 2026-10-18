@@ -4,6 +4,7 @@ public class Account : RomeEntity
 {
     public string Name { get; set; } = string.Empty;
     public bool IsActive { get; set; } = true;
+    public bool IsFavourite { get; set; }
     public long? VirtualBalance { get; set; }
     public string AccountNumber { get; set; } = string.Empty;
     public int Order { get; set; }

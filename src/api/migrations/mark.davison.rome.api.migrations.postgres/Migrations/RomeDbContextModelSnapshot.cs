@@ -120,6 +120,9 @@ namespace mark.davison.rome.api.migrations.postgres.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsFavourite")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTimeOffset>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
@@ -429,6 +432,20 @@ namespace mark.davison.rome.api.migrations.postgres.Migrations
                     b.ToTable("Tags");
                 });
 
+            modelBuilder.Entity("mark.davison.rome.api.models.Entities.UserPreference", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PreferencesJson")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("UserPreferences");
+                });
+
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.Transaction", b =>
                 {
                     b.Property<Guid>("Id")
@@ -586,6 +603,17 @@ namespace mark.davison.rome.api.migrations.postgres.Migrations
                     b.HasIndex("TagId");
 
                     b.ToTable("TransactionJournalTags");
+                });
+
+            modelBuilder.Entity("mark.davison.rome.api.models.Entities.UserPreference", b =>
+                {
+                    b.HasOne("mark.davison.common.server.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("mark.davison.rome.api.models.Entities.TransactionType", b =>

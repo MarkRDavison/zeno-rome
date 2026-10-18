@@ -19,4 +19,5 @@
     <NumericField id="edit-account-form-opening-balance" HideSpinButtons Label="Opening balance" @bind-Value="FormViewModel.OpeningBalance" AllowNegative="false" DecimalPlaces="@FormViewModel.DecimalPlaces" For="@(() => FormViewModel.OpeningBalance)" />
     <NumericField id="edit-account-form-virtual-balance" HideSpinButtons Label="Virtual balance" @bind-Value="FormViewModel.VirtualBalance" AllowNegative="false" DecimalPlaces="@FormViewModel.DecimalPlaces" For="@(() => FormViewModel.VirtualBalance)" />
     <MudDatePicker id="edit-account-form-opening-balance-date" Label="Opening balance date" @bind-Date="FormViewModel.OpeningBalanceDate" For="@(() => FormViewModel.OpeningBalanceDate)" />
+    <MudCheckBox id="edit-account-form-favourite" T="bool" Label="Favourite" @bind-Value="FormViewModel.IsFavourite" />
 </MudForm>

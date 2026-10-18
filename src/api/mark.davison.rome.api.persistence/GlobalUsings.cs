@@ -14,6 +14,7 @@ global using mark.davison.rome.shared.accounting.constants;
 global using mark.davison.rome.shared.constants;
 global using mark.davison.rome.shared.models.dto.Scenarios.Commands.CreateTransaction;
 global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertCategory;
+global using mark.davison.rome.shared.models.dto.Shared;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Diagnostics;
 global using Microsoft.EntityFrameworkCore.Storage.ValueConversion;

@@ -21,6 +21,7 @@ public sealed class EditTransactionFormSubmissionTests
                 string.Empty,
                 0,
                 true,
+                false,
                 DateTimeOffset.UtcNow,
                 0,
                 currencyId,

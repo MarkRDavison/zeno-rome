@@ -68,6 +68,7 @@ internal static class AccountQuerySupport
             account.AccountNumber,
             currentBalance,
             account.IsActive,
+            account.IsFavourite,
             account.LastModified,
             balanceDifference,
             account.CurrencyId,

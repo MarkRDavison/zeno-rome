@@ -30,6 +30,12 @@ public abstract class RomeBaseTest : LoggedInTest
 
     protected PlaywrightAppSettings AppSettings => throw new NotImplementedException();
 #else
+    protected override async Task OnTestInitialise()
+    {
+        await base.OnTestInitialise();
+        await AppContextDateRange.On(CurrentPage).ResetToCurrentMonthAsync();
+    }
+
     protected DashboardPage Dashboard => new(CurrentPage, AppSettings);
 #endif
 }

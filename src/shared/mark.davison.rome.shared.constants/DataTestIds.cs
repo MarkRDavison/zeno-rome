@@ -38,5 +38,12 @@
         public const string NavTags = "nav-tags";
         public const string ManageTagsLink = "manage-tags-link";
         public const string TagMultiSelectPrefix = "tag-multi-select-";
+
+        public const string DashboardAccounts = "dashboard-accounts";
+        public const string DashboardRecent = "dashboard-recent";
+        public const string DashboardAccountRowPrefix = "dashboard-account-row-";
+        public const string DashboardRecentRowPrefix = "dashboard-recent-row-";
+        public const string UserSettingsRecentCount = "user-settings-recent-count";
+        public const string UserSettingsSave = "user-settings-save";
     }
 }

@@ -33,7 +33,8 @@ public class EditAccountFormSubmission : IFormSubmission<EditAccountFormViewMode
                 formViewModel.AccountTypeId ?? Guid.Empty,
                 formViewModel.CurrencyId ?? Guid.Empty,
                 openingBalanceSpecified ? CurrencyRules.ToPersisted(formViewModel.OpeningBalance ?? 0) : null,
-                openingBalanceSpecified && formViewModel.OpeningBalanceDate != null ? DateOnly.FromDateTime(formViewModel.OpeningBalanceDate.Value) : null)
+                openingBalanceSpecified && formViewModel.OpeningBalanceDate != null ? DateOnly.FromDateTime(formViewModel.OpeningBalanceDate.Value) : null,
+                formViewModel.IsFavourite)
         };
 
         var response = await _clientHttpRepository.Post<UpsertAccountCommandRequest, UpsertAccountCommandResponse>(request, CancellationToken.None);

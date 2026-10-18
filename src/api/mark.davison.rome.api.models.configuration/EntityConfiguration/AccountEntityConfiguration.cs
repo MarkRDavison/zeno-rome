@@ -12,6 +12,10 @@ public partial class AccountEntityConfiguration : RomeEntityConfiguration<Accoun
             .Property(_ => _.IsActive);
 
         builder
+            .Property(_ => _.IsFavourite)
+            .HasDefaultValue(false);
+
+        builder
             .Property(_ => _.VirtualBalance);
 
         builder

@@ -419,4 +419,47 @@ public class UpsertAccountCommandProcessorTests
             await Assert.That(persitedTransactionJournal.Date).IsEqualTo(request.UpsertAccountDto.OpeningBalanceDate!.Value);
         }
     }
+
+    [Test]
+    public async Task ProcessAsync_PersistsIsFavourite()
+    {
+        var account = new Account
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test",
+            UserId = Guid.Empty,
+            AccountTypeId = AccountTypeConstants.Asset,
+            CurrencyId = CurrencyConstants.NZD,
+            AccountNumber = string.Empty,
+            IsFavourite = false,
+            Created = DateTime.UtcNow,
+            LastModified = DateTime.UtcNow,
+            Order = 0
+        };
+
+        await _dbContext.UpsertEntityAsync(account, CancellationToken.None);
+        await _dbContext.SaveChangesAsync(true, CancellationToken.None);
+
+        var request = new UpsertAccountCommandRequest
+        {
+            UpsertAccountDto = new UpsertAccountDto(
+                account.Id,
+                account.Name,
+                null,
+                account.AccountNumber,
+                account.AccountTypeId,
+                account.CurrencyId,
+                null,
+                null,
+                true)
+        };
+
+        var response = await _upsertAccountCommandProcessor.ProcessAsync(request, _currentUserContextMock.Object, CancellationToken.None);
+
+        await Assert.That(response.SuccessWithValue).IsTrue();
+        await Assert.That(response.Value.IsFavourite).IsTrue();
+
+        var persisted = await _dbContext.GetByIdAsync<Account>(account.Id, CancellationToken.None);
+        await Assert.That(persisted!.IsFavourite).IsTrue();
+    }
 }

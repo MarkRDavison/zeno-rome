@@ -125,7 +125,8 @@ public class EditAccountViewModel : BaseViewModel<(Guid, EditAccountFormViewMode
             OpeningBalance = account.OpeningBalance is null
                 ? null
                 : CurrencyRules.FromPersisted(account.OpeningBalance.Value),
-            OpeningBalanceDate = account.OpeningBalanceDate?.ToDateTime(TimeOnly.MinValue)
+            OpeningBalanceDate = account.OpeningBalanceDate?.ToDateTime(TimeOnly.MinValue),
+            IsFavourite = account.IsFavourite
         };
 
         return form;

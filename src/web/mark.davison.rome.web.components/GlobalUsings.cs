@@ -11,6 +11,10 @@ global using mark.davison.rome.shared.models.dto.Scenarios.Commands.CreateTransa
 global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertAccount;
 global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertCategory;
 global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertTag;
+global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertUserPreferences;
+global using mark.davison.rome.shared.models.dto.Scenarios.Queries.GetUserPreferences;
+global using mark.davison.rome.shared.models.dto.Scenarios.Queries.Home;
+global using mark.davison.rome.web.services.State.Home;
 global using mark.davison.rome.shared.models.dto.Shared;
 global using mark.davison.rome.web.components.CommonCandidates;
 global using mark.davison.rome.web.components.Forms.EditAccount;

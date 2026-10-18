@@ -1,4 +1,7 @@
-﻿namespace mark.davison.rome.web.components.Ignition;
+﻿using mark.davison.rome.web.components.Pages.Dashboard;
+using mark.davison.rome.web.components.Pages.UserSettings;
+
+namespace mark.davison.rome.web.components.Ignition;
 
 public static class DependencyInjectionExtensions
 {
@@ -11,6 +14,8 @@ public static class DependencyInjectionExtensions
             .UseCommonClient(typeof(Routes));
 
         services
+            .AddScoped<DashboardViewModel>()
+            .AddScoped<UserSettingsViewModel>()
             .AddScoped<AccountListViewModel>()
             .AddScoped<EditAccountViewModel>()
             .AddScoped<ViewAccountViewModel>();

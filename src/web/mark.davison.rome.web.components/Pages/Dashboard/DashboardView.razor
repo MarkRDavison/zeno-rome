@@ -1,0 +1,74 @@
+@attribute [Route(Routes.Dashboard)]
+
+@inherits BaseView<DashboardViewModel, object?>
+
+<AuthorizeView>
+    <NotAuthorized>
+        <Redirect Url="@Routes.Login" />
+    </NotAuthorized>
+    <Authorized>
+        <MudPaper Class="pa-10">
+            @if (ViewModel.Loading)
+            {
+                <MudProgressCircular Size="Size.Large" Class="ma-auto" Indeterminate="true" />
+            }
+            else
+            {
+                <MudStack Spacing="6">
+                    <MudText Typo="Typo.h4">Home</MudText>
+
+                    <MudStack data-testid="dashboard-accounts" Spacing="2">
+                        <MudText Typo="Typo.h6">Accounts</MudText>
+                        @if (!ViewModel.Accounts.Any())
+                        {
+                            <MudText>No accounts to show.</MudText>
+                        }
+                        else
+                        {
+                            <MudDataGrid Items="@ViewModel.Accounts" SortMode="SortMode.None">
+                                <Columns>
+                                    <TemplateColumn Title="Name">
+                                        <CellTemplate Context="row">
+                                            <MudLink data-testid="@($"dashboard-account-row-{row.Item.Id}")" Href="@row.Item.AccountHref">@row.Item.Name</MudLink>
+                                        </CellTemplate>
+                                    </TemplateColumn>
+                                    <PropertyColumn Title="Type" Property="_ => _.AccountType" />
+                                    <PropertyColumn Title="Balance (period end)" Property="_ => _.CurrentBalance" />
+                                    <PropertyColumn Title="Change in period" Property="_ => _.BalanceDifference" CellStyleFunc="@ViewModel.AmountCellStyleFunc(_ => _.BalanceDifferenceAmount)" />
+                                </Columns>
+                            </MudDataGrid>
+                        }
+                    </MudStack>
+
+                    <MudStack data-testid="dashboard-recent" Spacing="2">
+                        <MudText Typo="Typo.h6">Recent transactions</MudText>
+                        @if (!ViewModel.RecentTransactions.Any())
+                        {
+                            <MudText>No transactions in the selected date range.</MudText>
+                        }
+                        else
+                        {
+                            <MudList T="string" Dense="true">
+                                @foreach (var item in ViewModel.RecentTransactions)
+                                {
+                                    <MudListItem data-testid="@($"dashboard-recent-row-{item.TransactionGroupId}")">
+                                        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="flex-grow-1">
+                                            <MudStack Spacing="0">
+                                                <MudLink Href="@item.Href">@item.Title</MudLink>
+                                                @if (!string.IsNullOrEmpty(item.TransactionType))
+                                                {
+                                                    <MudText Typo="Typo.caption">@item.TransactionType</MudText>
+                                                }
+                                            </MudStack>
+                                            <MudText Typo="Typo.body2">@item.Date.ToString("d")</MudText>
+                                        </MudStack>
+                                    </MudListItem>
+                                }
+                            </MudList>
+                        }
+                    </MudStack>
+                </MudStack>
+            }
+        </MudPaper>
+    </Authorized>
+</AuthorizeView>

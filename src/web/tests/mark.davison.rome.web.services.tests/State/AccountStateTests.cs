@@ -13,6 +13,7 @@ public sealed class AccountStateTests
             "1",
             0,
             true,
+            false,
             DateTimeOffset.UtcNow,
             0,
             CurrencyConstants.NZD,
@@ -41,8 +42,8 @@ public sealed class AccountStateTests
     {
         var client = new Mock<IClientHttpRepository>();
         var state = new AccountState(client.Object);
-        var first = new AccountDto(Guid.NewGuid(), "A", AccountTypeConstants.Asset, string.Empty, 0, true, DateTimeOffset.UtcNow, 0, CurrencyConstants.NZD, null, null, null);
-        var second = new AccountDto(Guid.NewGuid(), "B", AccountTypeConstants.Expense, string.Empty, 0, true, DateTimeOffset.UtcNow, 0, CurrencyConstants.NZD, null, null, null);
+        var first = new AccountDto(Guid.NewGuid(), "A", AccountTypeConstants.Asset, string.Empty, 0, true, false, DateTimeOffset.UtcNow, 0, CurrencyConstants.NZD, null, null, null);
+        var second = new AccountDto(Guid.NewGuid(), "B", AccountTypeConstants.Expense, string.Empty, 0, true, false, DateTimeOffset.UtcNow, 0, CurrencyConstants.NZD, null, null, null);
 
         state.SetState([first]);
         state.MergeAccounts([second]);

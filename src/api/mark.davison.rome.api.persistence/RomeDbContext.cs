@@ -56,5 +56,6 @@ public sealed class RomeDbContext : DbContextBase<RomeDbContext>
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Tag> Tags => Set<Tag>();
     public DbSet<TransactionJournalTag> TransactionJournalTags => Set<TransactionJournalTag>();
+    public DbSet<UserPreference> UserPreferences => Set<UserPreference>();
 
 }

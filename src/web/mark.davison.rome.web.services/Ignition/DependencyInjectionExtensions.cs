@@ -8,6 +8,7 @@ public static class DependencyInjectionExtensions
             .AddScoped<IStartupState, StartupState>()
             .AddScoped<IAppSessionBootstrap, AppSessionBootstrap>()
             .AddScoped<IAccountState, AccountState>()
+            .AddScoped<IHomeState, HomeState>()
             .AddScoped<ITransactionState, TransactionState>()
             .AddScoped<ICategoryState, CategoryState>()
             .AddScoped<ITagState, TagState>()

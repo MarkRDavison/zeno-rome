@@ -53,8 +53,8 @@ public sealed class ViewTransactionViewModelTests
         var accountState = new Mock<IAccountState>();
         accountState.Setup(_ => _.FetchState(It.IsAny<Guid?>())).Returns(Task.CompletedTask);
         accountState.Setup(_ => _.Accounts).Returns([
-            new AccountDto(sourceAccountId, "Checking", AccountTypeConstants.Asset, string.Empty, 0, true, DateTimeOffset.UtcNow, 0, currencyId, null, null, null),
-            new AccountDto(destAccountId, "Supermarket", AccountTypeConstants.Expense, string.Empty, 0, true, DateTimeOffset.UtcNow, 0, currencyId, null, null, null)
+            new AccountDto(sourceAccountId, "Checking", AccountTypeConstants.Asset, string.Empty, 0, true, false, DateTimeOffset.UtcNow, 0, currencyId, null, null, null),
+            new AccountDto(destAccountId, "Supermarket", AccountTypeConstants.Expense, string.Empty, 0, true, false, DateTimeOffset.UtcNow, 0, currencyId, null, null, null)
         ]);
         accountState.Setup(_ => _.Loading).Returns(false);
         accountState.Setup(_ => _.Loaded).Returns(true);

@@ -1,4 +1,5 @@
 ﻿global using mark.davison.common.authentication.server.abstractions.Services;
+global using mark.davison.common.server.Models;
 global using mark.davison.common.persistence;
 global using mark.davison.common.server.test.Persistence;
 global using mark.davison.rome.api.models.Entities;
@@ -11,8 +12,11 @@ global using mark.davison.rome.shared.server.Services;
 global using mark.davison.rome.api.queries.Scenarios.TagList;
 global using mark.davison.rome.api.queries.Scenarios.FetchTransaction;
 global using mark.davison.rome.api.queries.Scenarios.TransactionByAccount;
+global using mark.davison.rome.api.queries.Scenarios.Home;
+global using mark.davison.rome.shared.models.dto.Scenarios.Queries.Home;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.CategoryList;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.TagList;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.FetchTransaction;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.TransactionByAccount;
+global using Microsoft.EntityFrameworkCore;
 global using Moq;

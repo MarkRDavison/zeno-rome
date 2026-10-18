@@ -55,8 +55,8 @@ public sealed class ViewAccountTests
 
         var accountState = new Mock<IAccountState>();
         accountState.Setup(_ => _.Accounts).Returns([
-            new AccountDto(accountId, "Checking", AccountTypeConstants.Asset, string.Empty, currentBalance, true, DateTimeOffset.UtcNow, 0, currencyId, null, null, null),
-            new AccountDto(expenseId, "Groceries", AccountTypeConstants.Expense, string.Empty, 0, true, DateTimeOffset.UtcNow, 0, currencyId, null, null, null)
+            new AccountDto(accountId, "Checking", AccountTypeConstants.Asset, string.Empty, currentBalance, true, false, DateTimeOffset.UtcNow, 0, currencyId, null, null, null),
+            new AccountDto(expenseId, "Groceries", AccountTypeConstants.Expense, string.Empty, 0, true, false, DateTimeOffset.UtcNow, 0, currencyId, null, null, null)
         ]);
         accountState.Setup(_ => _.Loading).Returns(false);
         accountState.Setup(_ => _.Loaded).Returns(true);

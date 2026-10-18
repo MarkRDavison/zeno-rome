@@ -11,6 +11,8 @@ global using mark.davison.rome.api.commands.Scenarios.SetUserContext;
 global using mark.davison.rome.api.commands.Scenarios.UpsertAccount;
 global using mark.davison.rome.api.commands.Scenarios.UpsertCategory;
 global using mark.davison.rome.api.commands.Scenarios.UpsertTag;
+global using mark.davison.rome.api.commands.Scenarios.UpsertUserPreferences;
+global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertUserPreferences;
 global using mark.davison.rome.api.models.Entities;
 global using mark.davison.rome.api.persistence;
 global using mark.davison.rome.shared.accounting.constants;

@@ -78,6 +78,26 @@ public sealed class ViewAccountPage : RomeBasePage
         return this;
     }
 
+    /// <summary>
+    /// Asserts each string appears in the register and in the given order (allows other rows above/between).
+    /// </summary>
+    public async Task<ViewAccountPage> ExpectRegisterTextsInOrder(params string[] expectedTextsInOrder)
+    {
+        var register = Page.GetByTestId(DataTestIds.ViewAccountRegister);
+        await register.WaitForAsync();
+        var body = await register.InnerTextAsync();
+
+        var searchFrom = 0;
+        foreach (var expected in expectedTextsInOrder)
+        {
+            var index = body.IndexOf(expected, searchFrom, StringComparison.Ordinal);
+            await Assert.That(index).IsGreaterThanOrEqualTo(searchFrom);
+            searchFrom = index + expected.Length;
+        }
+
+        return this;
+    }
+
     public async Task<ViewAccountPage> ExpectRegisterContains(string expectedText)
     {
         var register = Page.GetByTestId(DataTestIds.ViewAccountRegister);

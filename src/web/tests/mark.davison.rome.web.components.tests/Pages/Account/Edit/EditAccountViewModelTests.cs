@@ -19,6 +19,7 @@ public sealed class EditAccountViewModelTests
                 "ACC-1",
                 CurrencyRules.ToPersisted(2500m),
                 true,
+                false,
                 DateTimeOffset.UtcNow,
                 CurrencyRules.ToPersisted(2500m),
                 currencyId,
@@ -66,7 +67,7 @@ public sealed class EditAccountViewModelTests
         var accountState = new Mock<IAccountState>();
         accountState.Setup(_ => _.FetchAccount(accountId)).Returns(Task.CompletedTask);
         accountState.Setup(_ => _.Accounts).Returns([
-            new AccountDto(accountId, "Old", AccountTypeConstants.Asset, string.Empty, 0, true, DateTimeOffset.UtcNow, 0, CurrencyConstants.NZD, null, null, null)
+            new AccountDto(accountId, "Old", AccountTypeConstants.Asset, string.Empty, 0, true, false, DateTimeOffset.UtcNow, 0, CurrencyConstants.NZD, null, null, null)
         ]);
         accountState.Setup(_ => _.Loading).Returns(false);
         accountState.Setup(_ => _.Loaded).Returns(true);
@@ -76,7 +77,7 @@ public sealed class EditAccountViewModelTests
             .Setup(_ => _.Primary(It.IsAny<EditAccountFormViewModel>()))
             .ReturnsAsync(new UpsertAccountCommandResponse
             {
-                Value = new AccountDto(accountId, "Updated", AccountTypeConstants.Asset, string.Empty, 0, true, DateTimeOffset.UtcNow, 0, CurrencyConstants.NZD, null, null, null)
+                Value = new AccountDto(accountId, "Updated", AccountTypeConstants.Asset, string.Empty, 0, true, false, DateTimeOffset.UtcNow, 0, CurrencyConstants.NZD, null, null, null)
             });
 
         var navigation = new Mock<IClientNavigationManager>();

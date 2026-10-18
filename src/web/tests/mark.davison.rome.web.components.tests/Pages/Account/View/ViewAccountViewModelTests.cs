@@ -155,10 +155,10 @@ public sealed class ViewAccountViewModelTests
 
         var accountState = new Mock<IAccountState>();
         accountState.Setup(_ => _.Accounts).Returns([
-            new AccountDto(accountId, "Checking", AccountTypeConstants.Asset, string.Empty, 0, true, DateTimeOffset.UtcNow, 0, _currencyId, null, null, null),
+            new AccountDto(accountId, "Checking", AccountTypeConstants.Asset, string.Empty, 0, true, false, DateTimeOffset.UtcNow, 0, _currencyId, null, null, null),
             .. transactions.Select(t => t.AccountId).Distinct()
                 .Where(id => id != accountId)
-                .Select(id => new AccountDto(id, $"Acct-{id:N}", AccountTypeConstants.Expense, string.Empty, 0, true, DateTimeOffset.UtcNow, 0, _currencyId, null, null, null))
+                .Select(id => new AccountDto(id, $"Acct-{id:N}", AccountTypeConstants.Expense, string.Empty, 0, true, false, DateTimeOffset.UtcNow, 0, _currencyId, null, null, null))
         ]);
         accountState.Setup(_ => _.Loading).Returns(false);
         accountState.Setup(_ => _.Loaded).Returns(true);

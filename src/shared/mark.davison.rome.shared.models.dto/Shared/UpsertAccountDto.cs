@@ -8,7 +8,8 @@ public sealed record UpsertAccountDto(
     Guid AccountTypeId,
     Guid CurrencyId,
     long? OpeningBalance,
-    DateOnly? OpeningBalanceDate
+    DateOnly? OpeningBalanceDate,
+    bool IsFavourite = false
 )
 {
     public static UpsertAccountDto Default => new(Guid.Empty, string.Empty, null, string.Empty, Guid.Empty, Guid.Empty, null, null);

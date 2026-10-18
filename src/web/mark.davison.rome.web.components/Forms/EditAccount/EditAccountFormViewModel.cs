@@ -18,6 +18,7 @@ public class EditAccountFormViewModel : IFormViewModel
     public decimal? VirtualBalance { get; set; }
     public decimal? OpeningBalance { get; set; }
     public DateTime? OpeningBalanceDate { get; set; }
+    public bool IsFavourite { get; set; }
 
     public int? DecimalPlaces => _startupState.Currencies.FirstOrDefault(_ => _.Id == CurrencyId)?.DecimalPlaces;
 

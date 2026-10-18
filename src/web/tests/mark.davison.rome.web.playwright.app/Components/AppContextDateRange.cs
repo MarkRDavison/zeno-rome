@@ -20,4 +20,15 @@ public sealed class AppContextDateRange
 
         await _page.WaitForTimeoutAsync(500);
     }
+
+    /// <summary>
+    /// Matches default app context (current calendar month). Call at test start when prior tests may have changed the range.
+    /// </summary>
+    public Task ResetToCurrentMonthAsync()
+    {
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        var start = new DateOnly(today.Year, today.Month, 1);
+        var end = start.AddMonths(1).AddDays(-1);
+        return SetInclusiveRange(start, end);
+    }
 }

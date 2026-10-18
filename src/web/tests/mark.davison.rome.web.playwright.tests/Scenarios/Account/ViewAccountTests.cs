@@ -5,6 +5,10 @@ public sealed class ViewAccountTests : RomeBaseTest
     [Test]
     public async Task MultiSplitDeposit_ShowsOrderedRegisterOnSourceAccount()
     {
+        var splitGroupTitle = $"E2E multi-split {Guid.NewGuid():N}";
+        var everydayLeg = $"{splitGroupTitle}-everyday";
+        var savingsLeg = $"{splitGroupTitle}-savings";
+
         var createTransaction = await Dashboard
             .OpenQuickCreate()
             .ThenAsync(_ => _.CreateTransaction(TransactionType.Deposit));
@@ -12,16 +16,16 @@ public sealed class ViewAccountTests : RomeBaseTest
         await createTransaction
             .Submit(
                 new NewTransactionGroupInfo(
-                    "Split transaction",
+                    splitGroupTitle,
                     [
                         new NewTransactionSplitInfo(
-                            "split #1",
+                            everydayLeg,
                             AccountConstants.ExistingWorkAccountName,
                             AccountConstants.ExistingEverydayAccountName,
                             DateOnly.FromDateTime(DateTime.Today),
                             100.0M),
                         new NewTransactionSplitInfo(
-                            "split #2",
+                            savingsLeg,
                             AccountConstants.ExistingWorkAccountName,
                             AccountConstants.ExistingSavingsAccountName,
                             DateOnly.FromDateTime(DateTime.Today),
@@ -35,7 +39,7 @@ public sealed class ViewAccountTests : RomeBaseTest
 
         await viewAccount
             .ExpectAccountName(AccountConstants.ExistingEverydayAccountName)
-            .ThenAsync(_ => _.ExpectRegisterLeadingRows("Split transaction", "split #1"));
+            .ThenAsync(_ => _.ExpectRegisterTextsInOrder(splitGroupTitle, everydayLeg));
 
         var savingsAccount = await ViewAccountPage.OpenAssetAccountByName(
             CurrentPage,
@@ -44,6 +48,6 @@ public sealed class ViewAccountTests : RomeBaseTest
 
         await savingsAccount
             .ExpectAccountName(AccountConstants.ExistingSavingsAccountName)
-            .ThenAsync(_ => _.ExpectRegisterLeadingRows("Split transaction", "split #2"));
+            .ThenAsync(_ => _.ExpectRegisterTextsInOrder(splitGroupTitle, savingsLeg));
     }
 }

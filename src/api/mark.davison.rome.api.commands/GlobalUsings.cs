@@ -13,6 +13,8 @@ global using mark.davison.rome.shared.models.dto.Scenarios.Commands.SetUserConte
 global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertAccount;
 global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertCategory;
 global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertTag;
+global using mark.davison.rome.shared.models.dto.Scenarios.Commands.UpsertUserPreferences;
+global using mark.davison.rome.shared.constants;
 global using mark.davison.rome.shared.models.dto.Shared;
 global using mark.davison.rome.shared.server.Services;
 global using mark.davison.rome.shared.server.Utilities;

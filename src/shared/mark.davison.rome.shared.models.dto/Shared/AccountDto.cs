@@ -7,6 +7,7 @@ public sealed record AccountDto(
     string AccountNumber,
     long CurrentBalance,
     bool Active,
+    bool IsFavourite,
     DateTimeOffset LastModified,
     long BalanceDifference,
     Guid CurrencyId,

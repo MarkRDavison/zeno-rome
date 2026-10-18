@@ -32,6 +32,7 @@ public sealed class EditAccountTests
                 "123",
                 CurrencyRules.ToPersisted(1500m),
                 true,
+                false,
                 DateTimeOffset.UtcNow,
                 CurrencyRules.ToPersisted(1500m),
                 currencyId,

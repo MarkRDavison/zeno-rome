@@ -11,6 +11,8 @@ global using mark.davison.rome.shared.models.dto.Scenarios.Queries.AccountList;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.CategoryList;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.TagList;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.FetchTransaction;
+global using mark.davison.rome.shared.models.dto.Scenarios.Queries.GetUserPreferences;
+global using mark.davison.rome.shared.models.dto.Scenarios.Queries.Home;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.Startup;
 global using mark.davison.rome.shared.models.dto.Scenarios.Queries.TransactionByAccount;
 global using mark.davison.rome.shared.models.dto.Shared;
