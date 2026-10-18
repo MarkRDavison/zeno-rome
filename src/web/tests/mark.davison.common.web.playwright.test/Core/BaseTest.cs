@@ -149,7 +149,16 @@ public abstract class BaseTest : IAsyncDisposable
     protected virtual Task OnPreTestInitialise() => Task.CompletedTask;
     protected virtual Task OnTestInitialise() => Task.CompletedTask;
 
+    [After(Test)]
+    public Task TestTeardown() => TeardownCurrentTestAsync();
+
     public async ValueTask DisposeAsync()
+    {
+        await TeardownCurrentTestAsync();
+        GC.SuppressFinalize(this);
+    }
+
+    private async Task TeardownCurrentTestAsync()
     {
         if (AppSettings is null || CurrentPage is null)
         {
@@ -172,6 +181,7 @@ public abstract class BaseTest : IAsyncDisposable
         {
             if (_context != null)
             {
+                Directory.CreateDirectory(AppSettings.TEMP_DIR.TrimEnd('/'));
                 await _context.StorageStateAsync(new()
                 {
                     Path = AuthStateFullPath(AppSettings.TEMP_DIR)
@@ -180,8 +190,7 @@ public abstract class BaseTest : IAsyncDisposable
         }
 
         await CurrentPage.CloseAsync();
-
-        GC.SuppressFinalize(this);
+        CurrentPage = null!;
     }
 
     protected PlaywrightAppSettings AppSettings { get; } = default!;
